@@ -42,9 +42,15 @@
     align-items: center;
     background: lighten($background, 5);
   }
-  &.name {
-    font-weight: 300;
-    margin-left: 5px;
+  &.status {
+    font-weight: 600;
+    margin-left: 50%;
+  }
+  &.namelink {
+    color: white;
+  }
+  &.namelink:hover {
+    color: green;
   }
   &.username {
     font-weight: 500;

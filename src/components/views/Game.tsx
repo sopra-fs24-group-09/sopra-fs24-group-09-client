@@ -10,9 +10,14 @@ import { User } from "types";
 
 const Player = ({ user }: { user: User }) => (
   <div className="player container">
-    <div className="player username">{user.username}</div>
-    <div className="player name">{user.name}</div>
-    <div className="player id">id: {user.id}</div>
+    <div>
+      <div className="player id">id: {user.id}</div>
+      <div className="player username"><a href={`/user/${user.id}`} className="player namelink">Username: {user.username}</a></div>
+      <div className="player id">Creation Date: {user.registerDate}</div>
+    </div>
+    <div className="player status" style={{ color: user.status === "ONLINE" ? "green" : "red" }}>
+      {user.status}
+    </div>
   </div>
 );
 
@@ -21,7 +26,7 @@ Player.propTypes = {
 };
 
 const Game = () => {
-  // use react-router-dom's hook to access navigation, more info: https://reactrouter.com/en/main/hooks/use-navigate 
+  // use react-router-dom"s hook to access navigation, more info: https://reactrouter.com/en/main/hooks/use-navigate 
   const navigate = useNavigate();
 
   // define a state variable (using the state hook).
@@ -31,8 +36,23 @@ const Game = () => {
   // more information can be found under https://react.dev/learn/state-a-components-memory and https://react.dev/reference/react/useState 
   const [users, setUsers] = useState<User[]>(null);
 
-  const logout = (): void => {
+  // const logout = (): void => {
+  //   localStorage.removeItem("token");
+  //   navigate("/login");
+  // };
+
+  const logout = async () => {
+    const id = localStorage.getItem("id");
     localStorage.removeItem("token");
+    //apply a post request for user logout
+    try {
+      const requestBody = JSON.stringify({id:id});
+      const response = await api.post("/users/logout", requestBody);
+      console.log(response);
+    
+    } catch (error) {
+      alert(`Something went wrong during the logout: \n${handleError(error)}`);
+    }
     navigate("/login");
   };
 

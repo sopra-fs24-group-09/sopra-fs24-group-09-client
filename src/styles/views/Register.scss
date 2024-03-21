@@ -1,9 +1,9 @@
 @import 'styles/theme';
 
-.login {
+.register {
   &.container {
-    margin-top: 2em;
-    min-height: 300px;
+    margin-top: 0em;
+    min-height: 400px;
     /* we include the center mixin defined in _theme.scss and save three duplicate lines :) */
     @include center;
     flex-direction: column;
@@ -14,7 +14,7 @@
     justify-content: center;
     width: 60%;
     max-width: 30em;
-    height: 20em;
+    height: 35em;
     font-size: 16px;
     font-weight: 300;
     padding-left: 37px;
@@ -48,11 +48,11 @@
   &.button-container {
     display: flex;
     justify-content: center;
-    margin-top: 2em;
+    margin-top: 1em;
   }
   &.button-container1 {
     display: flex;
     justify-content: center;
-    margin-top: -1em;
+    margin-top: 0em;
   }
 }

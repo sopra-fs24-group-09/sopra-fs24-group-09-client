@@ -3,8 +3,10 @@ import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import {GameGuard} from "../routeProtectors/GameGuard";
 import GameRouter from "./GameRouter";
 import {LoginGuard} from "../routeProtectors/LoginGuard";
+import Register from "../../views/Register";
 import Login from "../../views/Login";
-
+import Profile from "../../views/Profile";
+import EditProfile from "../../views/Editprofile";
 /**
  * Main router of your application.
  * In the following class, different routes are rendered. In our case, there is a Login Route with matches the path "/login"
@@ -25,6 +27,19 @@ const AppRouter = () => {
 
         <Route path="/login" element={<LoginGuard />}>
           <Route path="/login" element={<Login/>} />
+        </Route>
+
+        <Route path="/register" element={<LoginGuard />}>
+          <Route path="/register" element={<Register/>} />
+        </Route>
+
+        {/* guard to user profile page */}
+        <Route path="/user/:id" element={<GameGuard />}>
+          <Route index element={<Profile />} />
+        </Route>
+
+        <Route path="/editprofile" element={<GameGuard />}>
+          <Route index element={<EditProfile />} />
         </Route>
 
         <Route path="/" element={
