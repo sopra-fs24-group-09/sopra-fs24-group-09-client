@@ -2,11 +2,16 @@
 
 .header {
   &.container {
-    @include center;
+    position: fixed;
+    top:0;
+    background-color: $greyBlue;
+    align-content: center;
+    align-items: center;
   }
 
   &.title {
-    font-weight: bold;
+    //font-weight: bold;
+    font-size: 1rem;
     color: $background;
     text-align: center;
   }

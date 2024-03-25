@@ -12,9 +12,8 @@ import "../../styles/views/Header.scss";
  * @FunctionalComponent
  */
 const Header = props => (
-  <div className="header container" style={{height: props.height}}>
-    <h1 className="header title">SoPra FS24 rocks with React!</h1>
-    <ReactLogo width="60px" height="60px"/>
+  <div  className="header container" style={{height: "5vh",width:"100vw"}}>
+    <h3 className="header title">state bar to be implemented</h3>
   </div>
 );
 
