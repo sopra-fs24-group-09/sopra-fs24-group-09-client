@@ -1,0 +1,100 @@
+@import "../theme";
+
+/* The '&' is a shorthand for the containing element,
+  so for example a '&.user-list' inside .game will compile to
+  .game.user-list
+
+  for more information visit https://sass-lang.com/guide
+ */
+
+.gameroom {
+  &.playercontainer {
+    position: absolute;
+    top:5vh;
+    left: 0;
+    width: 28vw;
+    height: 95vh;
+    background: $classicYellow;
+    padding: 1.5em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the start (left) */
+    justify-content: flex-start; /* Align content to the start (left) */
+    box-shadow: $dropShadow;
+    gap: 1rem;
+
+  }
+  &.roominfocontainer {
+    z-index:999;
+    position: absolute;
+    left:0;
+    top:0;
+    margin-left: 2rem;
+    height: 5vh;
+    width: 28vw;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  &.roominfo {
+    font-family: 'Inter';
+    font-weight: 400;
+    font-size: 1.4rem;
+    color: $darkBlue;
+  }
+  &.roomifotitle {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: bold;
+    font-size: 1.6rem;
+    color: $darkBlue;
+  }
+  &.singlePlayerContainer {
+    width:25vw;
+    height:15vh;
+    border-radius: 22px;
+    background-color: $lightYellow;
+    display: grid;
+    grid-template-columns: auto 1fr 0.2fr;
+    gap: 10px;
+  }
+  &.playerAvatar {
+    grid-column: 1;
+    height: 4.4rem;
+    width: 4.4rem;
+    position: relative;
+    top: 1rem;
+    left:1rem;
+    background-color: #D9D9D9;
+    border-radius: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .playerAvatar i {
+    font-size: 100%;
+  }
+  &.playerName {
+    position: relative;
+    top: 1rem;
+    left:1.4rem;
+    font-weight: 700;
+    font-size: 1.2rem;
+    grid-column: 2;
+    color:$darkBlue;
+  }
+  &.playerStatus {
+    grid-column: 3;
+    position: relative;
+    top: 1rem;
+  }
+  &.inputarea {
+    background-color: $greyBlue;
+    height: 22vh;
+    width: 72vw;
+    position: absolute;
+    left:28vw;
+    top:78vh;
+  }
+
+}
