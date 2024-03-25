@@ -1,6 +1,6 @@
 import React from "react";
 import AppRouter from "./components/routing/routers/AppRouter";
-import {VolumeBar} from "components/ui/VolumeBar";
+// import {VolumeBar} from "components/ui/VolumeBar";
 
 /**
  * Happy coding!
@@ -15,9 +15,9 @@ const App = () => {
   };
   return (
     <div>
-      <VolumeBar/>
-      {/* <Header height="100" />
-      <AppRouter /> */}
+      <Header height="100" />
+      {/* <VolumeBar/> */}
+      <AppRouter />
     </div>
   );
 };
