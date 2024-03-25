@@ -26,6 +26,7 @@ Player.propTypes = {
 };
 
 const Game = () => {
+  //test commit
   // use react-router-dom"s hook to access navigation, more info: https://reactrouter.com/en/main/hooks/use-navigate 
   const navigate = useNavigate();
 
