@@ -1,0 +1,61 @@
+@import "../theme";
+// define color variables
+$progressColor: yellow;
+$trackColor: #ffffff;
+$thumbColor: #582525;
+$backgroundColor: #31365c;
+.volume-bar {
+  display: flex;
+  align-items: center;
+  position: relative;
+  background-color: $backgroundColor;
+  border-radius: 5px;
+  width: fit-content;
+  // only apply padding in horizontal direction
+  padding: 1px 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  &.toggle-mute{
+    height: 20px;
+    align-items: center;
+    color: #fff;
+    background-color: transparent;
+    stroke: none;
+    padding: 0;
+  }
+  &.slider {
+    -webkit-appearance: none;
+    appearance: none;
+
+    height: 10px;
+    width: 100px;
+    vertical-align: middle;
+    transition: width 0.3s ease;
+    background: $trackColor;
+    overflow: hidden;
+    border-radius: 5px;
+    padding: 0%;// remove default padding
+    
+
+  }
+  ::-webkit-slider-thumb { // for webkit browsers
+    -webkit-appearance: none;
+    appearance: none;
+  
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background-color: #582525;
+    border: none;
+    /* slider progress trick :overflow hiden + box shadow*/
+    box-shadow: -407px 0px 0px 400px $progressColor;
+  }
+  ::-moz-range-thumb { // for mozilla browsers
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background-color: #582525;
+    border: none;
+    box-shadow: -407px 0px 0px 400px $progressColor;
+  }
+}
