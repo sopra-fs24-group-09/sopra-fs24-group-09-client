@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { api, handleError } from "helpers/api";
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {api, handleError} from "helpers/api";
+import {useNavigate} from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
-import { User } from "types";
+import {User} from "types";
 import "styles/views/Gameroom.scss";
 import "styles/twemoji-amazing.css";
 
@@ -62,32 +62,33 @@ const Gameroom = () => {
     // Add more player objects as needed
   ];
 
-  const PlayerList = ({ playerStatus }) => {
+  const PlayerList = ({playerStatus}) => {
     return (
       <>
 
-      <div className="gameroom roominfocontainer">
-        <div className={"gameroom roomifotitle"}> ROOM </div>
-        <div className={"gameroom roominfo"}> #05 - Advanced  </div>
-      </div>
-      <div className="gameroom playercontainer">
-        {playerStatus.map((playerInfo, index) => (
-          <div className="gameroom singlePlayerContainer" key={index}>
-            {/*<img src={playerInfo.user.avatar} alt={playerInfo.user.name} />*/}
-            <span className="gameroom playerAvatar">
-              <i className={"twa twa-" + playerInfo.user.avatar} style={{ fontSize: "3.8rem" }}/>
-            </span>
-            <span className="gameroom playerName">{playerInfo.user.name}</span>{/* Conditionally render the check mark or clock icon based on player status */}
-            <div className ="gameroom playerStatus">
-            {playerInfo.ready ? (
-              <i className="twa twa-check-mark-button" style={{ fontSize: "1.5rem" }} />
-            ) : (
-              <i className="twa twa-one-thirty" style={{ fontSize: "1.5rem" }} />
-            )}
+        <div className="gameroom roominfocontainer">
+          <div className={"gameroom roomifotitle"}> ROOM</div>
+          <div className={"gameroom roominfo"}> #05 - Advanced</div>
+        </div>
+        <div className="gameroom playercontainer">
+          {playerStatus.map((playerInfo, index) => (
+            <div className="gameroom singlePlayerContainer" key={index}>
+              {/*<img src={playerInfo.user.avatar} alt={playerInfo.user.name} />*/}
+              <span className="gameroom playerAvatar">
+                <i className={"twa twa-" + playerInfo.user.avatar} style={{fontSize: "3.8rem"}}/>
+              </span>
+              <span
+                className="gameroom playerName">{playerInfo.user.name}</span>{/* Conditionally render the check mark or clock icon based on player status */}
+              <div className="gameroom playerStatus">
+                {playerInfo.ready ? (
+                  <i className="twa twa-check-mark-button" style={{fontSize: "1.5rem"}}/>
+                ) : (
+                  <i className="twa twa-one-thirty" style={{fontSize: "1.5rem"}}/>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
       </>
     );
   };
@@ -106,8 +107,8 @@ const Gameroom = () => {
   };
 
   return (
-    <BaseContainer >
-      <PlayerList playerStatus={playerReadyStatus} />
+    <BaseContainer>
+      <PlayerList playerStatus={playerReadyStatus}/>
       <div className="gameroom inputarea"></div>
     </BaseContainer>
   );
