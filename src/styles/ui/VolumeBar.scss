@@ -1,18 +1,18 @@
 @import "../theme";
 // define color variables
-$progressColor: yellow;
-$trackColor: #ffffff;
-$thumbColor: #582525;
-$backgroundColor: #31365c;
+$progressColor: $classicYellow;
+$trackColor: $whiteYellow;
+$thumbColor: $lightYellow;
+$backgroundColor: $darkBlue;
 .volume-bar {
   display: flex;
   align-items: center;
   position: relative;
   background-color: $backgroundColor;
-  border-radius: 5px;
+  border-radius: 10px;
   width: fit-content;
   // only apply padding in horizontal direction
-  padding: 1px 5px;
+  padding: 2px 10px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   &.toggle-mute{
@@ -28,13 +28,14 @@ $backgroundColor: #31365c;
     appearance: none;
 
     height: 10px;
-    width: 100px;
+    width: 200px;
     vertical-align: middle;
     transition: width 0.3s ease;
     background: $trackColor;
     overflow: hidden;
-    border-radius: 5px;
+    border-radius: 10px;
     padding: 0%;// remove default padding
+    box-shadow: 1px 1px 0.2px 0.2px rgb(108, 111, 97);
     
 
   }
@@ -44,8 +45,7 @@ $backgroundColor: #31365c;
   
     height: 12px;
     width: 12px;
-    border-radius: 50%;
-    background-color: #582525;
+    background-color: $thumbColor;
     border: none;
     /* slider progress trick :overflow hiden + box shadow*/
     box-shadow: -407px 0px 0px 400px $progressColor;
@@ -53,9 +53,8 @@ $backgroundColor: #31365c;
   ::-moz-range-thumb { // for mozilla browsers
     height: 12px;
     width: 12px;
-    border-radius: 50%;
-    background-color: #582525;
+    background-color: $thumbColor;
     border: none;
-    box-shadow: -407px 0px 0px 400px $progressColor;
+    box-shadow: -407px 0px 1px 400px $progressColor;
   }
 }
