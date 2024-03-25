@@ -1,18 +1,9 @@
-/*
-  This file contains the most basic variables that control how your application will look.
- */
-
-/* Theme Colors
-
-   these values control the colors of your application.
-   feel free to play around with these and see what other look you can come up with! :D
-*/
-
 $accent: #FFCC4D;
 $accentDark: #FFCC4D;
 $textColor: black;
 $background: #C9D7DD;
 $stroke: #637A9F;
+//
 $background: rgba(255, 252, 245, 1);
 $classicYellow: rgba(255, 204, 77, 1);
 $lightYellow: rgba(255, 243, 207, 1);
@@ -21,29 +12,19 @@ $greyBlue: rgba(201, 215, 221, 1);
 $whiteYellow: rgba(255, 252, 245, 1);
 
 
->>>>>>>>> Temporary merge branch 2
-/* some constants */
 
 $DESKTOP_WIDTH: 1160px;
 $SMALL_LAPTOPS_WIDTH: 970px;
 $TABLETS_WIDTH: 750px;
 $SMALL_WIDTH: 768px;
 
-/* some standard elements */
-/* fonts */
 $fontDefault: "M PLUS Rounded 1c", sans-serif;
 $fontMono: "Roboto Mono", monospace;
 
-/* a standard drop shadow */
 $dropShadow: 0 0.25em 0.25em rgba(0, 0, 0, 0.25);
 
 $borderRadius: 0.75em;
 
-/* mixins
-
-  these allow you to create small snippets that you can insert with a one-liner in other stylesheets
-  for an example, see styles/views/Login.scss
-*/
 @mixin center {
   display: flex;
   align-items: center;
