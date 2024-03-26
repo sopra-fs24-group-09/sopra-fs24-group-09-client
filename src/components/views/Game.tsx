@@ -137,7 +137,7 @@ const Game = () => {
     }
 
     fetchData();
-    connect();
+    // connect();
 
     return () => {
       stompClient.disconnect();
