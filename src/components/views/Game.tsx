@@ -140,7 +140,7 @@ const Game = () => {
     // connect();
 
     return () => {
-      stompClient.disconnect();
+      // stompClient.disconnect();
     };
   }, []);
 
