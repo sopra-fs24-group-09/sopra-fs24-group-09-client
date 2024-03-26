@@ -10,6 +10,9 @@ import "styles/twemoji-amazing.css";
 const Gameroom = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>(null);
+  const [showScore, setShowScore] = useState(false)
+  const [showReadyPopup, setShowReadyPopup] = useState(false)
+
 
   // useEffect(() => {
   //   //fetch room info
@@ -41,7 +44,9 @@ const Gameroom = () => {
         name: "Maxwell",
         avatar: "smiling-face-with-smiling-eyes",
       },
-      ready: true
+      score: 70,
+      ready: true,
+      ifGuess: true
     },
     {
       user: {
@@ -49,7 +54,9 @@ const Gameroom = () => {
         name: "Hanky",
         avatar: "grinning-face-with-sweat",
       },
-      ready: true
+      score: 30,
+      ready: true,
+      ifGuess: false
     },
     {
       user: {
@@ -57,7 +64,9 @@ const Gameroom = () => {
         name: "Yang",
         avatar: "face-with-monocle",
       },
-      ready: false
+      score: 50,
+      ready: false,
+      ifGuess: true
     },
     // Add more player objects as needed
   ];
@@ -65,7 +74,6 @@ const Gameroom = () => {
   const PlayerList = ({playerStatus}) => {
     return (
       <>
-
         <div className="gameroom roominfocontainer">
           <div className={"gameroom roomifotitle"}> ROOM</div>
           <div className={"gameroom roominfo"}> #05 - Advanced</div>
@@ -77,8 +85,19 @@ const Gameroom = () => {
               <span className="gameroom playerAvatar">
                 <i className={"twa twa-" + playerInfo.user.avatar} style={{fontSize: "3.8rem"}}/>
               </span>
-              <span
-                className="gameroom playerName">{playerInfo.user.name}</span>{/* Conditionally render the check mark or clock icon based on player status */}
+              <div className={"gameroom secondcolumn"}>
+                <span
+                  className="gameroom playerName">{playerInfo.user.name}</span>
+                <span className="gameroom secondRow">
+                  <span className=" gameroom scoreTitle"> Score: </span>
+                  <span className=" gameroom playerScore">{playerInfo.score}</span>
+                  {playerInfo.ifGuess ? (
+                    <i className={"twa twa-speaking-head"} style={{marginTop: "1.8rem",marginLeft:"4.4rem" ,fontSize: "2.7rem"}}/>
+                  ):(
+                    <i className={"twa twa-studio-microphone"} style={{marginTop: "1.8rem",marginLeft:"4rem" ,fontSize: "2.8rem"}}/>
+                  )}
+                </span>
+              </div>
               <div className="gameroom playerStatus">
                 {playerInfo.ready ? (
                   <i className="twa twa-check-mark-button" style={{fontSize: "1.5rem"}}/>
@@ -109,7 +128,22 @@ const Gameroom = () => {
   return (
     <BaseContainer>
       <PlayerList playerStatus={playerReadyStatus}/>
-      <div className="gameroom inputarea"></div>
+      {showReadyPopup && (
+        <div className="gameroom readypopupbg">
+          <div className="gameroom readypopupcontainer">
+            <span className="gameroom popuptitle"> Room#05</span>
+            <span className="gameroom popuptheme"> Advanced</span>
+            <span className="gameroom popuptext"> Ready to start the game?</span>
+            <div className="gameroom buttonset">
+              <div className="gameroom readybutton">Confirm</div>
+              <div className="gameroom cancelbutton">Cancel</div>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="gameroom inputarea">
+        <button onClick={() => setShowReadyPopup(prevState => !prevState)}> show </button>
+      </div>
     </BaseContainer>
   );
 };

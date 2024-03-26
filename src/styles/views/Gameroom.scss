@@ -74,14 +74,47 @@
   .playerAvatar i {
     font-size: 100%;
   }
+  &.secondcolumn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    grid-column: 2;
+  }
   &.playerName {
     position: relative;
     top: 1rem;
     left:1.4rem;
     font-weight: 700;
     font-size: 1.2rem;
-    grid-column: 2;
     color:$darkBlue;
+  }
+  &.secondRow {
+    display: flex;
+    flex-direction: row;
+  }
+  &.scoreTitle {
+    position: relative;
+    top: 2.8rem;
+    left:1.4rem;
+    font-weight: 700;
+    font-size: 1.0rem;
+    color:$darkBlue;
+  }
+  &.playerScore {
+    position: relative;
+    top: 2.8rem;
+    left:1.4rem;
+    font-weight: 700;
+    font-size: 1rem;
+    color:$darkBlue;
+    border-radius: 1.7rem;
+    width: 1.7rem;
+    height: 1.7rem;
+    background-color: $whiteYellow;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 0.4rem;
   }
   &.playerStatus {
     grid-column: 3;
@@ -95,6 +128,89 @@
     position: absolute;
     left:28vw;
     top:78vh;
+  }
+  &.readypopupbg {
+    background-color: $classicYellow;
+    height: 40vh;
+    width: 35vw;
+    position: absolute;
+    top: 19vh;
+    left: 48vw;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &.readypopupcontainer {
+    background-color: $lightYellow;
+    height: 37vh;
+    width: 33vw;
+    position: relative;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  &.popuptitle {
+    margin-top: 2rem;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 2rem;
+    color:$darkBlue;
+  }
+  &.popuptheme {
+    margin-top: 0rem;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.8rem;
+    color:$darkBlue;
+  }
+  &.popuptext {
+    margin-top: 1.4rem;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1rem;
+    color:$darkBlue;
+  }
+  &.buttonset{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:5rem;
+    margin-top: 3rem;
+  }
+  .readybutton,
+  .cancelbutton {
+    border-radius: 0.5rem;
+    width: 11vw;
+    height: 5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $whiteYellow;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+
+  .readybutton {
+    background-color: $classicYellow;
+  }
+
+  .cancelbutton {
+    background-color: rgba(129, 129, 129, 1);
+  }
+
+  .readybutton:hover {
+    background-color: darken($classicYellow, 10%);
+    cursor: pointer;
+  }
+  .cancelbutton:hover {
+    background-color: darken(rgba(129, 129, 129, 1), 10%);
+    cursor: pointer;
   }
 
 }
