@@ -7,6 +7,8 @@ import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 import "styles/views/Game.scss";
 import { User } from "types";
+import SockJS from "sockjs-client";
+import {over} from "stompjs";
 
 const Player = ({ user }: { user: User }) => (
   <div className="player container">
@@ -25,11 +27,47 @@ Player.propTypes = {
   user: PropTypes.object,
 };
 
+var stompClient = null;
+
 const Game = () => {
   //test commit3
   //test commit2
   // use react-router-dom"s hook to access navigation, more info: https://reactrouter.com/en/main/hooks/use-navigate 
   const navigate = useNavigate();
+
+  const connect = () => {
+    let Sock = new SockJS("http://localhost:8080/ws");
+    // let Sock = new SockJS("https://sopra-fs24-group-09-server.oa.r.appspot.com/ws");
+    stompClient = over(Sock);
+    stompClient.connect({}, onConnected, onError);
+  }
+  const onConnected = () => {
+    stompClient.subscribe("/game", onMessageReceived);
+    // alert("Websocket Connnected")
+  }
+
+  const onMessageReceived = (payload) => {
+    var payloadData = JSON.parse(payload.body);
+    switch (payloadData.status) {
+    case "":
+      // updateRoom().catch((error) => {
+      //     // Handle error or rejection
+      //     console.error("An error occurred:", error);
+      // });
+      break;
+    case "":
+      // updateRoom().catch((error) => {
+      //         // Handle error or rejection
+      //     console.error("An error occurred:", error);
+      // });
+      break;
+    }
+  }
+
+  const onError = (err: any) => {
+    console.log(err);
+
+  }
 
   // define a state variable (using the state hook).
   // if this variable changes, the component will re-render, but the variable will
@@ -99,6 +137,11 @@ const Game = () => {
     }
 
     fetchData();
+    connect();
+
+    return () => {
+      stompClient.disconnect();
+    };
   }, []);
 
   let content = <Spinner />;
