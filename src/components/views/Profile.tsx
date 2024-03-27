@@ -23,7 +23,7 @@ const Profile = () => {
       } catch (error) {
         console.error(`Fetching user data failed: ${handleError(error)}`);
         alert(`Something went wrong during Fetching user: \n${handleError(error)}`);
-        navigate("/game");
+        navigate("/lobby");
       }
     }
 
@@ -64,7 +64,7 @@ const Profile = () => {
       <div className="profile container">
         {user ? <ProfileField functionuser={user} /> : <Spinner />}
         <div className="profile back-button">
-          <Button width="100%" onClick={() => navigate("/game")}>Go Back</Button>
+          <Button width="100%" onClick={() => navigate("/lobby")}>Go Back</Button>
         </div>
       </div>
     </BaseContainer>
