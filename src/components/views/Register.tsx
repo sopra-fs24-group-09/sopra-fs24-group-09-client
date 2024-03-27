@@ -52,8 +52,8 @@ const Register = () => {
       localStorage.setItem("id", user.id);
       // Store the username into the local storage.
       localStorage.setItem("username", user.username);
-      // Login successfully worked --> navigate to the route /game in the GameRouter
-      navigate("/game");
+      // Login successfully worked --> navigate to the route /game in the LobbyRouter
+      navigate("/lobby");
     } catch (error) {
       alert(
         `Something went wrong during the login: \n${handleError(error)}`
