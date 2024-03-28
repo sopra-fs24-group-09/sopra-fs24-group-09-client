@@ -30,6 +30,7 @@ export const audioBuffer2wavBlob = (abuffer) => {
 
   // return the blob
   const mergedBlob = new Blob(blobs, { type: "audio/wav" });
+  
   return mergedBlob;
   
 

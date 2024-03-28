@@ -3,6 +3,7 @@
   "version": "0.24.0",
   "private": true,
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.10",
     "axios": "^1.6.7",
     "eslint-config-react-app": "^7.0.1",
     "net": "^1.0.2",
