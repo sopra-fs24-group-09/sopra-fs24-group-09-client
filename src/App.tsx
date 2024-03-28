@@ -1,6 +1,6 @@
 import React from "react";
 import AppRouter from "./components/routing/routers/AppRouter";
-// import {VolumeBar} from "components/ui/VolumeBar";
+import AudioRecorder from "./components/ui/AudioRecorder";
 
 /**
  * Happy coding!
@@ -9,15 +9,11 @@ import AppRouter from "./components/routing/routers/AppRouter";
  * Updated by Marco Leder
  */
 const App = () => {
-  let volume = 0.5;
-  let setVolume = (volume) => {
-    console.log(volume);
-  };
   return (
     <div>
-      <Header height="100" />
-      {/* <VolumeBar/> */}
-      <AppRouter />
+      {/* <Header height="100" />
+      <AppRouter /> */}
+      <AudioRecorder />
     </div>
   );
 };
