@@ -19,7 +19,8 @@
     "build": "react-scripts build",
     "gcp-build": "",
     "eject": "react-scripts eject",
-    "test": "react-scripts test --env=jsdom"
+    "test": "react-scripts test --env=jsdom",
+    "lint": "eslint --fix src/**/*.ts src/**/*.tsx src/**/*.js"
   },
   "eslintConfig": {
     "extends": "react-app"

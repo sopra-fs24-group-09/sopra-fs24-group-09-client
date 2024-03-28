@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
-    "jsx": "react"
-    "baseUrl": "src"
+    "jsx": "react",
+    "baseUrl": "src",
+    "outDir": "build",
+    "target": "es5",
+    "sourceMap": true, // Enable source maps for debugging
   },
   "include": [
     "src"

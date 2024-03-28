@@ -18,7 +18,7 @@ type RoomListProps = {
 };
 const Player: React.FC<PlayerProps> = ({ user }) => (
   <div className="player">
-    <img src={`https://twemoji.maxcdn.com/v/latest/72x72/1f604.png`} alt={user.username} className="player-avatar" />
+    <img src={"https://twemoji.maxcdn.com/v/latest/72x72/1f604.png"} alt={user.username} className="player-avatar" />
     <div className="player-username">{user.username}</div>
   </div>
 );
@@ -50,28 +50,28 @@ Player.propTypes = {
 };
 
 const mockRoomPlayers: User[] = [
-  { id: 1, username: 'Alice', avatar: 'https://twemoji.maxcdn.com/v/latest/72x72/1f604.png', name: 'Alice Wonderland', status: 'ONLINE', registerDate: new Date('2021-08-01'), birthday: new Date('1990-01-01') },
-  { id: 2, username: 'Bob', avatar: 'https://twemoji.maxcdn.com/v/latest/72x72/1f602.png', name: 'Bob Builder', status: 'OFFLINE', registerDate: new Date('2021-09-01'), birthday: new Date('1985-02-02') },
+  { id: 1, username: "Alice", avatar: "https://twemoji.maxcdn.com/v/latest/72x72/1f604.png", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
+  { id: 2, username: "Bob", avatar: "https://twemoji.maxcdn.com/v/latest/72x72/1f602.png", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
 ];
 
 const mockRooms: Room[] = [
   {
-    id: '1',
-    roomOwnerId: '1',
+    id: "1",
+    roomOwnerId: "1",
     roomPlayersList: [mockRoomPlayers[0]],
-    theme: 'Advanced',
-    status: 'In Game',
+    theme: "Advanced",
+    status: "In Game",
     maxPlayersNum: 4,
     alivePlayersList: [mockRoomPlayers[0]],
     currentPlayerIndex: 0,
     playToOuted: false,
   },
   {
-    id: '2',
-    roomOwnerId: '2',
+    id: "2",
+    roomOwnerId: "2",
     roomPlayersList: [mockRoomPlayers[1]],
-    theme: 'Food',
-    status: 'Free',
+    theme: "Food",
+    status: "Free",
     maxPlayersNum: 4,
     alivePlayersList: [mockRoomPlayers[1]],
     currentPlayerIndex: 1,
@@ -149,14 +149,15 @@ const Lobby = () => {
           ROOM #{room.id}
           <div>{room.theme}</div>
 
-            <span className={`room-status ${room.status === 'In Game' ? 'in-game' : 'free'}`}>
-              {room.status}
-            </span>
+          <span className={`room-status ${room.status === "In Game" ? "in-game" : "free"}`}>
+            {room.status}
+          </span>
 
         </div>
       </div>
     ));
   };
+  
   return (
 
     <BaseContainer>
@@ -169,10 +170,10 @@ const Lobby = () => {
         Kaeps
       </div>
       <div className='information'> i </div>
-        <div className="lobby room-list">
-          <h1>Rooms</h1>
-          {renderRoomLists()}
-        </div>
+      <div className="lobby room-list">
+        <h1>Rooms</h1>
+        {renderRoomLists()}
+      </div>
 
     </BaseContainer>
   );
