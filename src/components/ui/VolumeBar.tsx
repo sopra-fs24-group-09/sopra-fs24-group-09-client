@@ -34,7 +34,7 @@ export const VolumeBar = props => {
             setVolume(e.target.value);
             }}
         />
-    
+
         </div>
     );
 }
