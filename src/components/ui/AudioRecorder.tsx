@@ -8,10 +8,13 @@ import { FFmpeg } from "@ffmpeg/ffmpeg";
 
 const AudioRecorder: React.FC = () => {
   const waveformRef = useRef<HTMLDivElement>(null);
+  const audioBlobRef = useRef<Blob | null>(null);
+  const audioReversedBlobRef = useRef<Blob | null>(null);
   const wavesurfer = useRef<WaveSurfer | null>(null);
   const recorder = useRef<RecordPlugin | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const ffmpegRef = useRef<FFmpeg | null>(new FFmpeg());
+  const [isReversed, setIsReversed] = useState(false);
 
   const reverseAudioByFFmpeg = async (audioBase64: string) => {
     const ffmpeg = ffmpegRef.current;
@@ -24,9 +27,15 @@ const AudioRecorder: React.FC = () => {
       await ffmpeg.exec(["-i", "audio.webm", "-af", "areverse", "reversed.webm"]);
       // audio webm to blob
       const data = await ffmpeg.readFile("reversed.webm");
-      const blob = new Blob([data], { type: "audio/webm" });
-      wavesurfer.current?.loadBlob(blob);
-      console.log("reversed audio", blob);
+      audioReversedBlobRef.current = new Blob([data], { type: "audio/webm" });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result as string;
+        localStorage.setItem("audioReversed", base64data);
+      }
+      reader.readAsDataURL(audioReversedBlobRef.current);
+      // wavesurfer.current?.loadBlob(blob);
+      console.log("reversed audio", audioReversedBlobRef.current);
     } catch (error) {
       console.error("Failed to reverse audio by FFmpeg", error);
     }
@@ -53,21 +62,41 @@ const AudioRecorder: React.FC = () => {
 
     // TODO: make it a prop parameter of the component
     const cachedAudioBase64 = localStorage.getItem("audio");
+    const cachedAudioReversedBase64 = localStorage.getItem("audioReversed");
+    // load cached isReversed flag as boolean
+    const cachedIsReversed = localStorage.getItem("isReversed");
     if (cachedAudioBase64) {
       console.log("load cached audio")
-      wavesurfer.current?.load(cachedAudioBase64);
+      audioBlobRef.current = new Blob([new Uint8Array(atob(cachedAudioBase64.split(",")[1]).split("").map(c => c.charCodeAt(0)))], { type: "audio/webm" });
+    }
+    if (cachedAudioReversedBase64) {
+      console.log("load cached reversed audio")
+      audioReversedBlobRef.current = new Blob([new Uint8Array(atob(cachedAudioReversedBase64.split(",")[1]).split("").map(c => c.charCodeAt(0)))], { type: "audio/webm" });
+    }
+    if (cachedIsReversed) {
+      const _flag = cachedIsReversed === "true";
+      wavesurfer.current.loadBlob(_flag ? audioReversedBlobRef.current : audioBlobRef.current);
+      setIsReversed(_flag);
+      console.log("load cached isReversed", _flag);
+      console.log("load cached audio", _flag ? "reversed" : "original");
     }
 
+
     recorder.current = wavesurfer.current?.registerPlugin(RecordPlugin.create());
+
+    // define record end behavior
     recorder.current?.on("record-end",(blob: Blob) => {
+      audioBlobRef.current = blob;
       console.warn("record-end", blob);
-      const container = waveformRef.current;
-      const url = URL.createObjectURL(blob);
       // save audio to local storage as encoded base64 string
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64data = reader.result as string;
         localStorage.setItem("audio", base64data);
+        reverseAudioByFFmpeg(base64data);
+        // set isReverse to false
+        setIsReversed(false);
+        localStorage.setItem("isReversed", "false");
       }
       reader.readAsDataURL(blob);
     });
@@ -90,49 +119,22 @@ const AudioRecorder: React.FC = () => {
     });
   };
 
-  const onClickReverse = async() => {
-    const audioBase64 = localStorage.getItem("audio");
-    // set context's sample rate to 8000 to reduce the size of the reversed audio
-    const context = new AudioContext();
-
-    if (audioBase64){
-      reverseAudioByFFmpeg(audioBase64);
+  const onClickToggleReverse = () => {
+    if (!wavesurfer.current) {
+      throw new Error("wavesurfer is not initialized");
     }
-
-    // if (audioBase64){
-    //   const buffer = await context.decodeAudioData(new Uint8Array(atob(audioBase64.split(',')[1]).split('').map(c => c.charCodeAt(0))).buffer);
-    //   const offlineContext = new OfflineAudioContext(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
-    //   const reversedBuffer = offlineContext.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
-    //   for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
-    //     const source = buffer.getChannelData(channel);
-    //     const dest = reversedBuffer.getChannelData(channel);
-    //     dest.set(source.reverse());
-    //   }
-    //   // render reversed audio
-    //   const reversedAudio = offlineContext.createBufferSource();
-    //   reversedAudio.buffer = reversedBuffer;
-    //   reversedAudio.connect(offlineContext.destination);
-    //   reversedAudio.start(0);
-    //   offlineContext.startRendering().then(renderedBuffer => {
-    //     const wavBlob = audioBuffer2wavBlob(renderedBuffer);
-    //     console.log('reversed audio', wavBlob);
-    //     const reader = new FileReader();
-    //     reader.onloadend = () => {
-    //       const base64data = reader.result as string;
-    //       try {
-    //         localStorage.setItem('audioReversed', base64data);
-    //         wavesurfer.current?.load(base64data);
-    //       } catch (error) {
-    //         console.error('Failed to save reversed audio to local storage', error);            
-    //       }
-    //     }
-    //     reader.readAsDataURL(wavBlob);
-        
-    //   });
-
-    // }
+    const prevIsReversed = isReversed;
+    const currentIsReversed = !prevIsReversed;
+    if (currentIsReversed && audioReversedBlobRef.current) {
+      wavesurfer.current.loadBlob(audioReversedBlobRef.current);
+      console.log("load reversed audio");
+    } else if (!currentIsReversed && audioBlobRef.current) {
+      wavesurfer.current.loadBlob(audioBlobRef.current);
+      console.log("load original audio");
+    }
+    setIsReversed(currentIsReversed);
+    localStorage.setItem("isReversed", currentIsReversed.toString());
   }
-
 
   // load audio
   useEffect(() => {
@@ -150,7 +152,9 @@ const AudioRecorder: React.FC = () => {
           Play/Pause
       </Button>
       <Button onClick={onClickRecord}>Record</Button>
-      <Button onClick={onClickReverse}>Reverse</Button>
+      <Button onClick={onClickToggleReverse}>
+        Toggle: {isReversed ? "Reversed" : "Original"}
+      </Button>
     </div>
   )
 };
