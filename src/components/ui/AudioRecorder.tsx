@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button } from "./Button";
 import { audioBuffer2wavBlob } from "helpers/audioUtilities";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
+import {Dropdown } from "./Dropdown";
 import {
   LiaToggleOffSolid,
   LiaToggleOnSolid,
@@ -78,8 +79,7 @@ const AudioRecorder: React.FC = () => {
         // use classicYellow in scss file
         progressColor: "rgba(255, 204, 77, 1)",// TODO: use scss variable
         cursorColor: "red",
-        height: 200,
-        width: 800,
+        height: 100,
         barWidth: 6,
         cursorWidth: 6,
       });
@@ -225,18 +225,16 @@ const AudioRecorder: React.FC = () => {
           {isReversed ? <LiaToggleOnSolid /> : <LiaToggleOffSolid />}
         </Button>
         {/*List menu to select playback rate*/}
-        <select
-          className="audio-recorder playback-rate"
-          disabled={isRecording || isPlaying}
-          value={playbackRate}
+        <Dropdown className="audio-recorder button-container playback-rate-dropdown"
           onChange={(e) => {
-            setPlaybackRate(+e.target.value);
+            setPlaybackRate(e.target.value);
           }}
-        >
-          <option value={0.5}>0.5x</option>
-          <option value={0.75}>0.75x</option>
-          <option value={1}>1x</option>
-        </select>
+          options={[
+            { value: 0.5, label: "0.5x" },
+            { value: 0.75, label: "0.75x" },
+            { value: 1, label: "1x" },
+          ]}
+        />
       </div>
     </div>
   );
