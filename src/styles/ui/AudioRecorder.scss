@@ -1,0 +1,61 @@
+@import "../theme";
+// define color variables
+.audio-recorder {
+    display:flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    &.wave-frame{
+        background-color: $darkBlue;
+    }
+    &.button-container{
+        display: flex;
+        flex-direction: row;
+        background-color: $darkBlue;
+        color: $darkBlue;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        // remove all button default styles
+        button{
+            background-color: $greyBlue;
+            border: none;
+            color: $whiteYellow;
+            font-size: 1.5em;
+            cursor: pointer;
+            border-radius: 0%;
+            &:focus{
+                outline: none;
+            }
+            align-items: center;
+            justify-content: center;
+            height: 30px;
+        }
+        select{
+            display: flex;
+            height: 30px;
+            padding: 6px;
+            background-color: $greyBlue;
+            color: $darkBlue;
+            cursor: pointer;
+            border: none;
+            border-radius: 0%;
+            text-align-last: center;
+            -ms-text-align-last: center;
+            -webkit-text-align-last: center;
+            
+            option{
+                height: 30px;
+                background-color: $darkBlue;
+                -ms-text-align-last: center;
+                -webkit-text-align-last: center;
+                text-align-last: center;
+                color: $whiteYellow;
+                padding: 6px;
+
+            }
+        }
+        &.wave-frame{
+            margin-top: 0;
+        }
+    }
+}
