@@ -4,15 +4,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button } from "./Button";
 import { audioBuffer2wavBlob } from "helpers/audioUtilities";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
-import {Dropdown } from "./Dropdown";
-import {
-  LiaToggleOffSolid,
-  LiaToggleOnSolid,
-  LiaPlaySolid,
-  LiaPauseSolid,
-} from "react-icons/lia";
+import { Dropdown } from "./Dropdown";
+import { FaPause, FaPlay } from "react-icons/fa";
+import { GiClockwiseRotation, GiAnticlockwiseRotation } from "react-icons/gi";
 import { IoMdMicrophone, IoMdCheckmark } from "react-icons/io";
 import "../../styles/ui/AudioRecorder.scss";
+const toBlobURL = async (url: string, type: string) => {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
+}
 
 const AudioRecorder: React.FC = () => {
   const waveformRef = useRef<HTMLDivElement>(null);
@@ -24,13 +25,28 @@ const AudioRecorder: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const ffmpegRef = useRef<FFmpeg | null>(new FFmpeg());
   const [isReversed, setIsReversed] = useState(false);
-  const [playbackRate, setPlaybackRate] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState<Number>(1);
 
   const reverseAudioByFFmpeg = async (audioBase64: string) => {
     const ffmpeg = ffmpegRef.current;
+    const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
     // check if ffmpeg is loaded
     if (!ffmpeg.loaded) {
-      await ffmpeg.load();
+      try {
+        await ffmpeg.load({
+          coreURL: await toBlobURL(
+            `${baseURL}/ffmpeg-core.js`,
+            "text/javascript"
+          ),
+          wasmURL: await toBlobURL(
+            `${baseURL}/ffmpeg-core.wasm`,
+            "application/wasm"
+          ),
+        });
+      } catch (error) {
+        console.error("Failed to load FFmpeg", error);
+        return;
+      }
     }
     try {
       await ffmpeg.writeFile(
@@ -72,16 +88,16 @@ const AudioRecorder: React.FC = () => {
     }
     if (waveformRef.current) {
       console.log("initializeWaveSurfer");
-      
+
       wavesurfer.current = WaveSurfer.create({
         container: waveformRef.current,
         waveColor: "white",
         // use classicYellow in scss file
-        progressColor: "rgba(255, 204, 77, 1)",// TODO: use scss variable
+        progressColor: "rgba(255, 204, 77, 1)", // TODO: use scss variable
         cursorColor: "red",
+        cursorWidth: 3,
         height: 100,
         barWidth: 6,
-        cursorWidth: 6,
       });
     }
 
@@ -208,7 +224,7 @@ const AudioRecorder: React.FC = () => {
             setIsPlaying(!isPlaying);
           }}
         >
-          {isPlaying ? <LiaPauseSolid /> : <LiaPlaySolid />}
+          {isPlaying ? <FaPause /> : <FaPlay />}
         </Button>
         <Button
           disabled={isPlaying}
@@ -222,13 +238,16 @@ const AudioRecorder: React.FC = () => {
           className="audio-recorder toggle-reverse-button"
           disabled={isRecording || isPlaying}
         >
-          {isReversed ? <LiaToggleOnSolid /> : <LiaToggleOffSolid />}
+          {isReversed ? <GiClockwiseRotation /> : <GiAnticlockwiseRotation />}
         </Button>
         {/*List menu to select playback rate*/}
-        <Dropdown className="audio-recorder button-container playback-rate-dropdown"
+        <Dropdown
+          className="audio-recorder button-container playback-rate-dropdown"
           onChange={(e) => {
-            setPlaybackRate(e.target.value);
+            const rate = parseFloat(e.target.value);
+            setPlaybackRate(rate);
           }}
+          defaultValue={playbackRate}
           options={[
             { value: 0.5, label: "0.5x" },
             { value: 0.75, label: "0.75x" },

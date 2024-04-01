@@ -13,6 +13,7 @@
         text-align: center;        
         option{
             background-color: $whiteYellow; //TODO: firefox not supporting this
+            outline: none;
             text-align: center;
         }
     }
