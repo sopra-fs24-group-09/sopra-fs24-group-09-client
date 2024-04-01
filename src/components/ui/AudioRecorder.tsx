@@ -33,6 +33,7 @@ const AudioRecorder: React.FC = () => {
       } catch (error) {
         console.error("Failed to load FFmpeg", error);
         alert("Failed to load FFmpeg, your browser may not support it.");
+        
         return;
       }
     }
@@ -82,6 +83,7 @@ const AudioRecorder: React.FC = () => {
       } catch (error) {
         console.error("Failed to load FFmpeg", error);
         alert("Failed to load FFmpeg, your browser may not support it.");
+        
         return;
       }
     }
@@ -171,6 +173,7 @@ const AudioRecorder: React.FC = () => {
   const initializeWaveSurferWithRecorder = () => {
     if (wavesurfer.current) {
       console.log("wavesurfer already initialized");
+      
       return;
     }
     if (waveformRef.current) {
@@ -190,7 +193,7 @@ const AudioRecorder: React.FC = () => {
 
     recorder.current = wavesurfer.current?.registerPlugin(
       RecordPlugin.create({
-        mimeType: "audio/webm",
+        // mimeType: "audio/webm",
       })
     );
 
