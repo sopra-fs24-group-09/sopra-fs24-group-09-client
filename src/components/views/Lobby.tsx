@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { useRef, useEffect, useState } from "react";
-=======
-import React, { useRef, useEffect, useState} from "react";
->>>>>>> 042f360... 1. add theme color
 import { api, handleError } from "helpers/api";
 import { Spinner } from "components/ui/Spinner";
 import { Button } from "components/ui/Button";
@@ -12,12 +8,9 @@ import PropTypes from "prop-types";
 import "styles/views/Lobby.scss";
 import { User, Room } from "types";
 import Popup from "components/ui/Popup";
-<<<<<<< HEAD
 import { Dropdown } from "components/ui/Dropdown";
 
 
-=======
->>>>>>> 042f360... 1. add theme color
 type PlayerProps = {
   user: User;
 };
@@ -136,12 +129,9 @@ const mockRooms: Room[] = [
 const Lobby = () => {
   const navigate = useNavigate();
   const roomCreationPopRef = useRef<HTMLDialogElement>(null);
-<<<<<<< HEAD
   const profilePopRef = useRef<HTMLDialogElement>(null);
   const changeAvatarPopRef = useRef<HTMLDialogElement>(null);
   const infoPopRef = useRef<HTMLDialogElement>(null);
-=======
->>>>>>> 042f360... 1. add theme color
   const [rooms, setRooms] = useState<Room[]>(mockRooms);
   const [user, setUser] = useState<User[]>(mockRoomPlayers[0]);
   const [username, setUsername] = useState<string | null>(null);
@@ -163,7 +153,6 @@ const Lobby = () => {
     navigate("/login");
   };
 
-<<<<<<< HEAD
   useEffect(() => {
     async function fetchData() {
       try {
@@ -323,53 +312,6 @@ const Lobby = () => {
         alert("An unexpected error occurred.");
       }
     }
-=======
-
-  // useEffect(() => {
-  //    async function fetchData() {
-  //     try {
-  //       //get all rooms
-  //       const response = await api.get("/games/lobby");
-  //       await new Promise((resolve) => setTimeout(resolve, 1000));
-  //       setRooms(response.data);
-  //
-  //       console.log("request to:", response.request.responseURL);
-  //       console.log("status code:", response.status);
-  //       console.log("status text:", response.statusText);
-  //       console.log("requested data:", response.data);
-  //
-  //       // See here to get more data.
-  //       console.log(response);
-  //     } catch (error) {
-  //       console.error(
-  //         `Something went wrong while fetching the users: \n${handleError(
-  //           error
-  //         )}`
-  //       );
-  //       console.error("Details:", error);
-  //       alert(
-  //         "Something went wrong while fetching the users! See the console for details."
-  //       );
-  //     }
-  //   }
-  //
-  //   fetchData();
-  // }, []);
-
-  const toggleRoomCreationPop = () => {
-    // if the ref is not set, do nothing
-    if(!roomCreationPopRef.current){
-      return;
-    }
-    // if the dialog is open, close it. Otherwise, open it.
-    roomCreationPopRef.current.hasAttribute("open") 
-      ? roomCreationPopRef.current.close() 
-      : roomCreationPopRef.current.showModal();
-  }
-
-  const userinfo = () =>{
-    return
->>>>>>> 042f360... 1. add theme color
   }
 
   const updateAvatar = (newAvatar) => {
@@ -429,29 +371,16 @@ const Lobby = () => {
         <i className={"twa twa-" + user.avatar} style={{fontSize: "3.8rem", marginTop:"0.8rem"}}/>
         <div className="name">{user.username}</div>
       </div>
-<<<<<<< HEAD
       <div className="big-title">Kaeps</div>
       <div className="information" onClick={toggleInfoPop}> i </div>
-=======
-      <div className="big-title">
-        Kaeps
-      </div>
-      <div className='information'> i </div>
->>>>>>> 042f360... 1. add theme color
       <div className="lobby room-list-wrapper">
         {/* for clip the scrollbar inside the border */}
         <div className="lobby room-list">
           <h1>Rooms</h1>
           {renderRoomLists()}
-<<<<<<< HEAD
           <div className="lobby room-list btn-container">
             <Button className="create-room-btn" onClick={toggleRoomCreationPop}>
               New Room
-=======
-          <div className="lobby room-list btn-container">        
-            <Button className="create-room-btn" onClick={toggleRoomCreationPop}>
-            New Room
->>>>>>> 042f360... 1. add theme color
             </Button>
           </div>
         </div>
@@ -459,13 +388,15 @@ const Lobby = () => {
       
       <Popup ref={roomCreationPopRef}
         toggleDialog={toggleRoomCreationPop}
-        className="roomCreationPopup">
-        <div className="popup-content">
+        className="room-creation-popup">
+        <BaseContainer className="room-creation-popup content">
           <input type="text" placeholder="Room Name" />
-          <input type="text" placeholder="Theme" />
           <input type="number" placeholder="Max Players" />
-          <Button className="create-room">Create Room</Button>
-        </div>
+          <div className="room-creation-popup btn-container">
+            <Button className="create-room">Create Room</Button>
+            <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
+          </div>
+        </BaseContainer>
       </Popup>
 
 
