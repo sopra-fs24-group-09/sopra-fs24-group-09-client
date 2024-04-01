@@ -272,6 +272,16 @@ const AudioRecorder: React.FC = () => {
   useEffect(() => {
     initializeWaveSurferWithRecorder();
     loadCachedAudio();
+    try {
+      if (!ffmpegRef.current?.loaded) {
+        ffmpegRef.current?.load();
+        console.log("load FFmpeg successfully");
+      }else{
+        console.log("FFmpeg already loaded");
+      }
+    } catch (error) {
+      console.error("Failed to load FFmpeg", error);
+    }
   }, []);
 
 
