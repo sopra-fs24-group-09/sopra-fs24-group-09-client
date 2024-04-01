@@ -245,3 +245,30 @@
   border-radius: $borderRadius;
 }
 
+.room-creation-popup{
+  &.content{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    input {
+      height: 35px;
+      width: 300px;
+      padding-left: 1px;
+      margin-left: 4px;
+      border: none;
+      border-radius: 0.75em;
+      margin-bottom: 20px;
+      background: transparentize(white, 0.4);
+      color: $textColor;
+    }
+  }
+  &.btn-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 20px;
+    Button{
+      margin: 0 10px;
+    }
+  }
+}

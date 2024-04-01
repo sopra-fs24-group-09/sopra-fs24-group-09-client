@@ -198,13 +198,15 @@ const Lobby = () => {
       
       <Popup ref={roomCreationPopRef}
         toggleDialog={toggleRoomCreationPop}
-        className="roomCreationPopup">
-        <div className="popup-content">
+        className="room-creation-popup">
+        <BaseContainer className="room-creation-popup content">
           <input type="text" placeholder="Room Name" />
-          <input type="text" placeholder="Theme" />
           <input type="number" placeholder="Max Players" />
-          <Button className="create-room">Create Room</Button>
-        </div>
+          <div className="room-creation-popup btn-container">
+            <Button className="create-room">Create Room</Button>
+            <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
+          </div>
+        </BaseContainer>
       </Popup>
 
 
