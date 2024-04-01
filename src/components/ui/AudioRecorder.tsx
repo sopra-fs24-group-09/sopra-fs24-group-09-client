@@ -9,11 +9,6 @@ import { FaPause, FaPlay } from "react-icons/fa";
 import { GiClockwiseRotation, GiAnticlockwiseRotation } from "react-icons/gi";
 import { IoMdMicrophone, IoMdCheckmark } from "react-icons/io";
 import "../../styles/ui/AudioRecorder.scss";
-const toBlobURL = async (url: string, type: string) => {
-  const res = await fetch(url);
-  const blob = await res.blob();
-  return URL.createObjectURL(blob);
-}
 
 const AudioRecorder: React.FC = () => {
   const waveformRef = useRef<HTMLDivElement>(null);
@@ -22,29 +17,71 @@ const AudioRecorder: React.FC = () => {
   const wavesurfer = useRef<WaveSurfer | null>(null);
   const recorder = useRef<RecordPlugin | null>(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState<Boolean>(false);
   const ffmpegRef = useRef<FFmpeg | null>(new FFmpeg());
   const [isReversed, setIsReversed] = useState(false);
   const [playbackRate, setPlaybackRate] = useState<Number>(1);
+  const [waveAvailable, setWaveAvailable] = useState(false);
 
-  const reverseAudioByFFmpeg = async (audioBase64: string) => {
+  // compress audio by FFmpeg
+  const compressAudioByFFmpeg = async (audioBase64: string) => {
     const ffmpeg = ffmpegRef.current;
-    const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
     // check if ffmpeg is loaded
     if (!ffmpeg.loaded) {
       try {
-        await ffmpeg.load({
-          coreURL: await toBlobURL(
-            `${baseURL}/ffmpeg-core.js`,
-            "text/javascript"
-          ),
-          wasmURL: await toBlobURL(
-            `${baseURL}/ffmpeg-core.wasm`,
-            "application/wasm"
-          ),
-        });
+        await ffmpeg.load();
       } catch (error) {
         console.error("Failed to load FFmpeg", error);
+        alert("Failed to load FFmpeg, your browser may not support it.");
+        return;
+      }
+    }
+    try {
+      await ffmpeg.writeFile(
+        "input.webm",
+        new Uint8Array(
+          atob(audioBase64.split(",")[1])
+            .split("")
+            .map((c) => c.charCodeAt(0))
+        )
+      );
+      await ffmpeg.exec([
+        "-i",
+        "input.webm",
+        "-c:a",
+        "libopus",
+        "-b:a",
+        "16k",
+        "compressed.webm",
+      ]);
+      // audio webm to blob
+      const data = await ffmpeg.readFile("compressed.webm");
+      const blob = new Blob([data], { type: "audio/webm" });
+      wavesurfer.current?.loadBlob(blob);
+      console.log("compressed audio", blob);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result as string;
+        localStorage.setItem("audio", base64data);
+      }
+      reader.readAsDataURL(blob);
+      // clean ffmpeg files
+      await ffmpeg.deleteFile("input.webm");
+      await ffmpeg.deleteFile("compressed.webm");
+    } catch (error) {
+      console.error("Failed to compress audio by FFmpeg", error);
+    }
+  }
+
+  const reverseAudioByFFmpeg = async (audioBase64: string) => {
+    const ffmpeg = ffmpegRef.current;
+    // check if ffmpeg is loaded
+    if (!ffmpeg.loaded) {
+      try {
+        await ffmpeg.load();
+      } catch (error) {
+        console.error("Failed to load FFmpeg", error);
+        alert("Failed to load FFmpeg, your browser may not support it.");
         return;
       }
     }
@@ -60,6 +97,10 @@ const AudioRecorder: React.FC = () => {
       await ffmpeg.exec([
         "-i",
         "audio.webm",
+        "-c:a",
+        "libopus",
+        "-b:a",
+        "16k",
         "-af",
         "areverse",
         "reversed.webm",
@@ -75,32 +116,15 @@ const AudioRecorder: React.FC = () => {
       reader.readAsDataURL(audioReversedBlobRef.current);
       // wavesurfer.current?.loadBlob(blob);
       console.log("reversed audio", audioReversedBlobRef.current);
+      // clean ffmpeg files
+      await ffmpeg.deleteFile("audio.webm");
+      await ffmpeg.deleteFile("reversed.webm");
     } catch (error) {
       console.error("Failed to reverse audio by FFmpeg", error);
     }
   };
-
-  // initialize wavesurfer
-  const initializeWaveSurferWithRecorder = () => {
-    if (wavesurfer.current) {
-      console.log("wavesurfer already initialized");
-      return;
-    }
-    if (waveformRef.current) {
-      console.log("initializeWaveSurfer");
-
-      wavesurfer.current = WaveSurfer.create({
-        container: waveformRef.current,
-        waveColor: "white",
-        // use classicYellow in scss file
-        progressColor: "rgba(255, 204, 77, 1)", // TODO: use scss variable
-        cursorColor: "red",
-        cursorWidth: 3,
-        height: 100,
-        barWidth: 6,
-      });
-    }
-
+  
+  const loadCachedAudio = () => {
     // TODO: make it a prop parameter of the component
     const cachedAudioBase64 = localStorage.getItem("audio");
     const cachedAudioReversedBase64 = localStorage.getItem("audioReversed");
@@ -141,9 +165,33 @@ const AudioRecorder: React.FC = () => {
       console.log("load cached isReversed", _flag);
       console.log("load cached audio", _flag ? "reversed" : "original");
     }
+  }
+ 
+  // initialize wavesurfer
+  const initializeWaveSurferWithRecorder = () => {
+    if (wavesurfer.current) {
+      console.log("wavesurfer already initialized");
+      return;
+    }
+    if (waveformRef.current) {
+      console.log("initializeWaveSurfer");
+
+      wavesurfer.current = WaveSurfer.create({
+        container: waveformRef.current,
+        waveColor: "white",
+        // use classicYellow in scss file
+        progressColor: "rgba(255, 204, 77, 1)", // TODO: use scss variable
+        cursorColor: "red",
+        cursorWidth: 3,
+        height: 100,
+        barWidth: 6,
+      });
+    }
 
     recorder.current = wavesurfer.current?.registerPlugin(
-      RecordPlugin.create()
+      RecordPlugin.create({
+        mimeType: "audio/webm",
+      })
     );
 
     // define record end behavior
@@ -152,10 +200,11 @@ const AudioRecorder: React.FC = () => {
       console.warn("record-end", blob);
       // save audio to local storage as encoded base64 string
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         const base64data = reader.result as string;
         localStorage.setItem("audio", base64data);
-        reverseAudioByFFmpeg(base64data);
+        await reverseAudioByFFmpeg(base64data);
+        await compressAudioByFFmpeg(base64data);
         // set isReverse to false
         setIsReversed(false);
         localStorage.setItem("isReversed", "false");
@@ -164,8 +213,22 @@ const AudioRecorder: React.FC = () => {
     });
 
     // on finish playing
-    wavesurfer.current.on("finish", () => {
+    wavesurfer.current?.on("finish", () => {
       setIsPlaying(false);
+    });
+
+    wavesurfer.current?.on("click", () => {
+      const duration = wavesurfer.current?.getDuration();
+      if (duration === 0) {
+        return;
+      }
+      wavesurfer.current?.playPause();
+      // setIsPlaying(!isPlaying); this is not working since it's async, and isPlaying is always false with it's initial value
+      setIsPlaying(prev => !prev);// toggle isPlaying
+    });
+
+    wavesurfer.current?.on("ready", () => {
+      setWaveAvailable(true);
     });
   };
 
@@ -208,7 +271,9 @@ const AudioRecorder: React.FC = () => {
   // load audio
   useEffect(() => {
     initializeWaveSurferWithRecorder();
+    loadCachedAudio();
   }, []);
+
 
   return (
     <div className="audio-recorder">
@@ -216,12 +281,11 @@ const AudioRecorder: React.FC = () => {
       <div className="audio-recorder button-container">
         <Button
           className="audio-recorder play-button"
-          disabled={isRecording}
+          disabled={isRecording || !waveAvailable}
           onClick={() => {
             // set playback rate, true for preserve pitch
-            wavesurfer.current?.setPlaybackRate(playbackRate, true);
             wavesurfer.current?.playPause();
-            setIsPlaying(!isPlaying);
+            setIsPlaying(prev => !prev);
           }}
         >
           {isPlaying ? <FaPause /> : <FaPlay />}
@@ -246,6 +310,7 @@ const AudioRecorder: React.FC = () => {
           onChange={(e) => {
             const rate = parseFloat(e.target.value);
             setPlaybackRate(rate);
+            wavesurfer.current?.setPlaybackRate(rate, true);
           }}
           defaultValue={playbackRate}
           options={[
