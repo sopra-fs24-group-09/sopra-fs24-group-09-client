@@ -296,7 +296,7 @@ const AudioRecorder: React.FC = () => {
           className="audio-recorder play-button"
           disabled={isRecording || !waveAvailable}
           onClick={() => {
-            // set playback rate, true for preserve pitch
+            wavesurfer.current?.setPlaybackRate(playbackRate, true);
             wavesurfer.current?.playPause();
             setIsPlaying(prev => !prev);
           }}
