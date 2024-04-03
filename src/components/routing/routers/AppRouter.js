@@ -40,6 +40,7 @@ const AppRouter = () => {
         </Route>
 
         {/*no guard for now*/}
+        <Route path="/rooms/:id" element={<Gameroom />} />
         
         <Route path="/editprofile" element={<LobbyGuard />}>
           <Route index element={<EditProfile />} />

@@ -29,12 +29,12 @@
     position: absolute;
     left:0;
     top:0;
-    margin-left: 2rem;
     height: 5vh;
     width: 28vw;
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
+    background-color: $greyBlue;
   }
   &.roominfo {
     font-family: 'Inter';
@@ -43,6 +43,7 @@
     color: $darkBlue;
   }
   &.roomifotitle {
+    margin-left: 2rem;
     font-family: 'Inter';
     font-style: normal;
     font-weight: bold;
@@ -211,6 +212,216 @@
   .cancelbutton:hover {
     background-color: darken(rgba(129, 129, 129, 1), 10%);
     cursor: pointer;
+  }
+  &.roundstatus {
+    position: absolute;
+    left: 28vw;
+    top: 5vh;
+    width: 72vw;
+    height: 73vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  &.counterdiv {
+    margin-top:1.5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &.counternum {
+    margin-left: 0.5rem;
+    font-family: 'Inter';
+    font-weight: 900;
+    font-size: 1.8rem;
+    color: $darkBlue;
+  }
+  &.speakPlayerContainer {
+    margin-top: 1vh;
+    width:25vw;
+    height:15vh;
+    border-radius: 22px;
+    background-color: $lightYellow;
+    display: grid;
+    grid-template-columns: auto 1fr 0.2fr;
+    gap: 10px;
+  }
+  &.remindermssg {
+    position: absolute;
+    left: 28vw;
+    top: 29.4vh;
+    width: 72vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &.remindertext {
+    background-color: $greyBlue;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 1rem;
+    font-weight: 500;
+    color: $darkBlue;
+  }
+  &.leaderboarddiv {
+    position: absolute;
+    top:8vh;
+    left:28vw;
+    height:65vh;
+    width: 72vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &.leaderboard {
+    //background-color: $whiteYellow;
+    background-color: $lightYellow;
+    border-style: solid;
+    border-width: 1rem;
+    border-radius: 2rem;
+    border-color: $classicYellow;
+    height:50vh;
+    width: 60vw;
+    overflow: auto;
+  }
+  &.singleScoreContainer {
+    height:13vh;
+    margin: 1.5vh 2vw;
+    border-radius: 22px;
+    background-color: $whiteYellow;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4vw, 1fr));
+    gap: 0.5rem;
+  }
+  &.ldPlayerAvatar {
+    grid-column: 2;
+    grid-row: 1;
+    height: 3.4rem;
+    width: 3.4rem;
+    position: relative;
+    top: 1rem;
+    left:1rem;
+    background-color: #D9D9D9;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &.ranking-0 {
+    grid-column: 1;
+    position: relative;
+    top: 3.9vh;
+    left: 1vw;
+    background-color: lighten($classicYellow,10%);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color:$darkBlue;
+  }
+  &.ranking-1 {
+    grid-column: 1;
+    position: relative;
+    top: 3.9vh;
+    left: 1vw;
+    background-color: lighten($classicYellow,18%);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color:$darkBlue;
+  }
+  &.ranking-2 {
+    grid-column: 1;
+    position: relative;
+    top: 3.9vh;
+    left: 1vw;
+    background-color: lighten($classicYellow,26%);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color:$darkBlue;
+  }
+  &.ranking-3 {
+    grid-column: 1;
+    position: relative;
+    top: 3.9vh;
+    left: 1vw;
+    background-color: lighten($greyBlue,10%);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color:$darkBlue;
+  }
+  &.ranking-4 {
+    grid-column: 1;
+    position: relative;
+    top: 3.9vh;
+    left: 1vw;
+    background-color: lighten($greyBlue,5%);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color:$darkBlue;
+  }
+  &.ldPlayerName {
+    grid-column: 2;
+    grid-row: 2;
+    position: relative;
+    top: 0.2rem;
+    left:1.4rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color:$darkBlue;
+  }
+  &.scorenum {
+    margin-left: 2rem;
+    position: relative;
+    top: 3.9vh;
+    left: 1vw;
+    background-color: lighten($greyBlue,5%);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color:$darkBlue;
+  }
+  &.ldtitle {
+    grid-row: 2;
+    margin-left: 2rem;
+    position: relative;
+    top: 0.2rem;
+    left:1.0rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color:lighten($darkBlue,20%);
   }
 
 }
