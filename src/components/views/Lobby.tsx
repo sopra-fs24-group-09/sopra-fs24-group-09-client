@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState} from "react";
 import { api, handleError } from "helpers/api";
 import { Spinner } from "components/ui/Spinner";
 import { Button } from "components/ui/Button";
@@ -7,6 +7,7 @@ import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 import "styles/views/Lobby.scss";
 import { User, Room } from "types";
+import Popup from "components/ui/Popup";
 type PlayerProps = {
   user: User;
 };
@@ -82,7 +83,7 @@ const mockRooms: Room[] = [
 
 const Lobby = () => {
   const navigate = useNavigate();
-
+  const roomCreationPopRef = useRef<HTMLDialogElement>(null);
   const [rooms, setRooms] = useState<Room[]>(mockRooms);
   const [user, setUser] = useState<User[]>(mockRoomPlayers[0]);
   const logout = async () => {
@@ -99,6 +100,7 @@ const Lobby = () => {
     }
     navigate("/login");
   };
+
 
   // useEffect(() => {
   //    async function fetchData() {
@@ -130,6 +132,17 @@ const Lobby = () => {
   //
   //   fetchData();
   // }, []);
+
+  const toggleRoomCreationPop = () => {
+    // if the ref is not set, do nothing
+    if(!roomCreationPopRef.current){
+      return;
+    }
+    // if the dialog is open, close it. Otherwise, open it.
+    roomCreationPopRef.current.hasAttribute("open") 
+      ? roomCreationPopRef.current.close() 
+      : roomCreationPopRef.current.showModal();
+  }
 
   const userinfo = () =>{
     return
@@ -170,10 +183,30 @@ const Lobby = () => {
         Kaeps
       </div>
       <div className='information'> i </div>
-      <div className="lobby room-list">
-        <h1>Rooms</h1>
-        {renderRoomLists()}
+      <div className="lobby room-list-wrapper">
+        {/* for clip the scrollbar inside the border */}
+        <div className="lobby room-list">
+          <h1>Rooms</h1>
+          {renderRoomLists()}
+          <div className="lobby room-list btn-container">        
+            <Button className="create-room-btn" onClick={toggleRoomCreationPop}>
+            New Room
+            </Button>
+          </div>
+        </div>
       </div>
+      
+      <Popup ref={roomCreationPopRef}
+        toggleDialog={toggleRoomCreationPop}
+        className="roomCreationPopup">
+        <div className="popup-content">
+          <input type="text" placeholder="Room Name" />
+          <input type="text" placeholder="Theme" />
+          <input type="number" placeholder="Max Players" />
+          <Button className="create-room">Create Room</Button>
+        </div>
+      </Popup>
+
 
     </BaseContainer>
   );
