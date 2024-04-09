@@ -246,22 +246,50 @@
 }
 
 .room-creation-popup{
-  height: 80%;
+  height: 50%;
   &.content{
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     font-size: 2em;
+    .title{
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      display: inline;
+      text-align: center;
+    }
     input {
       height: 100px;
       width: 800px;
       padding-left: 1px;
       margin-left: 4px;
-      border: none;
+      border: 1px solid black;
       border-radius: 0.75em;
       margin-bottom: 20px;
       background: transparentize(white, 0.4);
       color: $textColor;
+    }
+  }
+  .theme-dropdown{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    width: 800px;
+    height: 100px;
+    margin-bottom: 20px;
+    select{
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: $classicYellow;
+        text-align: center;        
+        border-radius: 0.75em;
+        option{
+            background-color: $classicYellow; //TODO: firefox not supporting this
+            outline: none;
+            text-align: center;
+        }
     }
   }
   &.btn-container{
