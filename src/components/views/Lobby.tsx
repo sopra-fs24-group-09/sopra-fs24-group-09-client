@@ -383,17 +383,29 @@ const Lobby = () => {
           </div>
         </div>
       </div>
-      
-      <Popup ref={roomCreationPopRef}
+
+      <Popup
+        ref={roomCreationPopRef}
         toggleDialog={toggleRoomCreationPop}
-        className="room-creation-popup">
+        className="room-creation-popup"
+      >
         <BaseContainer className="room-creation-popup content">
+          <div className="title">Create Room</div>
           <input type="text" placeholder="Room Name" />
           <input type="number" placeholder="Round" />
-          <Dropdown options={[{ value: "Advanced", label: "Advanced" }, { value: "Food", label: "Food" }]} />
+          <Dropdown
+            className="theme-dropdown"
+            prompt="Select Theme"
+            options={[
+              { value: "Beginner", label: "Beginner"},
+              { value: "Food", label: "Food" },
+            ]}
+          />
           <div className="room-creation-popup btn-container">
             <Button className="create-room">Create Room</Button>
-            <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
+            <Button className="cancel" onClick={toggleRoomCreationPop}>
+              Cancel
+            </Button>
           </div>
         </BaseContainer>
       </Popup>
