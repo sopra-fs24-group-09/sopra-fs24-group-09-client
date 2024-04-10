@@ -1,0 +1,88 @@
+@import "../theme";
+// define color variables
+.audio-recorder {
+    margin: 40px;
+    display:flex;
+    flex-direction: column;
+    box-shadow: 0 0 0 8px $whiteYellow,
+                0 0 0 15px $classicYellow;
+    border-radius: 6px;
+    border-color: $classicYellow;
+    background-color: $whiteYellow;
+    &.wave-frame{
+        margin: 0;
+        padding-inline: 10px;
+        background-color: $darkBlue;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        outline: none;
+        box-shadow: none;
+    }
+    &.button-container{
+        margin: 0;
+        border: 0 0 0 0;
+        box-shadow: none;
+        border: none;
+        display: flex;
+        outline: none;
+        flex-direction: row;
+        background-color: $darkBlue;
+        color: $darkBlue;
+        align-items: center;
+        border-radius: 6px;
+        justify-content: center;
+        height: 60px;
+        
+        // remove all button default styles
+        Button{
+            height: 70%;
+            width: 20%;
+            max-width: 100px;
+            margin: 0;
+            margin-left: 2%;
+            overflow-x: auto;
+        }
+        button{
+            background-color: $greyBlue;
+            outline: none;
+            border: none;
+            box-shadow: none;
+            color: $whiteYellow;
+            cursor: pointer;
+            border-radius: 6px;
+            padding: 0;
+            &:focus{
+                outline: none;
+            }
+            align-items: center;
+            justify-content: center;
+            
+        }
+        &.playback-rate-dropdown{
+            margin-right: 2%;
+            margin-left: auto;
+            padding-left: 2%;
+            background-color: transparent;
+            font-size: 1rem;
+            height: 70%;
+            width: 30%;
+            max-width: 200px;
+            
+            select{
+                background-color: $greyBlue;
+                border-radius: 6px;
+                color: $darkBlue;
+                font-size: 1em;
+                border: none;
+                height: 100%;
+                width: 100%;
+                text-align-last: center;
+                text-align: center;
+                cursor: pointer;
+                &:focus{
+                    outline: none;
+                }
+            }
+        }
+    }
+}

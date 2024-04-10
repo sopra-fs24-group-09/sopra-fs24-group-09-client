@@ -1,0 +1,34 @@
+@import "../theme";
+.primary-dropdown{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    select{
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        flex-grow: 1;
+        background-color: transparent;
+        text-align-last: center;
+        text-align: center;    
+        option{
+            background-color: $whiteYellow; //TODO: firefox not supporting this
+            outline: none;
+            text-align: center;
+            text-align-last: center;
+        }
+    }
+}
+.primary-dropdown:after{// for the dropdown arrow
+    display: flex;
+    --size: 0.4rem;
+    position: absolute;
+    content: "";
+    right: 0.3rem;
+    pointer-events: none;
+    border-left: var(--size) solid transparent;
+    border-right: var(--size) solid transparent;
+    border-top: var(--size) solid $stroke;
+}
+
