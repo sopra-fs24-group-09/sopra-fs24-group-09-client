@@ -14,6 +14,6 @@
 
 | Task Link | Description | Assigned to | Finished? |
 | --------- | ----------- | ----------- | --------- |
-|           |Play the submitted audio from other players| [@Shaochang Tan](https://github.com/petertheprocess) |           |
-|           |Add the recorder widget to the game page| [@Shaochang Tan](https://github.com/petertheprocess) |           |
-|           |Show widget for playing given reversed audio in different playback rate| [@Shaochang Tan](https://github.com/petertheprocess) |           |
+|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/42|Play the submitted audio from other players| [@Shaochang Tan](https://github.com/petertheprocess) |           |
+|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/59|Add the recorder widget to the game page| [@Shaochang Tan](https://github.com/petertheprocess) |           |
+|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/59|Show widget for playing given reversed audio in different playback rate| [@Shaochang Tan](https://github.com/petertheprocess) |           |
