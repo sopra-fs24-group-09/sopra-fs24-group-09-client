@@ -2,12 +2,15 @@ import React, {useEffect, useState, useRef} from "react";
 import WaveSurfer from "wavesurfer.js";
 import propTypes from "prop-types";
 import { Button } from "./Button";
+import "styles/ui/WavePlayer.scss";
 
 const WavePlayer = props => {
   const waveformRef = useRef<HTMLDivElement>(null);
   const wavesurfer = useRef<WaveSurfer | null>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
+  const playbackRateActiveColor = "coral";
+  const playbackRateInactiveColor = "grey";
 
   const initializeWaveSurfer = () => {
     if (wavesurfer.current) {
@@ -19,11 +22,11 @@ const WavePlayer = props => {
     if (waveformRef.current) {
       wavesurfer.current = WaveSurfer.create({
         container: waveformRef.current,
-        waveColor: "#f0f0f0",
-        progressColor: "#007bff",
-        cursorColor: "#007bff",
-        height: 100,
-        barWidth: 2,
+        waveColor: "grey",
+        cursorWidth: 3,
+        progressColor: "rgba(255, 204, 77, 1)",
+        height: "auto",
+        barWidth: 5,
         barRadius: 3,
         normalize: true,
       });
@@ -47,22 +50,66 @@ const WavePlayer = props => {
     initializeWaveSurfer();
   }, []);
 
-  console.log(`[${props.className}]`, props.audioBlob);
-
-  if (props.audioBlob) {
-    console.log(`[${props.className}]`,"Loading audio blob");
-    wavesurfer.current?.loadBlob(props.audioBlob);
+  // every time the audioBlob changes, load the new audio
+  useEffect(() => {
+    if (props.audioBlob) {
+      wavesurfer.current?.loadBlob(props.audioBlob);
+    }
+    console.log(`[${props.className}]`,"WaveSurfer loaded audioBlob");
   }
+  , [props.audioBlob]);
 
   return (
     <div className={`wave-player ${props.className}`}>
-      <div ref={waveformRef}/>
-      <Button onClick={() => {
-        wavesurfer.current?.setPlaybackRate(0.25);
-      }}
-      >
-                0.25x
-      </Button>
+      <div className="waveform" ref={waveformRef}/>
+      <div className="no-audio-placeholder" style={{display: props.audioBlob ? "none" : "block"}}>
+        ........is recording......
+      </div>
+      <div className="btn-group"
+        style={{display: props.audioBlob ? "flex" : "none"}}>
+        <Button
+          className={"x0.5"}
+          onClick={() => {
+            setPlaybackRate(0.5);
+            wavesurfer.current?.setPlaybackRate(0.5);
+          }}
+          style={
+            {
+              color: (playbackRate===0.5)? playbackRateActiveColor : playbackRateInactiveColor
+            }
+          }
+        >
+          x0.5
+        </Button>
+        <Button
+          className={"x0.75"}
+          onClick={() => {
+            setPlaybackRate(0.75);
+            wavesurfer.current?.setPlaybackRate(0.75);
+          }}
+          style={
+            {
+              color: (playbackRate===0.75)? playbackRateActiveColor : playbackRateInactiveColor
+            }
+          }
+        >
+          x0.75
+        </Button>
+        <Button
+          className={"x1"}
+          onClick={() => {
+            setPlaybackRate(1);
+            wavesurfer.current?.setPlaybackRate(1);
+          }}
+          style={
+            {
+              color: (playbackRate===1)? playbackRateActiveColor : playbackRateInactiveColor
+            }
+          }
+        >
+          x1
+        </Button>
+      </div>
     </div>
   );
 
@@ -71,7 +118,6 @@ const WavePlayer = props => {
 WavePlayer.propTypes = {
   className: propTypes.string,
   audioBlob: propTypes.instanceOf(Blob),
-  text: propTypes.string,
 }
 
 export default WavePlayer;
