@@ -40,6 +40,7 @@ const AudioRecorder: React.FC = props => {
       } catch (error) {
         console.error("Failed to load FFmpeg", error);
         alert("Failed to load FFmpeg, your browser may not support it.");
+        
         return;
       }
     }
@@ -167,7 +168,7 @@ const AudioRecorder: React.FC = props => {
     }
     if (cachedIsReversed
         && (cachedAudioReversedBase64 || cachedAudioBase64)
-      ) {
+    ) {
       const _flag = cachedIsReversed === "true";
       wavesurfer.current.loadBlob(
         _flag ? audioReversedBlobRef.current : audioBlobRef.current
@@ -309,7 +310,7 @@ const AudioRecorder: React.FC = props => {
 
 
   return (
-    <div className="audio-recorder">
+    <div className={`audio-recorder ${props.className}`}>
       <div ref={waveformRef} className="audio-recorder wave-frame" />
       <div className="audio-recorder button-container">
         <Button
