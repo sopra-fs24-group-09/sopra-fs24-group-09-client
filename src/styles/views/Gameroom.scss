@@ -47,7 +47,8 @@
     font-family: 'Inter';
     font-style: normal;
     font-weight: bold;
-    font-size: 1.6rem;
+    font-size: 1.6rem
+    ;
     color: $darkBlue;
   }
   &.singlePlayerContainer {
@@ -60,26 +61,34 @@
     gap: 10px;
   }
   &.playerAvatar {
-    grid-column: 1;
-    height: 4.4rem;
-    width: 4.4rem;
-    position: relative;
-    top: 1rem;
-    left:1rem;
+    // height: 4.4rem;
+    // width: 4.4rem;
+    // position: relative;
+    // top: 1rem;
+    // left:1rem;
+    // align-items: center;
     background-color: #D9D9D9;
     border-radius: 22px;
+    height: auto;
     display: flex;
     justify-content: center;
     align-items: center;
+    align-self: center;
+    margin: 0.5rem;
+    height: 4.4rem;
+    width: 4.4rem;
+    position: relative;
+    .twa.twa-studio-microphone {
+      position: absolute;
+      bottom: -1rem;
+      right: -1rem;
+    }
   }
   .playerAvatar i {
     font-size: 100%;
   }
-  &.secondcolumn {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    grid-column: 2;
+  &.audiorecorder {
+    width: 30%;
   }
   &.playerName {
     position: relative;
@@ -88,6 +97,15 @@
     font-weight: 700;
     font-size: 1.2rem;
     color:$darkBlue;
+  }
+  // for playerContainer
+  &.secondcolumn {
+    // position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
+    justify-content: center;
   }
   &.secondRow {
     display: flex;
@@ -219,15 +237,24 @@
     top: 5vh;
     width: 72vw;
     height: 73vh;
+    // height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: white;
   }
   &.counterdiv {
     margin-top:1.5vh;
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  &.statusdiv {
+    display: flex;
+    height: 30%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
   }
   &.counternum {
     margin-left: 0.5rem;
@@ -238,13 +265,33 @@
   }
   &.speakPlayerContainer {
     margin-top: 1vh;
-    width:25vw;
-    height:15vh;
+    width: 30%;
+    height: 100%;
     border-radius: 22px;
     background-color: $lightYellow;
-    display: grid;
-    grid-template-columns: auto 1fr 0.2fr;
-    gap: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    // display: grid;
+    // grid-template-columns: auto 1fr;
+    // gap: 10px;
+    // secondcolumn in speakPlayerContainer
+    .secondcolumn {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      height: 100%;
+      justify-content: center;
+      .wave-player {
+        color:$darkBlue;
+        justify-self: center;
+        flex-shrink: 1;
+        min-height: 0;
+        margin: 1rem;
+        display: flex;
+        flex-direction: row;
+      }
+    }
   }
   &.remindermssg {
     position: absolute;

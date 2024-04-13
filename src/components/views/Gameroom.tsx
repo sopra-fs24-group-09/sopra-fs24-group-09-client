@@ -1,12 +1,16 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import {api, handleError} from "helpers/api";
 import {useNavigate} from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 import {User} from "types";
 import "styles/views/Gameroom.scss";
+import "styles/views/Header.scss";
 import "styles/twemoji-amazing.css";
 import Header from "./Header";
+import {FFmpeg} from "@ffmpeg/ffmpeg";
+import AudioRecorder from "components/ui/AudioRecorder";
+import WavePlayer from "components/ui/WavePlayer";
 
 const Gameroom = () => {
   const navigate = useNavigate();
@@ -14,30 +18,81 @@ const Gameroom = () => {
   const [showScore, setShowScore] = useState(false)
   const [showReadyPopup, setShowReadyPopup] = useState(false)
   const [gameOver, setGameOver] = useState(false)
+  // FFmpeg ref, loaded in useEffect once the page is loaded
+  const ffmpegRef = useRef<FFmpeg | null>(new FFmpeg());
+  /**
+   * Attention!!: Just for testing purposes
+   * need to pass an audio blob to the WavePlayer like this:
+   */
+  const [testAudioBlob, setTestAudioBlob] = useState<Blob | null>(null);
+  
+  // load FFmpeg wasm module
+  const loadFFmpeg = async () => {
+    try {
+      if (!ffmpegRef.current?.loaded) {
+        await ffmpegRef.current?.load();
+      }
+    } catch (error) {
+      alert("Failed to load FFmpeg: " + error);
+    }
+    console.log("FFmpeg loaded");
+  }
+  loadFFmpeg();
 
 
-  // useEffect(() => {
-  //   //fetch room info
-  //   async function fetchData() {
-  //     try {
-  //       const response = await api.get("/users");
-  //       await new Promise((resolve) => setTimeout(resolve, 1000));
-  //       setUsers(response.data);
-  //       console.log(response);
-  //     } catch (error) {
-  //       console.error(
-  //         `Something went wrong while fetching the users: \n${handleError(
-  //           error
-  //         )}`
-  //       );
-  //       console.error("Details:", error);
-  //       alert(
-  //         "Something went wrong while fetching the users! See the console for details."
-  //       );
-  //     }
-  //   }
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    //fetch room info
+    // async function fetchData() {
+    //   try {
+    //     const response = await api.get("/users");
+    //     await new Promise((resolve) => setTimeout(resolve, 1000));
+    //     setUsers(response.data);
+    //     console.log(response);
+    //   } catch (error) {
+    //     console.error(
+    //       `Something went wrong while fetching the users: \n${handleError(
+    //         error
+    //       )}`
+    //     );
+    //     console.error("Details:", error);
+    //     alert(
+    //       "Something went wrong while fetching the users! See the console for details."
+    //     );
+    //   }
+    // }
+    // fetchData();
+
+    // Attention!!: Just for testing purposes
+    async function fetchAudioBlob() {
+      try {
+        const audioBase64 = sessionStorage.getItem("user1_original"); 
+        if (!audioBase64) {
+          return;
+        }
+        const blob = new Blob(
+          [
+            new Uint8Array(
+              atob(audioBase64.split(",")[1])
+                .split("")
+                .map((c) => c.charCodeAt(0))
+            ),
+          ],
+          {type: "audio/webm"}
+        );
+        setTestAudioBlob(blob);
+        console.log("Fetched audio blob", blob);
+      } catch (error) {
+        console.error(
+          `Something went wrong while fetching the audio blob: \n${error}`
+        );
+        console.error("Details:", error);
+        alert(
+          "Something went wrong while fetching the audio blob! See the console for details."
+        );
+      }
+    }
+    fetchAudioBlob();
+  }, []);
 
   const togglePopup = () => {
     setShowReadyPopup(prevState => !prevState);
@@ -147,20 +202,29 @@ const Gameroom = () => {
               {/*<img src={playerInfo.user.avatar} alt={playerInfo.user.name} />*/}
               <span className="gameroom playerAvatar">
                 <i className={"twa twa-" + gameInfo.currentSpeaker.avatar} style={{fontSize: "3.8rem"}}/>
+                <i className={"twa twa-studio-microphone"} style={{fontSize: "2.2rem"}}/>
               </span>
               <div className={"gameroom secondcolumn"}>
-                <div style={{flexDirection: "row"}} >
+                <div className="gameroom speakerName" style={{flexDirection: "row"}} >
                   <span className="gameroom playerName">{gameInfo.currentSpeaker.name}</span>
                   <span className="gameroom playerName">{" "+gameInfo.roundStatus+":"}</span>
                 </div>
-                <i className={"twa twa-studio-microphone"} style={{position:"absolute",top:"4rem",left:"-1.1rem",fontSize: "2.2rem"}}/>
+                <WavePlayer
+                  className="gameroom waveplayer"
+                  audioBlob={testAudioBlob}
+                />
               </div>
             </div>
           </div>
+          <AudioRecorder
+            className="gameroom audiorecorder"
+            ffmpeg={ffmpegRef.current}
+            audioName="user1"
+          />
         </div>
-        <div className="gameroom remindermssg">
+        {/* <div className="gameroom remindermssg">
           <span className="gameroom remindertext">{"Try to simulate the reversed audio and reverse again to figure out the word!"}</span>
-        </div>
+        </div> */}
       </>
 
     //  need to consider if the currentUser is the speaker
@@ -307,7 +371,7 @@ const Gameroom = () => {
 
   return (
     <BaseContainer>
-      <Header/>
+      <Header left="28vw"/>
       {!gameOver && !showReadyPopup && (
         <Roundstatus gameInfo={gameInfo}/>
       )}

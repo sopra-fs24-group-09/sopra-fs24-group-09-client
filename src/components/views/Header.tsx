@@ -12,13 +12,13 @@ import "../../styles/views/Header.scss";
  * @FunctionalComponent
  */
 const Header = props => (
-  <div  className="header container" style={{height: "5vh",width:"100vw"}}>
+  <div  className="header container" style={{left:props.left}}>
     <h3 className="header title">state bar to be implemented</h3>
   </div>
 );
 
 Header.propTypes = {
-  height: PropTypes.string,
+  left: PropTypes.string,
 };
 
 /**
