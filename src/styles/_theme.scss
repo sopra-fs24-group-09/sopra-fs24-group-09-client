@@ -10,19 +10,16 @@
 */
 
 $accent: white;
-$accentDark: white;
+$accentDark: rgba(255, 255, 255, 0.454);
 $textColor: black;
 $background: #C9D7DD;
 $stroke: #637A9F;
-//
-$background: rgba(255, 252, 245, 1);
 $classicYellow: rgba(255, 204, 77, 1);
 $lightYellow: rgba(255, 243, 207, 1);
 $darkBlue: rgba(99, 122, 159, 1);
 $greyBlue: rgba(201, 215, 221, 1);
-$whiteYellow: rgba(255, 252, 245, 1);
-
-
+$whiteYellow: rgb(255, 237, 196);
+/* some constants */
 
 $DESKTOP_WIDTH: 1160px;
 $SMALL_LAPTOPS_WIDTH: 970px;
