@@ -167,12 +167,15 @@ const AudioRecorder: React.FC = props => {
       );
     }
     if (cachedIsReversed
-        && (cachedAudioReversedBase64 || cachedAudioBase64)
     ) {
       const _flag = cachedIsReversed === "true";
-      wavesurfer.current.loadBlob(
-        _flag ? audioReversedBlobRef.current : audioBlobRef.current
-      );
+      if(_flag && audioReversedBlobRef.current){
+        wavesurfer.current.loadBlob(audioReversedBlobRef.current);
+      }else if(!_flag && audioBlobRef.current){
+        wavesurfer.current.loadBlob(audioBlobRef.current);
+      }else{
+        console.log("Failed to load cached audio");
+      }
       setIsReversed(_flag);
       console.log(`[${props.audioName}]`,"load cached isReversed", _flag);
       console.log(`[${props.audioName}]`,"load cached audio", _flag ? "reversed" : "original");
