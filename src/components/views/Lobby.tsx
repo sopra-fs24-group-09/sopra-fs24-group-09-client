@@ -59,24 +59,10 @@ Player.propTypes = {
 };
 
 const mockRoomPlayers: User[] = [
-  {
-    id: 1,
-    username: "Alice",
-    avatar: "https://twemoji.maxcdn.com/v/latest/72x72/1f604.png",
-    name: "Alice Wonderland",
-    status: "ONLINE",
-    registerDate: new Date("2021-08-01"),
-    birthday: new Date("1990-01-01"),
-  },
-  {
-    id: 2,
-    username: "Bob",
-    avatar: "https://twemoji.maxcdn.com/v/latest/72x72/1f602.png",
-    name: "Bob Builder",
-    status: "OFFLINE",
-    registerDate: new Date("2021-09-01"),
-    birthday: new Date("1985-02-02"),
-  },
+
+  { id: 1, username: "Alice", avatar: "twa twa-smiling-face-with-smiling-eyes", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
+  { id: 2, username: "Bob", avatar: "https://twemoji.maxcdn.com/v/latest/72x72/1f602.png", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
+
 ];
 
 const mockRooms: Room[] = [
@@ -110,8 +96,8 @@ const Lobby = () => {
   const [rooms, setRooms] = useState<Room[]>(mockRooms);
   const [user, setUser] = useState<User[]>(mockRoomPlayers[0]);
   const logout = async () => {
-    const id = localStorage.getItem("id");
-    localStorage.removeItem("token");
+    const id = sessionStorage.getItem("id");
+    sessionStorage.removeItem("token");
     //apply a post request for user logout
     try {
       const requestBody = JSON.stringify({ id: id });
@@ -174,11 +160,7 @@ const Lobby = () => {
         <div className="room-players">
           {room.roomPlayersList?.map((user, index) => (
             <div className="player" key={index}>
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="player-avatar"
-              />
+              <img src={user.avatar} alt={user.name} className="player-avatar" />
               <div className="name">{user.username}</div>
             </div>
           ))}
@@ -201,7 +183,8 @@ const Lobby = () => {
   return (
     <BaseContainer>
       <div className="user-container">
-        <img src={user.avatar} alt={user.name} className="player-avatar" />
+        <i className={"twa twa-" + user.avatar} style={{fontSize: "3.8rem"}}/>
+        {/*<img src={user.avatar} alt={user.name} className="player-avatar" />*/}
         <div className="name">{user.username}</div>
       </div>
       <div className="big-title">Kaeps</div>
