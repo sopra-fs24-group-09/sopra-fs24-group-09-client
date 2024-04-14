@@ -216,14 +216,14 @@ const Gameroom = () => {
               </div>
             </div>
           </div>
-        <div className="gameroom remindermssg">
-          <span className="gameroom remindertext">{"Try to simulate the reversed audio and reverse again to figure out the word!"}</span>
-          <AudioRecorder
-            className="gameroom audiorecorder"
-            ffmpeg={ffmpegRef.current}
-            audioName="user1"
-          />
-        </div>
+          <div className="gameroom remindermssg">
+            <span className="gameroom remindertext">{"Try to simulate the reversed audio and reverse again to figure out the word!"}</span>
+            <AudioRecorder
+              className="gameroom audiorecorder"
+              ffmpeg={ffmpegRef.current}
+              audioName="user1"
+            />
+          </div>
         </div>
       </>
 
@@ -296,10 +296,15 @@ const Gameroom = () => {
                 <span className="gameroom secondRow">
                   <span className=" gameroom scoreTitle"> Score: </span>
                   <span className=" gameroom playerScore">{playerInfo.score.total}</span>
-                  {playerInfo.ifGuess ? (
+                  {/* {playerInfo.ifGuess ? (
                     <i className={"twa twa-speaking-head"} style={{marginTop: "1.8rem",marginLeft:"4.4rem" ,fontSize: "2.7rem"}}/>
                   ):(
                     <i className={"twa twa-studio-microphone"} style={{marginTop: "1.8rem",marginLeft:"4rem" ,fontSize: "2.8rem"}}/>
+                  )} */}
+                  {playerInfo.ifGuess ? (
+                    <i className={"twa twa-speaking-head"}/>
+                  ):(
+                    <i className={"twa twa-studio-microphone"}/>
                   )}
                 </span>
               </div>
@@ -370,7 +375,7 @@ const Gameroom = () => {
   };
 
   return (
-    <BaseContainer>
+    <BaseContainer className="gameroom basecontainer">
       <Header left="28vw"/>
       {!gameOver && !showReadyPopup && (
         <Roundstatus gameInfo={gameInfo}/>
