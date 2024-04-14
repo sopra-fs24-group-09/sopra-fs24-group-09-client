@@ -60,8 +60,8 @@ Player.propTypes = {
 
 const mockRoomPlayers: User[] = [
 
-  { id: 1, username: "Alice", avatar: "twa twa-smiling-face-with-smiling-eyes", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
-  { id: 2, username: "Bob", avatar: "https://twemoji.maxcdn.com/v/latest/72x72/1f602.png", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
+  { id: 1, username: "Alice", avatar: "smiling-face-with-smiling-eyes", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
+  { id: 2, username: "Bob", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
 
 ];
 
@@ -160,7 +160,7 @@ const Lobby = () => {
         <div className="room-players">
           {room.roomPlayersList?.map((user, index) => (
             <div className="player" key={index}>
-              <img src={user.avatar} alt={user.name} className="player-avatar" />
+              <i className={"twa twa-" + user.avatar} style={{fontSize: "3.8rem"}}/>
               <div className="name">{user.username}</div>
             </div>
           ))}
@@ -183,8 +183,7 @@ const Lobby = () => {
   return (
     <BaseContainer>
       <div className="user-container">
-        <i className={"twa twa-" + user.avatar} style={{fontSize: "3.8rem"}}/>
-        {/*<img src={user.avatar} alt={user.name} className="player-avatar" />*/}
+        <i className={"twa twa-" + user.avatar} style={{fontSize: "3.8rem", marginTop:"0.8rem"}}/>
         <div className="name">{user.username}</div>
       </div>
       <div className="big-title">Kaeps</div>

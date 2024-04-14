@@ -79,6 +79,7 @@ const Register = () => {
               disabled={!username || !password ||password.indexOf(" ") !== -1|| username.indexOf(" ") !== -1}
               width="75%"
               onClick={() => doRegister()}
+              style={{ color: "black"}}
             >
               register
             </Button>

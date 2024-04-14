@@ -79,6 +79,7 @@ const Login = () => {
               disabled={!username || !password || username.trim() ===" " || password.trim() ===" "}
               width="100%"
               onClick={() => doLogin()}
+              style={{ color: "black"}}
             >
               Login
             </Button>
