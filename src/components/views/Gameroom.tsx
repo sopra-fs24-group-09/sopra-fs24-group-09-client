@@ -11,6 +11,7 @@ import Header from "./Header";
 import {FFmpeg} from "@ffmpeg/ffmpeg";
 import AudioRecorder from "components/ui/AudioRecorder";
 import WavePlayer from "components/ui/WavePlayer";
+import { ButtonPlayer } from "components/ui/ButtonPlayer";
 
 const Gameroom = () => {
   const navigate = useNavigate();
@@ -314,6 +315,7 @@ const Gameroom = () => {
                 ) : (
                   <i className="twa twa-one-thirty" style={{fontSize: "1.5rem"}}/>
                 )}
+                <ButtonPlayer audio={testAudioBlob}/>
               </div>
             </div>
           ))}
@@ -365,6 +367,7 @@ const Gameroom = () => {
               word: PropTypes.string.isRequired,
               role: PropTypes.number.isRequired,
               score: PropTypes.number.isRequired
+
             })
           ).isRequired
         }).isRequired,
