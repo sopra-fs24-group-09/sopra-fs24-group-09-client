@@ -53,7 +53,7 @@
   }
   &.singlePlayerContainer {
     width:25vw;
-    height:15vh;
+    min-height: fit-content;
     border-radius: 22px;
     background-color: $lightYellow;
     display: grid;
@@ -86,9 +86,6 @@
   }
   .playerAvatar i {
     font-size: 100%;
-  }
-  &.audiorecorder {
-    width: 30%;
   }
   &.playerName {
     position: relative;
@@ -266,8 +263,9 @@
   &.speakPlayerContainer {
     margin-top: 1vh;
     width: 30%;
-    height: 100%;
     border-radius: 22px;
+    height: 100%;
+    max-height: 100px;
     background-color: $lightYellow;
     display: flex;
     flex-direction: row;
@@ -279,31 +277,46 @@
     .secondcolumn {
       display: flex;
       flex-direction: column;
-      flex-grow: 1;
-      height: 100%;
       justify-content: center;
+      max-height: 100px;
+      height: 100%;
       .wave-player {
         color:$darkBlue;
         justify-self: center;
-        flex-shrink: 1;
         min-height: 0;
-        margin: 1rem;
+        padding: 1rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
+        width: 100%;
+      }
+      .speakerName{
+        margin-top: 0.5rem;
+      }
+      .playerName {
+        top: 0;
       }
     }
   }
   &.remindermssg {
-    position: absolute;
-    left: 28vw;
-    top: 29.4vh;
+    // position: absolute;
+    // top: 29.4vh;
+    // top: 40vh;
+    margin-top: auto;
+    justify-self: flex-end;
     width: 72vw;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    .audiorecorder {
+      width: 40%;
+    }
   }
   &.remindertext {
     background-color: $greyBlue;
+    margin-top: 1.5rem;
     padding-left: 1rem;
     padding-right: 1rem;
     border-radius: 1rem;

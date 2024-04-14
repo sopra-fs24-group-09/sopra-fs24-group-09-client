@@ -216,15 +216,15 @@ const Gameroom = () => {
               </div>
             </div>
           </div>
+        <div className="gameroom remindermssg">
+          <span className="gameroom remindertext">{"Try to simulate the reversed audio and reverse again to figure out the word!"}</span>
           <AudioRecorder
             className="gameroom audiorecorder"
             ffmpeg={ffmpegRef.current}
             audioName="user1"
           />
         </div>
-        {/* <div className="gameroom remindermssg">
-          <span className="gameroom remindertext">{"Try to simulate the reversed audio and reverse again to figure out the word!"}</span>
-        </div> */}
+        </div>
       </>
 
     //  need to consider if the currentUser is the speaker
