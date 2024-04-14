@@ -25,7 +25,7 @@ const WavePlayer = props => {
         waveColor: "grey",
         cursorWidth: 3,
         progressColor: "rgba(255, 204, 77, 1)",
-        height: "auto",
+        height: "auto", 
         barWidth: 5,
         barRadius: 3,
         normalize: true,
