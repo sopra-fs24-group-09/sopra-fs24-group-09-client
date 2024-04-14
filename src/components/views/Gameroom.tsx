@@ -19,6 +19,8 @@ const Gameroom = () => {
   const [showScore, setShowScore] = useState(false);
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const [currentSpeaker, setCurrentSpeaker] = useState(null);
+  const [currentStatus, setCurrentStatus] = useState<"speak" | "guess" |"reveal">('speak');
   // FFmpeg ref, loaded in useEffect once the page is loaded
   const ffmpegRef = useRef<FFmpeg | null>(new FFmpeg());
   /**
@@ -98,6 +100,22 @@ const Gameroom = () => {
     setShowReadyPopup((prevState) => !prevState);
   };
 
+  const toggleStatus = () => {
+    setCurrentStatus((prevState) => {
+      switch (prevState) {
+        case "speak":
+          return "guess";
+        case "guess":
+          return "reveal";
+        case "reveal":
+          return "speak";
+        default:
+          return "speak";
+      }
+    });
+  };
+
+
   const playerReadyStatus = [
     {
       user: {
@@ -110,13 +128,14 @@ const Gameroom = () => {
         guess: 50,
         read: 20,
         details: [
-          { word: "Lemon", role: 1, score: 20 },
-          { word: "Apple", role: 0, score: 30 },
-          { word: "Orange", role: 0, score: 20 },
-        ],
+          {"word": "Lemon","role": 1, "score": 20},
+          {"word": "Apple","role": 0, "score": 30},
+          {"word": "Orange","role": 0, "score": 20}
+        ]
       },
       ready: true,
       ifGuess: true,
+      roundFinished:true
     },
     {
       user: {
@@ -129,13 +148,14 @@ const Gameroom = () => {
         guess: 30,
         read: 0,
         details: [
-          { word: "Lemon", role: 0, score: 10 },
-          { word: "Apple", role: 1, score: 0 },
-          { word: "Orange", role: 0, score: 20 },
-        ],
+          {"word": "Lemon","role": 0, "score": 10},
+          {"word": "Apple","role": 1, "score": 0},
+          {"word": "Orange","role": 0, "score": 20}
+        ]
       },
       ready: true,
       ifGuess: false,
+      roundFinished:true
     },
     {
       user: {
@@ -148,13 +168,14 @@ const Gameroom = () => {
         guess: 30,
         read: 20,
         details: [
-          { word: "Lemon", role: 0, score: 30 },
-          { word: "Apple", role: 0, score: 0 },
-          { word: "Orange", role: 1, score: 20 },
-        ],
+          {"word": "Lemon","role": 0, "score": 30},
+          {"word": "Apple","role": 0, "score": 0},
+          {"word": "Orange","role": 1, "score": 20}
+        ]
       },
       ready: false,
       ifGuess: true,
+      roundFinished:false
     },
     {
       user: {
@@ -167,17 +188,24 @@ const Gameroom = () => {
         guess: 0,
         read: 60,
         details: [
-          { word: "Lemon", role: 0, score: 30 },
-          { word: "Apple", role: 0, score: 10 },
-          { word: "Orange", role: 0, score: 20 },
-        ],
+          {"word": "Lemon","role": 0, "score": 30},
+          {"word": "Apple","role": 0, "score": 10},
+          {"word": "Orange","role": 0, "score": 20}
+        ]
       },
       ready: true,
       ifGuess: true,
-    },
+      roundFinished:false
+    }
   ];
 
-  const gameInfo = {
+  let mePlayer = {
+    id: 3,
+    name: "Hanky",
+    avatar: "grinning-face-with-sweat",
+  }
+
+  let gameInfo = {
     roomID: 5,
     currentSpeaker: {
       id: 2,
@@ -185,22 +213,25 @@ const Gameroom = () => {
       avatar: "grinning-face-with-sweat",
     },
     currentAnswer: "Success",
-    roundStatus: "speaks",
+    roundStatus: "speak",
     currentRoundNum: 2,
+  };
+  const changeSpeaker = () => {
+    setShowReadyPopup((prevState) => !prevState);
   };
 
   const Roundstatus = ({ gameInfo }) => {
     return (
       <>
-        <div className="gameroom roundstatus">
-          <div className="gameroom counterdiv">
-            <i className={"twa twa-stopwatch"} style={{ fontSize: "2.6rem" }} />
-            <span className="gameroom counternum">50</span>
-          </div>
-          <div className="gameroom statusdiv">
-            <div className="gameroom speakPlayerContainer">
-              {/*<img src={playerInfo.user.avatar} alt={playerInfo.user.name} />*/}
-              <span className="gameroom playerAvatar">
+            <div className="gameroom roundstatus">
+              <div className="gameroom counterdiv">
+                <i className={"twa twa-stopwatch"} style={{ fontSize: "2.6rem" }} />
+                <span className="gameroom counternum">50</span>
+              </div>
+              <div className="gameroom statusdiv">
+                <div className="gameroom speakPlayerContainer">
+                  {/*<img src={playerInfo.user.avatar} alt={playerInfo.user.name} />*/}
+                  <span className="gameroom playerAvatar">
                 <i
                   className={"twa twa-" + gameInfo.currentSpeaker.avatar}
                   style={{ fontSize: "3.8rem" }}
@@ -210,41 +241,128 @@ const Gameroom = () => {
                   style={{ fontSize: "2.2rem" }}
                 />
               </span>
-              <div className={"gameroom secondcolumn"}>
-                <div
-                  className="gameroom speakerName"
-                  style={{ flexDirection: "row" }}
-                >
+                {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "speak" &&(
+                  <>
+                    <div className={"gameroom secondcolumn"}>
+                      <div
+                        className="gameroom speakerName"
+                        style={{ flexDirection: "row" }}
+                      >
+                        <span className="gameroom playerName">{"Round "+gameInfo.currentRoundNum+" "}</span>
+                        <span className="gameroom playerName">{gameInfo.currentSpeaker.name+", please"}</span>
+                        <span className="gameroom playerName">{" record:"}</span>
+                      </div>
+                      <span className="gameroom currentAnswer">{gameInfo.currentAnswer}</span>
+                    </div>
+                  </>
+                )}
+                {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "speak" &&(
+                  <>
+                    <div className={"gameroom secondcolumn"}>
+                      <div
+                        className="gameroom speakerName"
+                        style={{ flexDirection: "row" }}
+                      >
+                        <span className="gameroom playerName">{"Round "+gameInfo.currentRoundNum+" "}</span>
+                        <span className="gameroom playerName">{gameInfo.currentSpeaker.name+"'s'"}</span>
+                        <span className="gameroom playerName">{"turn to record"}</span>
+                      </div>
+                      {/*<span className="gameroom currentAnswer">{gameInfo.currentAnswer}</span>*/}
+                    </div>
+                  </>
+                )}
+                {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "guess" &&(
+                  <>
+                    <div className={"gameroom secondcolumn"}>
+                      <div
+                        className="gameroom speakerName"
+                        style={{ flexDirection: "row" }}
+                      >
+                        <span className="gameroom playerName">
+                          {gameInfo.currentSpeaker.name+"'s revesed audio:"}
+                        </span>
+                      </div>
+                      <WavePlayer
+                        className="gameroom waveplayer"
+                        audioBlob={testAudioBlob}
+                      />
+                    </div>
+                  </>
+                )}
+                {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "guess" &&(
+                  <>
+                    <div className={"gameroom secondcolumn"}>
+                      <div
+                        className="gameroom speakerName"
+                        style={{ flexDirection: "row" }}
+                      >
                   <span className="gameroom playerName">
-                    {gameInfo.currentSpeaker.name}
+                    {"Your revesed audio:"}
                   </span>
-                  <span className="gameroom playerName">
-                    {" " + gameInfo.roundStatus + ":"}
-                  </span>
+                      </div>
+                      <WavePlayer
+                        className="gameroom waveplayer"
+                        audioBlob={testAudioBlob}
+                      />
+                    </div>
+                  </>
+                )}
+                {currentStatus === "reveal" &&(
+                  <>
+                    <div className={"gameroom secondcolumn"}>
+                      <div
+                        className="gameroom speakerName"
+                        style={{ flexDirection: "row" }}
+                      >
+                        <span className="gameroom playerName">
+                          {"The word "+gameInfo.currentSpeaker.name+" recorded is "}
+                        </span>
+                        <span className="gameroom revealAnswer"> {gameInfo.currentAnswer}</span>
+                      </div>
+                      <WavePlayer
+                        className="gameroom waveplayer"
+                        audioBlob={testAudioBlob}
+                      />
+                    </div>
+                  </>
+                )}
                 </div>
-                <WavePlayer
-                  className="gameroom waveplayer"
-                  audioBlob={testAudioBlob}
+              </div>
+              <div className="gameroom remindermssg">
+                {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "speak" &&(
+                  <span className="gameroom remindertext">
+                    {"Try to read and record the word steadily and loudly!"}
+                  </span>
+                  )}
+                {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "speak" &&(
+                  <span className="gameroom remindertext">
+                    {"Please wait until the speak player finishes recording and uploading!"}
+                  </span>
+                )}
+                {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "guess" &&(
+                  <span className="gameroom remindertext">
+                    {"Try to simulate the reversed audio and reverse again to figure out the word!"}
+                  </span>
+                )}
+                {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "guess" &&(
+                  <span className="gameroom remindertext">
+                    {"You can try to simulate the reversed audio or listen to others' audio!"}
+                  </span>
+                )}
+                { currentStatus === "reveal" &&(
+                  <span className="gameroom remindertext">
+                    {"Time is up and now reveals the answer!"}
+                  </span>
+                )}
+                <AudioRecorder
+                  className="gameroom audiorecorder"
+                  ffmpeg={ffmpegRef.current}
+                  audioName="user1"
                 />
               </div>
             </div>
-          </div>
-          <div className="gameroom remindermssg">
-            <span className="gameroom remindertext">
-              {
-                "Try to simulate the reversed audio and reverse again to figure out the word!"
-              }
-            </span>
-            <AudioRecorder
-              className="gameroom audiorecorder"
-              ffmpeg={ffmpegRef.current}
-              audioName="user1"
-            />
-          </div>
-        </div>
       </>
 
-    //  need to consider if the currentUser is the speaker
     );
   };
 
@@ -458,6 +576,7 @@ const Gameroom = () => {
         {!gameOver && !showReadyPopup && <Roundstatus gameInfo={gameInfo} />}
         <div className="gameroom inputarea">
           <button onClick={togglePopup}> show </button>
+          <button onClick={toggleStatus}> status</button>
           <button onClick={() => setGameOver((prevState) => !prevState)}>
             Over
           </button>

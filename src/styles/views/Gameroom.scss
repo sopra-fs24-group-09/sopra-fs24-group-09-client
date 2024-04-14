@@ -44,7 +44,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      background-color: white;
+      background-color: $whiteYellow;
     }
   }
   &.playercontainer {
@@ -332,10 +332,16 @@
         width: 100%;
       }
       .speakerName{
+        margin-left: 2rem;
         margin-top: 0.5rem;
       }
       .playerName {
         top: 0;
+      }
+      .revealAnswer {
+        color: black;
+        margin-left: 0.3rem;
+        font-weight: 1000;
       }
     }
   }
@@ -522,6 +528,14 @@
     font-weight: 700;
     font-size: 0.8rem;
     color:lighten($darkBlue,20%);
+  }
+  &.currentAnswer {
+    position: relative;
+    top: 0%;
+    left: 35%;
+    font-weight: 1000;
+    font-size: 1.4rem;
+    color:$darkBlue;
   }
 
 }
