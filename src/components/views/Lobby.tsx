@@ -93,6 +93,7 @@ const mockRooms: Room[] = [
 const Lobby = () => {
   const navigate = useNavigate();
   const roomCreationPopRef = useRef<HTMLDialogElement>(null);
+  const profilePopRef = useRef<HTMLDialogElement>(null);
   const [rooms, setRooms] = useState<Room[]>(mockRooms);
   const [user, setUser] = useState<User[]>(mockRoomPlayers[0]);
   const logout = async () => {
@@ -151,6 +152,17 @@ const Lobby = () => {
       : roomCreationPopRef.current.showModal();
   };
 
+  const toggleProfilePop = () => {
+    // if the ref is not set, do nothing
+    if (!profilePopRef.current) {
+      return;
+    }
+    // if the dialog is open, close it. Otherwise, open it.
+    profilePopRef.current.hasAttribute("open")
+      ? profilePopRef.current.close()
+      : profilePopRef.current.showModal();
+  };
+
   const userinfo = () => {
     return;
   };
@@ -182,7 +194,7 @@ const Lobby = () => {
 
   return (
     <BaseContainer>
-      <div className="user-container">
+      <div className="user-container" onClick={toggleProfilePop}>
         <i className={"twa twa-" + user.avatar} style={{fontSize: "3.8rem", marginTop:"0.8rem"}}/>
         <div className="name">{user.username}</div>
       </div>
@@ -200,6 +212,26 @@ const Lobby = () => {
           </div>
         </div>
       </div>
+
+      <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className = "profile-popup">
+        <BaseContainer className="profile-popup content">
+          <div className="header-cnt">
+            <i className={"twa twa-" + user.avatar} style={{fontSize: "5rem", marginTop:"0.8rem", textAlign:"center"}}/>
+            <div className="title">{user.username}</div>
+          </div>
+          <div>Name: {user.name}</div>
+          <div>Status: {user.status}</div>
+
+          <div>RegisterDate: {user && new Date(user.registerDate).toLocaleDateString()}</div>
+          <div>Birthday: {user && new Date(user.birthday).toLocaleDateString()}</div>
+
+          <div className="profile-popup btn-container">
+            <Button className="cancel" onClick={toggleProfilePop}>
+              Close
+            </Button>
+          </div>
+        </BaseContainer>
+      </Popup>
 
       <Popup
         ref={roomCreationPopRef}

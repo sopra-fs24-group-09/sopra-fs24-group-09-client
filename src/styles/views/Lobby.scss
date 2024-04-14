@@ -245,6 +245,49 @@
   border-radius: $borderRadius;
 }
 
+.profile-popup{
+  height:50%;
+  &.content{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    font-size: 2em;
+    .title{
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      display: inline;
+      text-align: center;
+    }
+  }
+  &.header-cnt{
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    font-size: 2em;
+    .title{
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      display: inline;
+      text-align: center;
+    }
+  }
+  &.btn-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top: 10%;
+    Button{
+      height: auto;
+      font-size: 1em;
+      padding: 0.6em;
+      margin: 0 10px;
+      color: white;
+      background-color: $classicYellow;
+    }
+  }
+
+}
 .room-creation-popup{
   height: 50%;
   &.content{
