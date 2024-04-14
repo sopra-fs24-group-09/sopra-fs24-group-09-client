@@ -1,0 +1,15 @@
+@import "../theme";
+.btn-player{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    Button{
+        display: flex;
+        color: white;
+        background-color: $middleBlue;
+        height: 2.7rem;
+        aspect-ratio: 1;
+        align-items: center;
+        justify-content: center;
+    }
+}
