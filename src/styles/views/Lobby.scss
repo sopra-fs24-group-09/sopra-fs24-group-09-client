@@ -17,7 +17,22 @@
     align-items: center;
     box-shadow: $dropShadow;
   }
-  &.room-list{
+  &.room-list::-webkit-scrollbar{
+      width: 10px;
+      height: 10px;
+
+      &-track{
+        background: $whiteYellow;
+        border-radius: 5px;
+      }
+
+      &-thumb{
+        background: $greyBlue;
+        -webkit-border-radius: 10px;
+        border-radius: 10px;
+      }
+    }
+  &.room-list-wrapper{
     position: absolute;  // 使用绝对定位
     right: 3%;           // 定位到右边
     top: 10%;           // 从顶部留下10%的空间以居中显示
@@ -25,11 +40,50 @@
     height: 80%;        // 高度为视口高度的80%
     display: flex;
     flex-direction: column;
-    background-color: #ffcc66;
+    background-color: $classicYellow;
     padding: 10px;
     border-radius: 1.5em;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-y: hidden;
+  }
+  &.room-list{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
     overflow-y: auto;
+    &.btn-container{
+      all: initial; // avoid the inherited styles
+      position: relative; // absolute pos relative to the parent      
+      background-color: transparent; // use Btn's color
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: center;
+      height: auto;
+      width: 100%;
+      bottom: 3%;
+      left: 0%;
+      margin-top: 2%;
+      flex-grow: 1;
+      .create-room-btn{
+        bottom: 0%;
+        min-width: fit-content;
+        width: 20%;
+        min-height: 50px;
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        justify-content: center;
+        align-content: center;
+        font-size: 1.3em;
+        background-color: $darkBlue;
+        color: white;
+        // dont capitalize the text
+        text-transform: none;
+        // make the text bold
+        font-weight: bolder;
+      }
+    }
   }
   &.user-list {
     list-style: none;
@@ -48,9 +102,11 @@
 .room-container{
   display: flex;
   margin-bottom: 20px;
-  background: #fff6e5;
+  background: white;
+  box-shadow: 0 0 0 4px $whiteYellow;
   border-radius: 10px;
   padding: 10px;
+  margin-inline: 5%;
   justify-content: space-between;
 }
 .room {
@@ -172,7 +228,7 @@
   left: 15%;           // 定位到zuo边
   top: 25%;           // 从顶部留下10%的空间以居中显示
   font-size: 250px;
-  color: #ffcc66;
+  color: $classicYellow;
   font-family: "Acme", sans-serif;
 }
 
@@ -185,6 +241,69 @@
   text-align: center;
   color: white;
   font-family: "Acme", sans-serif;
-  background: #ffcc66;
+  background: $classicYellow;
   border-radius: $borderRadius;
+}
+
+.room-creation-popup{
+  height: 50%;
+  &.content{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    font-size: 2em;
+    .title{
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      display: inline;
+      text-align: center;
+    }
+    input {
+      height: 100px;
+      width: 800px;
+      padding-left: 1px;
+      margin-left: 4px;
+      border: 1px solid black;
+      border-radius: 0.75em;
+      margin-bottom: 20px;
+      background: transparentize(white, 0.4);
+      color: $textColor;
+    }
+  }
+  .theme-dropdown{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    width: 800px;
+    height: 100px;
+    margin-bottom: 20px;
+    select{
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: $classicYellow;
+        text-align: center;        
+        border-radius: 0.75em;
+        option{
+            background-color: $classicYellow; //TODO: firefox not supporting this
+            outline: none;
+            text-align: center;
+        }
+    }
+  }
+  &.btn-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    Button{
+      height: auto;
+      font-size: 1em;
+      padding: 0.6em;
+      margin: 0 10px;
+      color: white;
+      background-color: $classicYellow;
+    }
+  }
 }

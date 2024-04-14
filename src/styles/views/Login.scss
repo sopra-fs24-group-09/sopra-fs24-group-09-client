@@ -58,3 +58,12 @@
     margin-top: -1em;
   }
 }
+
+.kaeps-title{
+
+  top: 5%;           // 从顶部留下10%的空间以居中显示
+  font-size: 150px;
+  padding-bottom: 5%;
+  color: $classicYellow;
+  font-family: "Acme", sans-serif;
+}

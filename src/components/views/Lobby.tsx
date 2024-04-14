@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { api, handleError } from "helpers/api";
 import { Spinner } from "components/ui/Spinner";
 import { Button } from "components/ui/Button";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 import "styles/views/Lobby.scss";
 import { User, Room } from "types";
+import Popup from "components/ui/Popup";
+import { Dropdown } from "components/ui/Dropdown";
 type PlayerProps = {
   user: User;
 };
@@ -18,28 +20,35 @@ type RoomListProps = {
 };
 const Player: React.FC<PlayerProps> = ({ user }) => (
   <div className="player">
-    <img src={"https://twemoji.maxcdn.com/v/latest/72x72/1f604.png"} alt={user.username} className="player-avatar" />
+    <img
+      src={"https://twemoji.maxcdn.com/v/latest/72x72/1f604.png"}
+      alt={user.username}
+      className="player-avatar"
+    />
     <div className="player-username">{user.username}</div>
   </div>
 );
 const RoomComponent: React.FC<RoomComponentProps> = ({ room }) => (
   <div className="room">
     <div className="room-header">
-      {room.roomPlayersList.map(user => (
+      {room.roomPlayersList.map((user) => (
         <Player key={user.id} user={user} />
       ))}
     </div>
     <div className="room-footer">
       <div className="room-theme">{room.theme}</div>
-      <div className="room-status" style={{ color: room.status === "In Game" ? "orange" : "green" }}>
+      <div
+        className="room-status"
+        style={{ color: room.status === "In Game" ? "orange" : "green" }}
+      >
         {room.status}
       </div>
     </div>
   </div>
 );
-const RoomList: React.FC<RoomListProps> = ({ rooms }) =>  (
+const RoomList: React.FC<RoomListProps> = ({ rooms }) => (
   <div className="room-list">
-    {rooms.map(room => (
+    {rooms.map((room) => (
       <RoomComponent key={room.id} room={room} />
     ))}
   </div>
@@ -50,8 +59,10 @@ Player.propTypes = {
 };
 
 const mockRoomPlayers: User[] = [
-  { id: 1, username: "Alice", avatar: "https://twemoji.maxcdn.com/v/latest/72x72/1f604.png", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
+
+  { id: 1, username: "Alice", avatar: "twa twa-smiling-face-with-smiling-eyes", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
   { id: 2, username: "Bob", avatar: "https://twemoji.maxcdn.com/v/latest/72x72/1f602.png", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
+
 ];
 
 const mockRooms: Room[] = [
@@ -76,24 +87,22 @@ const mockRooms: Room[] = [
     alivePlayersList: [mockRoomPlayers[1]],
     currentPlayerIndex: 1,
     playToOuted: false,
-  }
+  },
 ];
-
 
 const Lobby = () => {
   const navigate = useNavigate();
-
+  const roomCreationPopRef = useRef<HTMLDialogElement>(null);
   const [rooms, setRooms] = useState<Room[]>(mockRooms);
   const [user, setUser] = useState<User[]>(mockRoomPlayers[0]);
   const logout = async () => {
-    const id = localStorage.getItem("id");
-    localStorage.removeItem("token");
+    const id = sessionStorage.getItem("id");
+    sessionStorage.removeItem("token");
     //apply a post request for user logout
     try {
-      const requestBody = JSON.stringify({id:id});
+      const requestBody = JSON.stringify({ id: id });
       const response = await api.post("/users/logout", requestBody);
       console.log(response);
-
     } catch (error) {
       alert(`Something went wrong during the logout: \n${handleError(error)}`);
     }
@@ -131,11 +140,22 @@ const Lobby = () => {
   //   fetchData();
   // }, []);
 
-  const userinfo = () =>{
-    return
-  }
+  const toggleRoomCreationPop = () => {
+    // if the ref is not set, do nothing
+    if (!roomCreationPopRef.current) {
+      return;
+    }
+    // if the dialog is open, close it. Otherwise, open it.
+    roomCreationPopRef.current.hasAttribute("open")
+      ? roomCreationPopRef.current.close()
+      : roomCreationPopRef.current.showModal();
+  };
+
+  const userinfo = () => {
+    return;
+  };
   const renderRoomLists = () => {
-    return mockRooms.map(room => (
+    return mockRooms.map((room) => (
       <div className="room-container" key={room.id}>
         <div className="room-players">
           {room.roomPlayersList?.map((user, index) => (
@@ -148,33 +168,65 @@ const Lobby = () => {
         <div className="room-header">
           ROOM #{room.id}
           <div>{room.theme}</div>
-
-          <span className={`room-status ${room.status === "In Game" ? "in-game" : "free"}`}>
+          <span
+            className={`room-status ${
+              room.status === "In Game" ? "in-game" : "free"
+            }`}
+          >
             {room.status}
           </span>
-
         </div>
       </div>
     ));
   };
-  
+
   return (
-
     <BaseContainer>
-
       <div className="user-container">
-        <img src={user.avatar} alt={user.name} className="player-avatar" />
+        <i className={"twa twa-" + user.avatar} style={{fontSize: "3.8rem"}}/>
+        {/*<img src={user.avatar} alt={user.name} className="player-avatar" />*/}
         <div className="name">{user.username}</div>
       </div>
-      <div className="big-title">
-        Kaeps
-      </div>
-      <div className='information'> i </div>
-      <div className="lobby room-list">
-        <h1>Rooms</h1>
-        {renderRoomLists()}
+      <div className="big-title">Kaeps</div>
+      <div className="information"> i </div>
+      <div className="lobby room-list-wrapper">
+        {/* for clip the scrollbar inside the border */}
+        <div className="lobby room-list">
+          <h1>Rooms</h1>
+          {renderRoomLists()}
+          <div className="lobby room-list btn-container">
+            <Button className="create-room-btn" onClick={toggleRoomCreationPop}>
+              New Room
+            </Button>
+          </div>
+        </div>
       </div>
 
+      <Popup
+        ref={roomCreationPopRef}
+        toggleDialog={toggleRoomCreationPop}
+        className="room-creation-popup"
+      >
+        <BaseContainer className="room-creation-popup content">
+          <div className="title">Create Room</div>
+          <input type="text" placeholder="Room Name" />
+          <input type="number" placeholder="Round" />
+          <Dropdown
+            className="theme-dropdown"
+            prompt="Select Theme"
+            options={[
+              { value: "Beginner", label: "Beginner"},
+              { value: "Food", label: "Food" },
+            ]}
+          />
+          <div className="room-creation-popup btn-container">
+            <Button className="create-room">Create Room</Button>
+            <Button className="cancel" onClick={toggleRoomCreationPop}>
+              Cancel
+            </Button>
+          </div>
+        </BaseContainer>
+      </Popup>
     </BaseContainer>
   );
 };
