@@ -9,8 +9,7 @@ import { GiClockwiseRotation, GiAnticlockwiseRotation } from "react-icons/gi";
 import { IoMdMicrophone, IoMdCheckmark } from "react-icons/io";
 import "../../styles/ui/AudioRecorder.scss";
 import PropType from "prop-types";
-
-type Base64audio = `data:audio/${string};base64,${string}`;
+import { Base64audio } from "types";
 
 
 const AudioRecorder: React.FC = props => {
