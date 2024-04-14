@@ -48,10 +48,10 @@ export const ButtonPlayer = (props: ButtonPlayerProps) => {
 
   return (
     <div className={`btn-player ${props.className}`}>
-    <Button onClick={playAudio} {...props}>
-      <audio ref={audioRef} src={url} />
-      {!isPlaying ? <FaPlay /> : <FaPause />}
-    </Button>
+      <Button onClick={playAudio} {...props}>
+        <audio ref={audioRef} src={url} />
+        {!isPlaying ? <FaPlay /> : <FaPause />}
+      </Button>
     </div>
   );
 };
