@@ -105,6 +105,7 @@
     .playerStatus {
       grid-column: 3;
       position: relative;
+      left:0;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -160,7 +161,7 @@
     flex-direction: row;
     align-items: flex-end;
     .twa{
-      margin-left: auto;
+      margin-left: 7rem;
       font-size: 2.7rem;
       color: $darkBlue;
     

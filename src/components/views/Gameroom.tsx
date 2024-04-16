@@ -1,17 +1,17 @@
-import React, { useEffect, useState, useRef } from "react";
-import { api, handleError } from "helpers/api";
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useState, useRef} from "react";
+import {api, handleError} from "helpers/api";
+import {useNavigate} from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
-import { User } from "types";
+import {User} from "types";
 import "styles/views/Gameroom.scss";
 import "styles/views/Header.scss";
 import "styles/twemoji-amazing.css";
 import Header from "./Header";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
+import {FFmpeg} from "@ffmpeg/ffmpeg";
 import AudioRecorder from "components/ui/AudioRecorder";
 import WavePlayer from "components/ui/WavePlayer";
-import { ButtonPlayer } from "components/ui/ButtonPlayer";
+import {ButtonPlayer} from "components/ui/ButtonPlayer";
 
 const Gameroom = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const Gameroom = () => {
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [currentSpeaker, setCurrentSpeaker] = useState(null);
-  const [currentStatus, setCurrentStatus] = useState<"speak" | "guess" |"reveal">('speak');
+  const [currentStatus, setCurrentStatus] = useState<"speak" | "guess" | "reveal">('speak');
   // FFmpeg ref, loaded in useEffect once the page is loaded
   const ffmpegRef = useRef<FFmpeg | null>(new FFmpeg());
   /**
@@ -79,7 +79,7 @@ const Gameroom = () => {
                 .map((c) => c.charCodeAt(0))
             ),
           ],
-          { type: "audio/webm" }
+          {type: "audio/webm"}
         );
         setTestAudioBlob(blob);
         console.log("Fetched audio blob", blob);
@@ -93,6 +93,7 @@ const Gameroom = () => {
         );
       }
     }
+
     fetchAudioBlob();
   }, []);
 
@@ -115,6 +116,11 @@ const Gameroom = () => {
     });
   };
 
+  const userRecordings = [
+    {userId: 1, audioFile: 'audio1'},
+    {userId: 3, audioFile: 'audio3'},
+  ];
+
 
   const playerReadyStatus = [
     {
@@ -128,14 +134,14 @@ const Gameroom = () => {
         guess: 50,
         read: 20,
         details: [
-          {"word": "Lemon","role": 1, "score": 20},
-          {"word": "Apple","role": 0, "score": 30},
-          {"word": "Orange","role": 0, "score": 20}
+          {"word": "Lemon", "role": 1, "score": 20},
+          {"word": "Apple", "role": 0, "score": 30},
+          {"word": "Orange", "role": 0, "score": 20}
         ]
       },
       ready: true,
       ifGuess: true,
-      roundFinished:true
+      roundFinished: true
     },
     {
       user: {
@@ -148,14 +154,14 @@ const Gameroom = () => {
         guess: 30,
         read: 0,
         details: [
-          {"word": "Lemon","role": 0, "score": 10},
-          {"word": "Apple","role": 1, "score": 0},
-          {"word": "Orange","role": 0, "score": 20}
+          {"word": "Lemon", "role": 0, "score": 10},
+          {"word": "Apple", "role": 1, "score": 0},
+          {"word": "Orange", "role": 0, "score": 20}
         ]
       },
       ready: true,
       ifGuess: false,
-      roundFinished:true
+      roundFinished: true
     },
     {
       user: {
@@ -168,14 +174,14 @@ const Gameroom = () => {
         guess: 30,
         read: 20,
         details: [
-          {"word": "Lemon","role": 0, "score": 30},
-          {"word": "Apple","role": 0, "score": 0},
-          {"word": "Orange","role": 1, "score": 20}
+          {"word": "Lemon", "role": 0, "score": 30},
+          {"word": "Apple", "role": 0, "score": 0},
+          {"word": "Orange", "role": 1, "score": 20}
         ]
       },
       ready: false,
       ifGuess: true,
-      roundFinished:false
+      roundFinished: false
     },
     {
       user: {
@@ -188,14 +194,14 @@ const Gameroom = () => {
         guess: 0,
         read: 60,
         details: [
-          {"word": "Lemon","role": 0, "score": 30},
-          {"word": "Apple","role": 0, "score": 10},
-          {"word": "Orange","role": 0, "score": 20}
+          {"word": "Lemon", "role": 0, "score": 30},
+          {"word": "Apple", "role": 0, "score": 10},
+          {"word": "Orange", "role": 0, "score": 20}
         ]
       },
       ready: true,
       ifGuess: true,
-      roundFinished:false
+      roundFinished: false
     }
   ];
 
@@ -220,147 +226,147 @@ const Gameroom = () => {
     setShowReadyPopup((prevState) => !prevState);
   };
 
-  const Roundstatus = ({ gameInfo }) => {
+  const Roundstatus = ({gameInfo}) => {
     return (
       <>
-            <div className="gameroom roundstatus">
-              <div className="gameroom counterdiv">
-                <i className={"twa twa-stopwatch"} style={{ fontSize: "2.6rem" }} />
-                <span className="gameroom counternum">50</span>
-              </div>
-              <div className="gameroom statusdiv">
-                <div className="gameroom speakPlayerContainer">
-                  {/*<img src={playerInfo.user.avatar} alt={playerInfo.user.name} />*/}
-                  <span className="gameroom playerAvatar">
+        <div className="gameroom roundstatus">
+          <div className="gameroom counterdiv">
+            <i className={"twa twa-stopwatch"} style={{fontSize: "2.6rem"}}/>
+            <span className="gameroom counternum">50</span>
+          </div>
+          <div className="gameroom statusdiv">
+            <div className="gameroom speakPlayerContainer">
+              {/*<img src={playerInfo.user.avatar} alt={playerInfo.user.name} />*/}
+              <span className="gameroom playerAvatar">
                 <i
                   className={"twa twa-" + gameInfo.currentSpeaker.avatar}
-                  style={{ fontSize: "3.8rem" }}
+                  style={{fontSize: "3.8rem"}}
                 />
                 <i
                   className={"twa twa-studio-microphone"}
-                  style={{ fontSize: "2.2rem" }}
+                  style={{fontSize: "2.2rem"}}
                 />
               </span>
-                {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "speak" &&(
-                  <>
-                    <div className={"gameroom secondcolumn"}>
-                      <div
-                        className="gameroom speakerName"
-                        style={{ flexDirection: "row" }}
-                      >
-                        <span className="gameroom playerName">{"Round "+gameInfo.currentRoundNum+" "}</span>
-                        <span className="gameroom playerName">{gameInfo.currentSpeaker.name+", please"}</span>
-                        <span className="gameroom playerName">{" record:"}</span>
-                      </div>
-                      <span className="gameroom currentAnswer">{gameInfo.currentAnswer}</span>
+              {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "speak" && (
+                <>
+                  <div className={"gameroom secondcolumn"}>
+                    <div
+                      className="gameroom speakerName"
+                      style={{flexDirection: "row"}}
+                    >
+                      <span className="gameroom playerName">{"Round " + gameInfo.currentRoundNum + " "}</span>
+                      <span className="gameroom playerName">{gameInfo.currentSpeaker.name + ", please"}</span>
+                      <span className="gameroom playerName">{" record:"}</span>
                     </div>
-                  </>
-                )}
-                {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "speak" &&(
-                  <>
-                    <div className={"gameroom secondcolumn"}>
-                      <div
-                        className="gameroom speakerName"
-                        style={{ flexDirection: "row" }}
-                      >
-                        <span className="gameroom playerName">{"Round "+gameInfo.currentRoundNum+" "}</span>
-                        <span className="gameroom playerName">{gameInfo.currentSpeaker.name+"'s'"}</span>
-                        <span className="gameroom playerName">{"turn to record"}</span>
-                      </div>
-                      {/*<span className="gameroom currentAnswer">{gameInfo.currentAnswer}</span>*/}
+                    <span className="gameroom currentAnswer">{gameInfo.currentAnswer}</span>
+                  </div>
+                </>
+              )}
+              {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "speak" && (
+                <>
+                  <div className={"gameroom secondcolumn"}>
+                    <div
+                      className="gameroom speakerName"
+                      style={{flexDirection: "row"}}
+                    >
+                      <span className="gameroom playerName">{"Round " + gameInfo.currentRoundNum + " "}</span>
+                      <span className="gameroom playerName">{gameInfo.currentSpeaker.name + "'s'"}</span>
+                      <span className="gameroom playerName">{"turn to record"}</span>
                     </div>
-                  </>
-                )}
-                {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "guess" &&(
-                  <>
-                    <div className={"gameroom secondcolumn"}>
-                      <div
-                        className="gameroom speakerName"
-                        style={{ flexDirection: "row" }}
-                      >
+                    {/*<span className="gameroom currentAnswer">{gameInfo.currentAnswer}</span>*/}
+                  </div>
+                </>
+              )}
+              {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "guess" && (
+                <>
+                  <div className={"gameroom secondcolumn"}>
+                    <div
+                      className="gameroom speakerName"
+                      style={{flexDirection: "row"}}
+                    >
                         <span className="gameroom playerName">
-                          {gameInfo.currentSpeaker.name+"'s revesed audio:"}
+                          {gameInfo.currentSpeaker.name + "'s revesed audio:"}
                         </span>
-                      </div>
-                      <WavePlayer
-                        className="gameroom waveplayer"
-                        audioBlob={testAudioBlob}
-                      />
                     </div>
-                  </>
-                )}
-                {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "guess" &&(
-                  <>
-                    <div className={"gameroom secondcolumn"}>
-                      <div
-                        className="gameroom speakerName"
-                        style={{ flexDirection: "row" }}
-                      >
+                    <WavePlayer
+                      className="gameroom waveplayer"
+                      audioBlob={testAudioBlob}
+                    />
+                  </div>
+                </>
+              )}
+              {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "guess" && (
+                <>
+                  <div className={"gameroom secondcolumn"}>
+                    <div
+                      className="gameroom speakerName"
+                      style={{flexDirection: "row"}}
+                    >
                   <span className="gameroom playerName">
                     {"Your revesed audio:"}
                   </span>
-                      </div>
-                      <WavePlayer
-                        className="gameroom waveplayer"
-                        audioBlob={testAudioBlob}
-                      />
                     </div>
-                  </>
-                )}
-                {currentStatus === "reveal" &&(
-                  <>
-                    <div className={"gameroom secondcolumn"}>
-                      <div
-                        className="gameroom speakerName"
-                        style={{ flexDirection: "row" }}
-                      >
+                    <WavePlayer
+                      className="gameroom waveplayer"
+                      audioBlob={testAudioBlob}
+                    />
+                  </div>
+                </>
+              )}
+              {currentStatus === "reveal" && (
+                <>
+                  <div className={"gameroom secondcolumn"}>
+                    <div
+                      className="gameroom speakerName"
+                      style={{flexDirection: "row"}}
+                    >
                         <span className="gameroom playerName">
-                          {"The word "+gameInfo.currentSpeaker.name+" recorded is "}
+                          {"The word " + gameInfo.currentSpeaker.name + " recorded is "}
                         </span>
-                        <span className="gameroom revealAnswer"> {gameInfo.currentAnswer}</span>
-                      </div>
-                      <WavePlayer
-                        className="gameroom waveplayer"
-                        audioBlob={testAudioBlob}
-                      />
+                      <span className="gameroom revealAnswer"> {gameInfo.currentAnswer}</span>
                     </div>
-                  </>
-                )}
-                </div>
-              </div>
-              <div className="gameroom remindermssg">
-                {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "speak" &&(
-                  <span className="gameroom remindertext">
+                    <WavePlayer
+                      className="gameroom waveplayer"
+                      audioBlob={testAudioBlob}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="gameroom remindermssg">
+            {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "speak" && (
+              <span className="gameroom remindertext">
                     {"Try to read and record the word steadily and loudly!"}
                   </span>
-                  )}
-                {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "speak" &&(
-                  <span className="gameroom remindertext">
+            )}
+            {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "speak" && (
+              <span className="gameroom remindertext">
                     {"Please wait until the speak player finishes recording and uploading!"}
                   </span>
-                )}
-                {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "guess" &&(
-                  <span className="gameroom remindertext">
+            )}
+            {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "guess" && (
+              <span className="gameroom remindertext">
                     {"Try to simulate the reversed audio and reverse again to figure out the word!"}
                   </span>
-                )}
-                {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "guess" &&(
-                  <span className="gameroom remindertext">
+            )}
+            {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "guess" && (
+              <span className="gameroom remindertext">
                     {"You can try to simulate the reversed audio or listen to others' audio!"}
                   </span>
-                )}
-                { currentStatus === "reveal" &&(
-                  <span className="gameroom remindertext">
+            )}
+            {currentStatus === "reveal" && (
+              <span className="gameroom remindertext">
                     {"Time is up and now reveals the answer!"}
                   </span>
-                )}
-                <AudioRecorder
-                  className="gameroom audiorecorder"
-                  ffmpeg={ffmpegRef.current}
-                  audioName="user1"
-                />
-              </div>
-            </div>
+            )}
+            <AudioRecorder
+              className="gameroom audiorecorder"
+              ffmpeg={ffmpegRef.current}
+              audioName="user1"
+            />
+          </div>
+        </div>
       </>
 
     );
@@ -380,7 +386,7 @@ const Gameroom = () => {
     }).isRequired,
   };
 
-  const LeaderBoard = ({ playerStatus }) => {
+  const LeaderBoard = ({playerStatus}) => {
     return (
       <div className="gameroom leaderboarddiv">
         <div className="gameroom leaderboard">
@@ -390,42 +396,42 @@ const Gameroom = () => {
               <span className="gameroom ldPlayerAvatar">
                 <i
                   className={"twa twa-" + playerInfo.user.avatar}
-                  style={{ fontSize: "2.8rem" }}
+                  style={{fontSize: "2.8rem"}}
                 />
               </span>
               <span className="gameroom ldPlayerName">
                 {playerInfo.user.name}
               </span>
-              <span className="gameroom scorenum" style={{ gridColumn: "3" }}>
+              <span className="gameroom scorenum" style={{gridColumn: "3"}}>
                 {playerInfo.score.total}
               </span>
-              <span className="gameroom ldtitle" style={{ gridColumn: "3" }}>
+              <span className="gameroom ldtitle" style={{gridColumn: "3"}}>
                 Total
               </span>
-              <span className="gameroom scorenum" style={{ gridColumn: "4" }}>
+              <span className="gameroom scorenum" style={{gridColumn: "4"}}>
                 {playerInfo.score.guess}
               </span>
-              <span className="gameroom ldtitle" style={{ gridColumn: "4" }}>
+              <span className="gameroom ldtitle" style={{gridColumn: "4"}}>
                 Guess
               </span>
-              <span className="gameroom scorenum" style={{ gridColumn: "5" }}>
+              <span className="gameroom scorenum" style={{gridColumn: "5"}}>
                 {playerInfo.score.read}
               </span>
-              <span className="gameroom ldtitle" style={{ gridColumn: "5" }}>
+              <span className="gameroom ldtitle" style={{gridColumn: "5"}}>
                 Read
               </span>
               {playerInfo.score.details.map((detail, detailIndex) => (
                 <React.Fragment key={detailIndex}>
                   <span
                     className="gameroom scorenum"
-                    style={{ gridColumn: `${detailIndex + 6}` }}
+                    style={{gridColumn: `${detailIndex + 6}`}}
                   >
                     {detail.score}
                   </span>
 
                   <span
                     className="gameroom ldtitle"
-                    style={{ gridColumn: `${detailIndex + 6}` }}
+                    style={{gridColumn: `${detailIndex + 6}`}}
                   >
                     {detail.word}
                   </span>
@@ -438,60 +444,46 @@ const Gameroom = () => {
     );
   };
 
-  const PlayerList = ({ playerStatus }) => {
+  const PlayerList = ({ playerStatus, userRecordings }) => {
     return (
       <>
         <div className="gameroom roominfocontainer">
-          <div className={"gameroom roomifotitle"}> ROOM</div>
-          <div className={"gameroom roominfo"}> #05 - Advanced</div>
+          <div className="gameroom roominfotitle">ROOM</div>
+          <div className="gameroom roominfo">#05 - Advanced</div>
         </div>
         <div className="gameroom playercontainer">
-          {playerStatus.map((playerInfo, index) => (
-            <div className="gameroom singlePlayerContainer" key={index}>
-              {/*<img src={playerInfo.user.avatar} alt={playerInfo.user.name} />*/}
+          {playerStatus.map((playerInfo, index) => {
+            const hasRecording = userRecordings.some(
+              recording => recording.userId === playerInfo.user.id
+            );
+            return (
+              <div className="gameroom singlePlayerContainer" key={index}>
               <span className="gameroom playerAvatar">
-                <i
-                  className={"twa twa-" + playerInfo.user.avatar}
-                  style={{ fontSize: "3.8rem" }}
-                />
+                <i className={"twa twa-" + playerInfo.user.avatar} style={{ fontSize: "3.8rem" }} />
               </span>
-              <div className={"gameroom secondcolumn"}>
-                <span className="gameroom playerName">
-                  {playerInfo.user.name}
+                <div className="gameroom secondcolumn">
+                  <span className="gameroom playerName">{playerInfo.user.name}</span>
+                  <span className="gameroom secondRow">
+                  <span className="gameroom scoreTitle">Score:</span>
+                  <span className="gameroom playerScore">{playerInfo.score.total}</span>
+                    {playerInfo.ifGuess ? (
+                      <i className="twa twa-speaking-head" />
+                    ) : (
+                      <i className="twa twa-studio-microphone" />
+                    )}
                 </span>
-                <span className="gameroom secondRow">
-                  <span className=" gameroom scoreTitle"> Score: </span>
-                  <span className=" gameroom playerScore">
-                    {playerInfo.score.total}
-                  </span>
-                  {/* {playerInfo.ifGuess ? (
-                    <i className={"twa twa-speaking-head"} style={{marginTop: "1.8rem",marginLeft:"4.4rem" ,fontSize: "2.7rem"}}/>
-                  ):(
-                    <i className={"twa twa-studio-microphone"} style={{marginTop: "1.8rem",marginLeft:"4rem" ,fontSize: "2.8rem"}}/>
-                  )} */}
-                  {playerInfo.ifGuess ? (
-                    <i className={"twa twa-speaking-head"} />
+                </div>
+                <div className="gameroom playerStatus">
+                  {playerInfo.ready ? (
+                    <i className="twa twa-check-mark-button" style={{ fontSize: "1.5rem" }} />
                   ) : (
-                    <i className={"twa twa-studio-microphone"} />
+                    <i className="twa twa-one-thirty" style={{ fontSize: "1.5rem" }} />
                   )}
-                </span>
+                  {hasRecording && <ButtonPlayer audio={testAudioBlob} />}
+                </div>
               </div>
-              <div className="gameroom playerStatus">
-                {playerInfo.ready ? (
-                  <i
-                    className="twa twa-check-mark-button"
-                    style={{ fontSize: "1.5rem" }}
-                  />
-                ) : (
-                  <i
-                    className="twa twa-one-thirty"
-                    style={{ fontSize: "1.5rem" }}
-                  />
-                )}
-                <ButtonPlayer audio={testAudioBlob} />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </>
     );
@@ -547,12 +539,18 @@ const Gameroom = () => {
         ifGuess: PropTypes.bool.isRequired,
       })
     ).isRequired,
+    userRecordings: PropTypes.arrayOf(
+      PropTypes.shape({
+        userId: PropTypes.number.isRequired,
+        audioFile: PropTypes.string.isRequired,
+      })
+    ).isRequired,
   };
 
   return (
     <BaseContainer className="gameroom basecontainer">
-      <Header left="28vw" />
-      <PlayerList playerStatus={playerReadyStatus} />
+      <Header left="28vw"/>
+      <PlayerList playerStatus={playerReadyStatus} userRecordings={userRecordings}/>
       <div className="gameroom right-area">
         {!gameOver && showReadyPopup && (
           <div className="gameroom readypopupbg">
@@ -573,9 +571,9 @@ const Gameroom = () => {
         {gameOver && (
           <LeaderBoard playerStatus={playerReadyStatus}></LeaderBoard>
         )}
-        {!gameOver && !showReadyPopup && <Roundstatus gameInfo={gameInfo} />}
+        {!gameOver && !showReadyPopup && <Roundstatus gameInfo={gameInfo}/>}
         <div className="gameroom inputarea">
-          <button onClick={togglePopup}> show </button>
+          <button onClick={togglePopup}> show</button>
           <button onClick={toggleStatus}> status</button>
           <button onClick={() => setGameOver((prevState) => !prevState)}>
             Over
