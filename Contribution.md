@@ -17,9 +17,9 @@
 
 | Task Link | Description | Assigned to | Finished? |
 | --------- | ----------- | ----------- | --------- |
-|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/42|Play the submitted audio from other players| [@Shaochang Tan](https://github.com/petertheprocess) |           |
-|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/59|Add the recorder widget to the game page| [@Shaochang Tan](https://github.com/petertheprocess) |           |
-|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/59|Show widget for playing given reversed audio in different playback rate| [@Shaochang Tan](https://github.com/petertheprocess) |           |
+|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/42|Play the submitted audio from other players| [@Shaochang Tan](https://github.com/petertheprocess) |:white_check_mark:|
+|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/59|Add the recorder widget to the game page| [@Shaochang Tan](https://github.com/petertheprocess) |:white_check_mark:|
+|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/59|Show widget for playing given reversed audio in different playback rate| [@Shaochang Tan](https://github.com/petertheprocess) |:white_check_mark:|
 | https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/20 | Create Login and Register forms.            | Han Yang | :white_check_mark: |
 | https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/28 | A loggined user can go to profile page by clicking his avatar.            | Han Yang | :white_check_mark: |
 | https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/29 | After login / registration, the player is redirected to Lobby page (design Lobby page).            | Han Yang | :white_check_mark: |
