@@ -461,26 +461,46 @@ const Gameroom = () => {
               <span className="gameroom playerAvatar">
                 <i className={"twa twa-" + playerInfo.user.avatar} style={{ fontSize: "3.8rem" }} />
               </span>
-                <div className="gameroom secondcolumn">
-                  <span className="gameroom playerName">{playerInfo.user.name}</span>
-                  <span className="gameroom secondRow">
-                  <span className="gameroom scoreTitle">Score:</span>
-                  <span className="gameroom playerScore">{playerInfo.score.total}</span>
-                    {playerInfo.ifGuess ? (
-                      <i className="twa twa-speaking-head" />
-                    ) : (
-                      <i className="twa twa-studio-microphone" />
-                    )}
-                </span>
-                </div>
-                <div className="gameroom playerStatus">
-                  {playerInfo.ready ? (
-                    <i className="twa twa-check-mark-button" style={{ fontSize: "1.5rem" }} />
-                  ) : (
-                    <i className="twa twa-one-thirty" style={{ fontSize: "1.5rem" }} />
-                  )}
-                  {hasRecording && <ButtonPlayer audio={testAudioBlob} />}
-                </div>
+                {!showReadyPopup && (
+                  <>
+                    <div className="gameroom secondcolumn">
+                      <span className="gameroom playerName">{playerInfo.user.name}</span>
+                      <span className="gameroom secondRow">
+                        <span className="gameroom scoreTitle">Score:</span>
+                        <span className="gameroom playerScore">{playerInfo.score.total}</span>
+                        {playerInfo.ifGuess ? (
+                          <i className="twa twa-speaking-head" />
+                        ) : (
+                          <i className="twa twa-studio-microphone" />
+                        )}
+                      </span>
+                    </div>
+                    <div className="gameroom playerStatus">
+                      {playerInfo.roundFinished ? (
+                        <i className="twa twa-check-mark-button" style={{ fontSize: "1.5rem" }} />
+                      ) : (
+                        <i className="twa twa-one-thirty" style={{ fontSize: "1.5rem" }} />
+                      )}
+                      {hasRecording && <ButtonPlayer audio={testAudioBlob} />}
+                    </div>
+                  </>
+                )}
+                {showReadyPopup &&(
+                  <>
+                    <div className="gameroom secondcolumn">
+                      <span className="gameroom playerName">{playerInfo.user.name}</span>
+                      <span className="gameroom secondRow">
+                      </span>
+                    </div>
+                    <div className="gameroom playerStatus">
+                      {playerInfo.ready ? (
+                        <i className="twa twa-check-mark-button" style={{ fontSize: "1.5rem" }} />
+                      ) : (
+                        <i className="twa twa-one-thirty" style={{ fontSize: "1.5rem" }} />
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             );
           })}
