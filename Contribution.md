@@ -24,3 +24,12 @@
 | https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/28 | A loggined user can go to profile page by clicking his avatar.            | Han Yang | :white_check_mark: |
 | https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/29 | After login / registration, the player is redirected to Lobby page (design Lobby page).            | Han Yang | :white_check_mark: |
 | https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/57 | Implement pop-up window to show profiles of user.            | Han Yang | :white_check_mark: |
+
+## WEEK2 2024.4.17-2024.4.24
+
+| Task Link | Description | Assigned to | Finished? |
+| --------- | ----------- | ----------- | --------- |
+|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/67|Once new audio is sent from backend, the page should imediatly show or update this audio.| [@Shaochang Tan](https://github.com/petertheprocess) |:white_check_mark:|
+|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/66|Volume bar should always stick to the top of the game page, and the tunning result should apply to all audio context.| [@Shaochang Tan](https://github.com/petertheprocess) |:white_check_mark:|
+
+
