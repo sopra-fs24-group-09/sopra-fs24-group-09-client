@@ -29,7 +29,7 @@
 
 | Task Link | Description | Assigned to | Finished? |
 | --------- | ----------- | ----------- | --------- |
-|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/67|Once new audio is sent from backend, the page should imediatly show or update this audio.| [@Shaochang Tan](https://github.com/petertheprocess) |:white_check_mark:|
-|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/66|Volume bar should always stick to the top of the game page, and the tunning result should apply to all audio context.| [@Shaochang Tan](https://github.com/petertheprocess) |:white_check_mark:|
+|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/67|Once new audio is sent from backend, the page should imediatly show or update this audio.| [@Shaochang Tan](https://github.com/petertheprocess) | |
+|https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/issues/66|Volume bar should always stick to the top of the game page, and the tunning result should apply to all audio context.| [@Shaochang Tan](https://github.com/petertheprocess) | |
 
 
