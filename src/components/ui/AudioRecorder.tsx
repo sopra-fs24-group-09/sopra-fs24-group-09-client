@@ -1,6 +1,6 @@
 import WaveSurfer from "wavesurfer.js";
 import RecordPlugin from "wavesurfer.js/dist/plugins/record.esm.js";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useLayoutEffect , useRef, useState } from "react";
 import { Button } from "./Button";
 // import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { Dropdown } from "./Dropdown";
@@ -284,30 +284,10 @@ const AudioRecorder: React.FC = props => {
     sessionStorage.setItem(cachedIsReversedName, currentIsReversed.toString());
   };
 
-  // load audio
-  useEffect(() => {
+  // load audio, layoutEffect is used to make sure the wavesurfer is initialized before loading audio
+  useLayoutEffect(() => {
     initializeWaveSurferWithRecorder();
     loadCachedAudio();
-    // try{
-    //   if (!props.ffmpeg.loaded) {
-    //     props.ffmpeg.load();
-    //     console.log(`[${props.audioName}]`,"load FFmpeg successfully");
-    //   }else{
-    //     console.log(`[${props.audioName}]`,"FFmpeg already loaded");
-    //   }
-    // } catch (error) {
-    //   console.error("Failed to load FFmpeg", error);
-    // }
-    // try {
-    //   if (!ffmpegRef.current?.loaded) {
-    //     ffmpegRef.current?.load();
-    //     console.log(`[${props.audioName}]`,"load FFmpeg successfully");
-    //   }else{
-    //     console.log(`[${props.audioName}]`,"FFmpeg already loaded");
-    //   }
-    // } catch (error) {
-    //   console.error("Failed to load FFmpeg", error);
-    // }
     return () => {
       // clean up wavesurfer
       if (wavesurfer.current) {
