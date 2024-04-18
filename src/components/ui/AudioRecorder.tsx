@@ -308,6 +308,13 @@ const AudioRecorder: React.FC = props => {
     // } catch (error) {
     //   console.error("Failed to load FFmpeg", error);
     // }
+    return () => {
+      // clean up wavesurfer
+      if (wavesurfer.current) {
+        wavesurfer.current.destroy();
+        console.log(`[${props.audioName}]`,"destroy wavesurfer");
+      }
+    }
   }, []);
 
 
