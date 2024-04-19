@@ -226,7 +226,7 @@ const Gameroom = () => {
                 </div>
                 <WavePlayer
                   className="gameroom waveplayer"
-                  audioBlob={testAudioBlob}
+                  audioURL={testAudioURL}
                 />
               </div>
             </div>
@@ -372,7 +372,7 @@ const Gameroom = () => {
                     style={{ fontSize: "1.5rem" }}
                   />
                 )}
-                  {testAudioURL && <ButtonPlayer audioURL={testAudioURL} />}
+                {testAudioURL && <ButtonPlayer audioURL={testAudioURL} />}
               </div>
             </div>
           ))}
