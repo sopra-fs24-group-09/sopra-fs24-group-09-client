@@ -212,7 +212,9 @@ const Lobby = () => {
 
       const response = await api.post('/games', requestBody);
       console.log('Room created successfully:', response);
-      toggleRoomCreationPop();  // 关闭创建房间的弹窗
+      const roomId = response.roomId;
+      navigate(`/room=${roomId}`);
+      //toggleRoomCreationPop();  // 关闭创建房间的弹窗
     } catch (error) {
       console.error('Error creating room:', handleError(error));
       alert(`Error creating room: ${handleError(error)}`);
