@@ -194,15 +194,15 @@ const Lobby = () => {
       if (error.response && error.response.data) {
         alert(error.response.data.message);
       } else {
-        console.error('Error:', error.message);
-        alert('An unexpected error occurred.');
+        console.error("Error:", error.message);
+        alert("An unexpected error occurred.");
       }
     }
   };
 
   const createRoom = async () => {
     try {
-      const ownerId = sessionStorage.getItem('id');  // 假设ownerId存储在sessionStorage中
+      const ownerId = sessionStorage.getItem("id");  // 假设ownerId存储在sessionStorage中
       const requestBody = JSON.stringify({
         name: roomName,
         num: numRounds,
@@ -210,13 +210,13 @@ const Lobby = () => {
         theme: roomTheme
       });
 
-      const response = await api.post('/games', requestBody);
-      console.log('Room created successfully:', response);
+      const response = await api.post("/games", requestBody);
+      console.log("Room created successfully:", response);
       const roomId = response.roomId;
       navigate(`/room=${roomId}`);
       //toggleRoomCreationPop();  // 关闭创建房间的弹窗
     } catch (error) {
-      console.error('Error creating room:', handleError(error));
+      console.error("Error creating room:", handleError(error));
       alert(`Error creating room: ${handleError(error)}`);
     }
   };
@@ -247,7 +247,7 @@ const Lobby = () => {
   async function enterRoom(roomId, userId) {
     try {
       const requestBody = JSON.stringify({ userId, roomId });
-      await api.put('/games', requestBody);
+      await api.put("/games", requestBody);
     } catch (error) {
       console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
     }
@@ -294,8 +294,8 @@ const Lobby = () => {
       if (error.response && error.response.data) {
         alert(error.response.data.message);
       } else {
-        console.error('Error:', error.message);
-        alert('An unexpected error occurred.');
+        console.error("Error:", error.message);
+        alert("An unexpected error occurred.");
       }
     }
   }
@@ -316,16 +316,16 @@ const Lobby = () => {
     return mockRooms.map((Room) => (
       <div className="room-container" key={Room.id} onClick={(e) => {
         e.preventDefault();
-        const currentId = sessionStorage.getItem('id');
+        const currentId = sessionStorage.getItem("id");
         // const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
         enterRoom(Room.id, currentId)
-        .then(() => {
-        navigate(`/room=${Room.id}`);
-      })
-        .catch(error => {
-        console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
-        alert(`Something went wrong during the enterRoom: \n${handleError(error)}`);
-      });
+          .then(() => {
+            navigate(`/room=${Room.id}`);
+          })
+          .catch(error => {
+            console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+            alert(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+          });
       }}>
         <div className="room-players">
           {Room.roomPlayersList?.map((user, index) => (
@@ -343,12 +343,13 @@ const Lobby = () => {
               Room.status === "In Game" ? "in-game" : "free"
             }`}
           >
-            {Room.status}
-          </span>
+          {Room.status}
+        </span>
         </div>
       </div>
     ));
   };
+
 
   return (
     <BaseContainer>
@@ -379,14 +380,6 @@ const Lobby = () => {
           }}>
             <i className={"twa twa-" + user.avatar} style={{fontSize: "10rem", marginTop:"0.8rem", textAlign:"center"}}/>
           </div>
-            {/*<FormField*/}
-            {/*  label="Username:"*/}
-            {/*  type="text"*/}
-            {/*  placeholder="Username..."*/}
-            {/*  value={user.username}*/}
-            {/*  onChange={un => setUsername(un)}*/}
-            {/*  disabled={false}*/}
-            {/*/>*/}
           <div className="profile-popup field">
             <label className="profile-popup label">
               Username:
@@ -463,9 +456,7 @@ const Lobby = () => {
 
       </Popup>
 
-      <Popup ref={infoPopRef}
-             toggleDialog={toggleInfoPop}
-             className="profile-popup">
+      <Popup ref={infoPopRef} toggleDialog={toggleInfoPop} className="profile-popup">
         <div>Here is some Guidelines....</div>
         <div className="profile-popup btn-container">
           <Button className="cancel" onClick={toggleInfoPop}>
