@@ -108,6 +108,7 @@
   padding: 10px;
   margin-inline: 5%;
   justify-content: space-between;
+  flex-direction: row;
 }
 .room {
   background-color: #fff;
@@ -115,7 +116,7 @@
   border-radius: 8px;
   //overflow: hidden;
 
-  .room-header, .room-players {
+  .room-header{
     flex: 1;                   // Allow both children to grow and take up equal space
     display: flex;
     flex-direction: column;    // Stack the children of these containers vertically
@@ -126,27 +127,19 @@
 
   .room-players {
     align-items: flex-start;   // Align the players to the start of the flex container
+    flex: 1;                   // Allow both children to grow and take up equal space
+    display: flex;
+    flex-direction: row;    // Stack the children of these containers vertically
+    //align-items: center;       // Center the items horizontally
+    justify-content: center;   // Center the items vertically
+    padding: 10px;
   }
 
   .room-header {
     align-items: flex-end;     // Align the room details to the end of the flex container
   }
 
-  .player {
-    margin-right: 10px;
-    text-align: center;
 
-    .player-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #D9D9D9; // 默认背景色
-    }
-
-    .player-username {
-      font-size: 0.8em;
-    }
-  }
 
   .room-footer {
     display: flex;
@@ -159,6 +152,50 @@
     }
 
   }
+}
+.avatar-list {
+  display: flex;
+  flex-wrap: wrap; // 允许头像列表换行
+  justify-content: flex-start; // 头像左对齐
+  margin: 0 -10px; // 用于抵消每个头像的外边距，可以根据实际需求调整
+
+  .player {
+    width: 20%; // 四个头像一行，每个占总宽的25%
+    padding-left: 10%; // 每个头像周围的间距，可以根据实际需求调整
+    box-sizing: border-box; // 包括padding在内的宽度计算方式
+
+    i {
+      display: block; // 确保图标块状显示
+      font-size: 3.8rem; // 图标大小
+      cursor: pointer; // 鼠标悬停时显示指针
+      margin: 10px 0; // 上下间距，可以根据需要调整
+    }
+  }
+}
+.player {
+  margin-right: 10px;
+  margin-left: 10px;
+  text-align: center;
+
+  .player-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #D9D9D9; // 默认背景色
+  }
+
+  .player-username {
+    font-size: 0.8em;
+  }
+}
+.room-players {
+  align-items: flex-end;   // Align the players to the start of the flex container
+  flex: 1;                   // Allow both children to grow and take up equal space
+  display: flex;
+  flex-direction: row;    // Stack the children of these containers vertically
+  //align-items: center;       // Center the items horizontally
+  justify-content: left;   // Center the items vertically
+  padding: 10px;
 }
 .status-container {
   width: 18%; /* 或者任何固定宽度 */
@@ -258,7 +295,13 @@
       display: inline;
       text-align: center;
     }
+    .avatar-container {
+      display: flex;
+      justify-content: center; /* 水平居中 */
+      margin-bottom: 3rem;
+    }
   }
+
   &.header-cnt{
     display: flex;
     flex-direction: row;
@@ -285,6 +328,25 @@
       color: white;
       background-color: $classicYellow;
     }
+  }
+  &.label {
+    display: flex;
+    font-size: 32px;
+  }
+  &.field {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+  &.input {
+    height: 35px;
+    padding-left: 15px;
+    margin-left: -4px;
+    border: none;
+    border-radius: 0.75em;
+    //margin-top: 20px;
+    background: transparentize(white, 0.85);
+    color: $textColor;
   }
 
 }

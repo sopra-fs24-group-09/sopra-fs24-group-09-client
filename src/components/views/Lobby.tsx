@@ -53,27 +53,60 @@ const RoomList: React.FC<RoomListProps> = ({ rooms }) => (
     ))}
   </div>
 );
+interface FormFieldProps {
+  label: string;
+  placeholder?: string;
+  value: string;
+  type?: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+}
 
+const FormField: React.FC<FormFieldProps> = (props) => {
+  return (
+    <div className="profile-popup field">
+      <label className="profile-popup label">
+        {props.label}
+      </label>
+      <input
+        className="profile-popup input"
+        placeholder={props.placeholder}
+        value={props.value}
+        type={props.type}
+        onChange={e => props.onChange(e.target.value)}
+        disabled={props.disabled}
+      />
+    </div>
+  );
+};
 Player.propTypes = {
   user: PropTypes.object,
 };
 
 const mockRoomPlayers: User[] = [
 
-  { id: 1, username: "Alice", avatar: "smiling-face-with-smiling-eyes", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
+  { id: 1, username: "Alice", avatar: "grinning-face-with-sweat", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
   { id: 2, username: "Bob", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
+  { id: 3, username: "Han", avatar: "grinning-face-with-sweat", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
+  { id: 4, username: "Li", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
+  { id: 5, username: "Liuz", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
 
 ];
+
+const avatarList: string[] = [
+  "grinning-face-with-sweat","horse-face", "hot-face","hushed-face", "kissing-face",
+  "last-quarter-moon-face","loudly-crying-face", "lying-face"
+]
 
 const mockRooms: Room[] = [
   {
     id: "1",
     roomOwnerId: "1",
-    roomPlayersList: [mockRoomPlayers[0]],
+    roomPlayersList: mockRoomPlayers,
     theme: "Advanced",
     status: "In Game",
     maxPlayersNum: 4,
-    alivePlayersList: [mockRoomPlayers[0]],
+    alivePlayersList: mockRoomPlayers,
     currentPlayerIndex: 0,
     playToOuted: false,
   },
@@ -94,8 +127,13 @@ const Lobby = () => {
   const navigate = useNavigate();
   const roomCreationPopRef = useRef<HTMLDialogElement>(null);
   const profilePopRef = useRef<HTMLDialogElement>(null);
+  const changeAvatarPopRef = useRef<HTMLDialogElement>(null);
   const [rooms, setRooms] = useState<Room[]>(mockRooms);
   const [user, setUser] = useState<User[]>(mockRoomPlayers[0]);
+  const [username, setUsername] = useState<string | null>(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
+  const [avatarToBeChanged, setAvatarToBeChanged] = useState<string | null>(null);
+  const [avatarOrigin, setAvatarOrigin] = useState<string | null>(null);
   const logout = async () => {
     const id = sessionStorage.getItem("id");
     sessionStorage.removeItem("token");
@@ -141,6 +179,23 @@ const Lobby = () => {
   //   fetchData();
   // }, []);
 
+  const doEdit = async () => {
+    try {
+      const requestBody = JSON.stringify({ username, avatar: avatar });
+      const id = sessionStorage.getItem("id");
+      console.log("Request body:", requestBody);
+      await api.put(`/users/${id}`, requestBody);
+      toggleProfilePop();
+    } catch (error) {
+      if (error.response && error.response.data) {
+        alert(error.response.data.message);
+      } else {
+        console.error('Error:', error.message);
+        alert('An unexpected error occurred.');
+      }
+    }
+  };
+
   const toggleRoomCreationPop = () => {
     // if the ref is not set, do nothing
     if (!roomCreationPopRef.current) {
@@ -163,14 +218,38 @@ const Lobby = () => {
       : profilePopRef.current.showModal();
   };
 
+  const toggleAvatarPop = () => {
+    // if the ref is not set, do nothing
+    if (!changeAvatarPopRef.current) {
+      return;
+    }
+    // if the dialog is open, close it. Otherwise, open it.
+    changeAvatarPopRef.current.hasAttribute("open")
+      ? changeAvatarPopRef.current.close()
+      : changeAvatarPopRef.current.showModal();
+  };
+
+  const changeAvatar = (avatar) =>{
+    setAvatarToBeChanged(avatar);
+    updateAvatar(avatar);
+    toggleAvatarPop();
+  }
+
+  const updateAvatar = (newAvatar) => {
+    setUser(prevUser => ({
+      ...prevUser, // 复制 prevUser 对象的所有现有属性
+      avatar: newAvatar // 更新 avatar 属性
+    }));
+  };
+
   const userinfo = () => {
     return;
   };
   const renderRoomLists = () => {
-    return mockRooms.map((room) => (
-      <div className="room-container" key={room.id}>
+    return mockRooms.map((Room) => (
+      <div className="room-container" key={Room.id}>
         <div className="room-players">
-          {room.roomPlayersList?.map((user, index) => (
+          {Room.roomPlayersList?.map((user, index) => (
             <div className="player" key={index}>
               <i className={"twa twa-" + user.avatar} style={{fontSize: "3.8rem"}}/>
               <div className="name">{user.username}</div>
@@ -178,14 +257,14 @@ const Lobby = () => {
           ))}
         </div>
         <div className="room-header">
-          ROOM #{room.id}
-          <div>{room.theme}</div>
+          ROOM #{Room.id}
+          <div>{Room.theme}</div>
           <span
             className={`room-status ${
-              room.status === "In Game" ? "in-game" : "free"
+              Room.status === "In Game" ? "in-game" : "free"
             }`}
           >
-            {room.status}
+            {Room.status}
           </span>
         </div>
       </div>
@@ -215,10 +294,22 @@ const Lobby = () => {
 
       <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className = "profile-popup">
         <BaseContainer className="profile-popup content">
-          <div className="header-cnt">
-            <i className={"twa twa-" + user.avatar} style={{fontSize: "5rem", marginTop:"0.8rem", textAlign:"center"}}/>
-            <div className="title">{user.username}</div>
+          <div className="avatar-container" onClick={() => {
+            toggleAvatarPop();
+            toggleProfilePop();
+            setAvatarOrigin(user.avatar);
+          }}>
+            <i className={"twa twa-" + user.avatar} style={{fontSize: "10rem", marginTop:"0.8rem", textAlign:"center"}}/>
           </div>
+            <FormField
+              label="Username:"
+              type="text"
+              placeholder="Username..."
+              value={user.username}
+              onChange={un => setUsername(un)}
+              disabled={false}
+            />
+
           <div>Name: {user.name}</div>
           <div>Status: {user.status}</div>
 
@@ -226,11 +317,35 @@ const Lobby = () => {
           <div>Birthday: {user && new Date(user.birthday).toLocaleDateString()}</div>
 
           <div className="profile-popup btn-container">
-            <Button className="cancel" onClick={toggleProfilePop}>
-              Close
+            <Button className="cancel" onClick={() => {
+              toggleProfilePop();
+              updateAvatar(avatarOrigin);
+            }}>
+              Cancel
+            </Button>
+            <Button className="cancel" onClick={() => doEdit()
+            }>
+              Edit
             </Button>
           </div>
         </BaseContainer>
+      </Popup>
+
+      <Popup
+        ref={changeAvatarPopRef}
+        toggleDialog={toggleAvatarPop}
+        className="room-creation-popup"
+      >
+        <div className="avatar-list">
+          {avatarList?.map((avatar,index) => (
+            <div className="player" key={index} >
+              <i className={"twa twa-" + avatar} style={{fontSize: "3.8rem"}} onClick={() => {
+                changeAvatar(avatar);
+                toggleProfilePop();
+              }}/>
+            </div>
+          ))}
+        </div>
       </Popup>
 
       <Popup
