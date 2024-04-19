@@ -29,6 +29,7 @@ const Gameroom = () => {
    * need to pass an audio blob to the WavePlayer like this:
    */
   const [testAudioBlob, setTestAudioBlob] = useState<Blob | null>(null);
+  const [testAudioURL, setTestAudioURL] = useState<string | null>(null);
 
   // load FFmpeg wasm module
   const loadFFmpeg = async () => {
@@ -83,6 +84,7 @@ const Gameroom = () => {
           {type: "audio/webm"}
         );
         setTestAudioBlob(blob);
+        setTestAudioURL(URL.createObjectURL(blob));
         console.log("Fetched audio blob", blob);
       } catch (error) {
         console.error(
@@ -488,7 +490,7 @@ const Gameroom = () => {
                       ) : (
                         <i className="twa twa-one-thirty" style={{ fontSize: "1.5rem" }} />
                       )}
-                      {hasRecording && <ButtonPlayer audio={testAudioBlob} />}
+                      {hasRecording && <ButtonPlayer audioURL={testAudioURL} />}
                     </div>
                   </>
                 )}

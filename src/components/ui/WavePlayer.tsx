@@ -8,7 +8,6 @@ const WavePlayer = props => {
   const waveformRef = useRef<HTMLDivElement>(null);
   const wavesurfer = useRef<WaveSurfer | null>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [isPlaying, setIsPlaying] = useState(false);
   const playbackRateActiveColor = "coral";
   const playbackRateInactiveColor = "grey";
 
