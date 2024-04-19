@@ -9,6 +9,8 @@ import "styles/views/Lobby.scss";
 import { User, Room } from "types";
 import Popup from "components/ui/Popup";
 import { Dropdown } from "components/ui/Dropdown";
+
+
 type PlayerProps = {
   user: User;
 };
@@ -133,7 +135,9 @@ const Lobby = () => {
   const [user, setUser] = useState<User[]>(mockRoomPlayers[0]);
   const [username, setUsername] = useState<string | null>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
-
+  const [roomName, setRoomName] = useState('');
+  const [numRounds, setNumRounds] = useState(0);
+  const [roomTheme, setRoomTheme] = useState('');
   const logout = async () => {
     const id = sessionStorage.getItem("id");
     sessionStorage.removeItem("token");
@@ -196,6 +200,26 @@ const Lobby = () => {
     }
   };
 
+  const createRoom = async () => {
+    try {
+      const ownerId = sessionStorage.getItem('id');  // 假设ownerId存储在sessionStorage中
+      const requestBody = JSON.stringify({
+        name: roomName,
+        num: numRounds,
+        ownerId: ownerId,
+        theme: roomTheme
+      });
+
+      const response = await api.post('/games', requestBody);
+      console.log('Room created successfully:', response);
+      toggleRoomCreationPop();  // 关闭创建房间的弹窗
+    } catch (error) {
+      console.error('Error creating room:', handleError(error));
+      alert(`Error creating room: ${handleError(error)}`);
+    }
+  };
+
+
   const toggleRoomCreationPop = () => {
     // if the ref is not set, do nothing
     if (!roomCreationPopRef.current) {
@@ -218,7 +242,14 @@ const Lobby = () => {
       : profilePopRef.current.showModal();
   };
 
-
+  async function enterRoom(roomId, userId) {
+    try {
+      const requestBody = JSON.stringify({ userId, roomId });
+      await api.put('/games', requestBody);
+    } catch (error) {
+      console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+    }
+  }
 
   const toggleAvatarPop = () => {
     // if the ref is not set, do nothing
@@ -277,9 +308,23 @@ const Lobby = () => {
   const userinfo = () => {
     return;
   };
+
+
   const renderRoomLists = () => {
     return mockRooms.map((Room) => (
-      <div className="room-container" key={Room.id}>
+      <div className="room-container" key={Room.id} onClick={(e) => {
+        e.preventDefault();
+        const currentId = sessionStorage.getItem('id');
+        // const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
+        enterRoom(Room.id, currentId)
+        .then(() => {
+        navigate(`/room=${Room.id}`);
+      })
+        .catch(error => {
+        console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+        alert(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+      });
+      }}>
         <div className="room-players">
           {Room.roomPlayersList?.map((user, index) => (
             <div className="player" key={index}>
@@ -332,14 +377,25 @@ const Lobby = () => {
           }}>
             <i className={"twa twa-" + user.avatar} style={{fontSize: "10rem", marginTop:"0.8rem", textAlign:"center"}}/>
           </div>
-            <FormField
-              label="Username:"
+            {/*<FormField*/}
+            {/*  label="Username:"*/}
+            {/*  type="text"*/}
+            {/*  placeholder="Username..."*/}
+            {/*  value={user.username}*/}
+            {/*  onChange={un => setUsername(un)}*/}
+            {/*  disabled={false}*/}
+            {/*/>*/}
+          <div className="profile-popup field">
+            <label className="profile-popup label">
+              Username:
+            </label>
+            <input
+              // className="profile-popup input"
+              //value={user.username}
               type="text"
-              placeholder="Username..."
-              value={user.username}
-              onChange={un => setUsername(un)}
-              disabled={false}
+              onChange={e => setUsername(e)}
             />
+          </div>
 
           <div>Name: {user.name}</div>
           <div>Status: {user.status}</div>
@@ -385,23 +441,24 @@ const Lobby = () => {
       >
         <BaseContainer className="room-creation-popup content">
           <div className="title">Create Room</div>
-          <input type="text" placeholder="Room Name" />
-          <input type="number" placeholder="Round" />
+          <input type="text" placeholder="Room Name" value={roomName} onChange={e => setRoomName(e.target.value)} />
+          <input type="number" placeholder="Number of Players" value={numRounds} onChange={e => setNumRounds(parseInt(e.target.value, 10))} />
           <Dropdown
             className="theme-dropdown"
             prompt="Select Theme"
+            value={roomTheme}
             options={[
               { value: "Beginner", label: "Beginner"},
-              { value: "Food", label: "Food" },
+              { value: "Food", label: "Food" }
             ]}
+            onChange={(selectedOption) => setRoomTheme(selectedOption.value)}
           />
           <div className="room-creation-popup btn-container">
-            <Button className="create-room">Create Room</Button>
-            <Button className="cancel" onClick={toggleRoomCreationPop}>
-              Cancel
-            </Button>
+            <Button className="create-room" onClick={createRoom}>Create Room</Button>
+            <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </div>
         </BaseContainer>
+
       </Popup>
 
       <Popup ref={infoPopRef}
