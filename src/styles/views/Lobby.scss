@@ -341,11 +341,11 @@
   &.input {
     height: 35px;
     padding-left: 15px;
-    margin-left: -4px;
+    margin-left: 4px;
     border: none;
     border-radius: 0.75em;
-    //margin-top: 20px;
-    background: transparentize(white, 0.85);
+    margin-top: 5px;
+    background: #FFF3CF;
     color: $textColor;
   }
 

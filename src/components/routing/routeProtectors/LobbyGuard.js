@@ -17,6 +17,7 @@ export const LobbyGuard = () => {
     return <Outlet />;
   }
   // Debugging
+
   return <Outlet />;
   //return <Navigate to="/login" replace />;
 };

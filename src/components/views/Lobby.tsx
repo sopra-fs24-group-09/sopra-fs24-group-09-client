@@ -9,12 +9,15 @@ import "styles/views/Lobby.scss";
 import { User, Room } from "types";
 import Popup from "components/ui/Popup";
 import { Dropdown } from "components/ui/Dropdown";
+
+
 type PlayerProps = {
   user: User;
 };
 type RoomComponentProps = {
   room: Room;
 };
+
 type RoomListProps = {
   rooms: Room[];
 };
@@ -128,12 +131,14 @@ const Lobby = () => {
   const roomCreationPopRef = useRef<HTMLDialogElement>(null);
   const profilePopRef = useRef<HTMLDialogElement>(null);
   const changeAvatarPopRef = useRef<HTMLDialogElement>(null);
+  const infoPopRef = useRef<HTMLDialogElement>(null);
   const [rooms, setRooms] = useState<Room[]>(mockRooms);
   const [user, setUser] = useState<User[]>(mockRoomPlayers[0]);
   const [username, setUsername] = useState<string | null>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
-  const [avatarToBeChanged, setAvatarToBeChanged] = useState<string | null>(null);
-  const [avatarOrigin, setAvatarOrigin] = useState<string | null>(null);
+  const [roomName, setRoomName] = useState("");
+  const [numRounds, setNumRounds] = useState(0);
+  const [roomTheme, setRoomTheme] = useState("");
   const logout = async () => {
     const id = sessionStorage.getItem("id");
     sessionStorage.removeItem("token");
@@ -190,11 +195,33 @@ const Lobby = () => {
       if (error.response && error.response.data) {
         alert(error.response.data.message);
       } else {
-        console.error('Error:', error.message);
-        alert('An unexpected error occurred.');
+        console.error("Error:", error.message);
+        alert("An unexpected error occurred.");
       }
     }
   };
+
+  const createRoom = async () => {
+    try {
+      const ownerId = sessionStorage.getItem("id");  // 假设ownerId存储在sessionStorage中
+      const requestBody = JSON.stringify({
+        name: roomName,
+        num: numRounds,
+        ownerId: ownerId,
+        theme: roomTheme
+      });
+
+      const response = await api.post("/games", requestBody);
+      console.log("Room created successfully:", response);
+      const roomId = response.roomId;
+      navigate(`/room=${roomId}`);
+      //toggleRoomCreationPop();  // 关闭创建房间的弹窗
+    } catch (error) {
+      console.error("Error creating room:", handleError(error));
+      alert(`Error creating room: ${handleError(error)}`);
+    }
+  };
+
 
   const toggleRoomCreationPop = () => {
     // if the ref is not set, do nothing
@@ -218,6 +245,15 @@ const Lobby = () => {
       : profilePopRef.current.showModal();
   };
 
+  async function enterRoom(roomId, userId) {
+    try {
+      const requestBody = JSON.stringify({ userId, roomId });
+      await api.put("/games", requestBody);
+    } catch (error) {
+      console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+    }
+  }
+
   const toggleAvatarPop = () => {
     // if the ref is not set, do nothing
     if (!changeAvatarPopRef.current) {
@@ -229,10 +265,40 @@ const Lobby = () => {
       : changeAvatarPopRef.current.showModal();
   };
 
-  const changeAvatar = (avatar) =>{
-    setAvatarToBeChanged(avatar);
-    updateAvatar(avatar);
-    toggleAvatarPop();
+  const toggleInfoPop = () => {
+    // if the ref is not set, do nothing
+    if (!infoPopRef.current) {
+      return;
+    }
+    // if the dialog is open, close it. Otherwise, open it.
+    infoPopRef.current.hasAttribute("open")
+      ? infoPopRef.current.close()
+      : infoPopRef.current.showModal();
+  };
+
+  const changeAvatar = async (newAvatar) =>{
+    try {
+      // 更新本地状态
+      setAvatar(newAvatar);
+
+      // 构造请求体，只包含 avatar 更改
+      const requestBody = JSON.stringify({ username, avatar: newAvatar });
+      const id = sessionStorage.getItem("id");
+      console.log("Request body:", requestBody);
+      // 执行更新请求
+      await api.put(`/users/${id}`, requestBody);
+
+      // 可能需要关闭弹窗或执行其他 UI 反馈
+
+      console.log("Avatar changed successfully");
+    } catch (error) {
+      if (error.response && error.response.data) {
+        alert(error.response.data.message);
+      } else {
+        console.error("Error:", error.message);
+        alert("An unexpected error occurred.");
+      }
+    }
   }
 
   const updateAvatar = (newAvatar) => {
@@ -245,9 +311,23 @@ const Lobby = () => {
   const userinfo = () => {
     return;
   };
+
+
   const renderRoomLists = () => {
     return mockRooms.map((Room) => (
-      <div className="room-container" key={Room.id}>
+      <div className="room-container" key={Room.id} onClick={(e) => {
+        e.preventDefault();
+        const currentId = sessionStorage.getItem("id");
+        // const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
+        enterRoom(Room.id, currentId)
+          .then(() => {
+            navigate(`/room=${Room.id}`);
+          })
+          .catch(error => {
+            console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+            alert(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+          });
+      }}>
         <div className="room-players">
           {Room.roomPlayersList?.map((user, index) => (
             <div className="player" key={index}>
@@ -271,6 +351,7 @@ const Lobby = () => {
     ));
   };
 
+
   return (
     <BaseContainer>
       <div className="user-container" onClick={toggleProfilePop}>
@@ -278,7 +359,7 @@ const Lobby = () => {
         <div className="name">{user.username}</div>
       </div>
       <div className="big-title">Kaeps</div>
-      <div className="information"> i </div>
+      <div className="information" onClick={toggleInfoPop}> i </div>
       <div className="lobby room-list-wrapper">
         {/* for clip the scrollbar inside the border */}
         <div className="lobby room-list">
@@ -296,19 +377,21 @@ const Lobby = () => {
         <BaseContainer className="profile-popup content">
           <div className="avatar-container" onClick={() => {
             toggleAvatarPop();
-            toggleProfilePop();
-            setAvatarOrigin(user.avatar);
+            // toggleProfilePop();
           }}>
             <i className={"twa twa-" + user.avatar} style={{fontSize: "10rem", marginTop:"0.8rem", textAlign:"center"}}/>
           </div>
-            <FormField
-              label="Username:"
+          <div className="profile-popup field">
+            <label className="profile-popup label">
+              Username:
+            </label>
+            <input
+              // className="profile-popup input"
+              //value={user.username}
               type="text"
-              placeholder="Username..."
-              value={user.username}
-              onChange={un => setUsername(un)}
-              disabled={false}
+              onChange={e => setUsername(e)}
             />
+          </div>
 
           <div>Name: {user.name}</div>
           <div>Status: {user.status}</div>
@@ -319,7 +402,6 @@ const Lobby = () => {
           <div className="profile-popup btn-container">
             <Button className="cancel" onClick={() => {
               toggleProfilePop();
-              updateAvatar(avatarOrigin);
             }}>
               Cancel
             </Button>
@@ -340,8 +422,8 @@ const Lobby = () => {
           {avatarList?.map((avatar,index) => (
             <div className="player" key={index} >
               <i className={"twa twa-" + avatar} style={{fontSize: "3.8rem"}} onClick={() => {
-                changeAvatar(avatar);
-                toggleProfilePop();
+                changeAvatar(avatar).then(r => toggleProfilePop());
+
               }}/>
             </div>
           ))}
@@ -355,23 +437,33 @@ const Lobby = () => {
       >
         <BaseContainer className="room-creation-popup content">
           <div className="title">Create Room</div>
-          <input type="text" placeholder="Room Name" />
-          <input type="number" placeholder="Round" />
+          <input type="text" placeholder="Room Name" value={roomName} onChange={e => setRoomName(e.target.value)} />
+          <input type="number" placeholder="Number of Players" value={numRounds} onChange={e => setNumRounds(parseInt(e.target.value, 10))} />
           <Dropdown
             className="theme-dropdown"
             prompt="Select Theme"
+            value={roomTheme}
             options={[
               { value: "Beginner", label: "Beginner"},
-              { value: "Food", label: "Food" },
+              { value: "Food", label: "Food" }
             ]}
+            onChange={(selectedOption) => setRoomTheme(selectedOption.value)}
           />
           <div className="room-creation-popup btn-container">
-            <Button className="create-room">Create Room</Button>
-            <Button className="cancel" onClick={toggleRoomCreationPop}>
-              Cancel
-            </Button>
+            <Button className="create-room" onClick={createRoom}>Create Room</Button>
+            <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </div>
         </BaseContainer>
+
+      </Popup>
+
+      <Popup ref={infoPopRef} toggleDialog={toggleInfoPop} className="profile-popup">
+        <div>Here is some Guidelines....</div>
+        <div className="profile-popup btn-container">
+          <Button className="cancel" onClick={toggleInfoPop}>
+            Close
+          </Button>
+        </div>
       </Popup>
     </BaseContainer>
   );
