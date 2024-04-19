@@ -121,8 +121,8 @@ const Gameroom = () => {
   };
 
   const userRecordings = [
-    { userId: 1, audioFile: "audio1" },
-    { userId: 3, audioFile: "audio3" },
+    { userId: 1, audioURL: null },
+    { userId: 3, audioURL: null },
   ];
 
   const playerReadyStatus = [
@@ -491,10 +491,17 @@ const Gameroom = () => {
           <div className="gameroom roominfo">#05 - Advanced</div>
         </div>
         <div className="gameroom playercontainer">
+          {/*map begin*/}
           {playerStatus.map((playerInfo, index) => {
             const hasRecording = userRecordings.some(
               (recording) => recording.userId === playerInfo.user.id
             );
+            let audioURL = null;
+            if (hasRecording) {
+              audioURL = userRecordings.find(
+                (recording) => recording.userId === playerInfo.user.id
+              ).audioURL;
+            }
 
             return (
               <div className="gameroom singlePlayerContainer" key={index}>
@@ -534,7 +541,7 @@ const Gameroom = () => {
                           style={{ fontSize: "1.5rem" }}
                         />
                       )}
-                      {hasRecording && <ButtonPlayer audioURL={testAudioURL} />}
+                      {hasRecording && <ButtonPlayer audioURL={audioURL} />}
                     </div>
                   </>
                 )}
@@ -561,7 +568,6 @@ const Gameroom = () => {
                     </div>
                   </>
                 )}
-                {testAudioURL && <ButtonPlayer audioURL={testAudioURL} />}
               </div>
             );
           })}
