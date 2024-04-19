@@ -21,7 +21,7 @@ const Gameroom = () => {
   const [gameOver, setGameOver] = useState(false);
   const [currentSpeaker, setCurrentSpeaker] = useState(null);
   const [validateAnswer,setValidateAnswer] = useState(null);
-  const [currentStatus, setCurrentStatus] = useState<"speak" | "guess" | "reveal">('speak');
+  const [currentStatus, setCurrentStatus] = useState<"speak" | "guess" | "reveal">("speak");
   // FFmpeg ref, loaded in useEffect once the page is loaded
   const ffmpegRef = useRef<FFmpeg | null>(new FFmpeg());
   /**
@@ -105,21 +105,21 @@ const Gameroom = () => {
   const toggleStatus = () => {
     setCurrentStatus((prevState) => {
       switch (prevState) {
-        case "speak":
-          return "guess";
-        case "guess":
-          return "reveal";
-        case "reveal":
-          return "speak";
-        default:
-          return "speak";
+      case "speak":
+        return "guess";
+      case "guess":
+        return "reveal";
+      case "reveal":
+        return "speak";
+      default:
+        return "speak";
       }
     });
   };
 
   const userRecordings = [
-    {userId: 1, audioFile: 'audio1'},
-    {userId: 3, audioFile: 'audio3'},
+    {userId: 1, audioFile: "audio1"},
+    {userId: 3, audioFile: "audio3"},
   ];
 
 
@@ -285,9 +285,9 @@ const Gameroom = () => {
                       className="gameroom speakerName"
                       style={{flexDirection: "row"}}
                     >
-                        <span className="gameroom playerName">
-                          {gameInfo.currentSpeaker.name + "'s revesed audio:"}
-                        </span>
+                      <span className="gameroom playerName">
+                        {gameInfo.currentSpeaker.name + "'s revesed audio:"}
+                      </span>
                     </div>
                     <WavePlayer
                       className="gameroom waveplayer"
@@ -303,9 +303,9 @@ const Gameroom = () => {
                       className="gameroom speakerName"
                       style={{flexDirection: "row"}}
                     >
-                  <span className="gameroom playerName">
-                    {"Your revesed audio:"}
-                  </span>
+                      <span className="gameroom playerName">
+                        {"Your revesed audio:"}
+                      </span>
                     </div>
                     <WavePlayer
                       className="gameroom waveplayer"
@@ -321,9 +321,9 @@ const Gameroom = () => {
                       className="gameroom speakerName"
                       style={{flexDirection: "row"}}
                     >
-                        <span className="gameroom playerName">
-                          {"The word " + gameInfo.currentSpeaker.name + " recorded is "}
-                        </span>
+                      <span className="gameroom playerName">
+                        {"The word " + gameInfo.currentSpeaker.name + " recorded is "}
+                      </span>
                       <span className="gameroom revealAnswer"> {gameInfo.currentAnswer}</span>
                     </div>
                     <WavePlayer
@@ -338,28 +338,28 @@ const Gameroom = () => {
           <div className="gameroom remindermssg">
             {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "speak" && (
               <span className="gameroom remindertext">
-                    {"Try to read and record the word steadily and loudly!"}
-                  </span>
+                {"Try to read and record the word steadily and loudly!"}
+              </span>
             )}
             {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "speak" && (
               <span className="gameroom remindertext">
-                    {"Please wait until the speak player finishes recording and uploading!"}
-                  </span>
+                {"Please wait until the speak player finishes recording and uploading!"}
+              </span>
             )}
             {gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "guess" && (
               <span className="gameroom remindertext">
-                    {"Try to simulate the reversed audio and reverse again to figure out the word!"}
-                  </span>
+                {"Try to simulate the reversed audio and reverse again to figure out the word!"}
+              </span>
             )}
             {gameInfo.currentSpeaker.id === mePlayer.id && currentStatus === "guess" && (
               <span className="gameroom remindertext">
-                    {"You can try to simulate the reversed audio or listen to others' audio!"}
-                  </span>
+                {"You can try to simulate the reversed audio or listen to others' audio!"}
+              </span>
             )}
             {currentStatus === "reveal" && (
               <span className="gameroom remindertext">
-                    {"Time is up and now reveals the answer!"}
-                  </span>
+                {"Time is up and now reveals the answer!"}
+              </span>
             )}
             <AudioRecorder
               className="gameroom audiorecorder"
@@ -462,11 +462,12 @@ const Gameroom = () => {
             const hasRecording = userRecordings.some(
               recording => recording.userId === playerInfo.user.id
             );
+            
             return (
               <div className="gameroom singlePlayerContainer" key={index}>
-              <span className="gameroom playerAvatar">
-                <i className={"twa twa-" + playerInfo.user.avatar} style={{ fontSize: "3.8rem" }} />
-              </span>
+                <span className="gameroom playerAvatar">
+                  <i className={"twa twa-" + playerInfo.user.avatar} style={{ fontSize: "3.8rem" }} />
+                </span>
                 {!showReadyPopup && (
                   <>
                     <div className="gameroom secondcolumn">
@@ -599,7 +600,7 @@ const Gameroom = () => {
         )}
         {!gameOver && !showReadyPopup && <Roundstatus gameInfo={gameInfo}/>}
         <div className="gameroom inputarea">
-          {!gameOver && !showReadyPopup && (
+          {!gameOver && !showReadyPopup && gameInfo.currentSpeaker.id !== mePlayer.id && currentStatus === "guess" && (
             <div style={{display:"flex",flexDirection:"row"}}>
               <input
                 value={validateAnswer}
@@ -607,8 +608,8 @@ const Gameroom = () => {
                 className="gameroom validateForm"
                 type="text" placeholder='Validate your answer...' />
               <button className="gameroom validateUpload"
-                   disabled={!validateAnswer}
-                   onClick={() => validateAnswer && submitValidateAnswer()}
+                disabled={!validateAnswer}
+                onClick={() => validateAnswer && submitValidateAnswer()}
               >
                 Submit
               </button>
