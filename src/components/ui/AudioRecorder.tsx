@@ -305,7 +305,7 @@ const AudioRecorder: React.FC = props => {
       <div className="audio-recorder button-container">
         <Button
           className="audio-recorder play-button"
-          disabled={isRecording || !waveAvailable}
+          disabled={isRecording || !waveAvailable || props.disabled}
           onClick={() => {
             wavesurfer.current?.setPlaybackRate(playbackRate, true);
             wavesurfer.current?.playPause();
@@ -315,7 +315,7 @@ const AudioRecorder: React.FC = props => {
           {isPlaying ? <FaPause /> : <FaPlay />}
         </Button>
         <Button
-          disabled={isPlaying}
+          disabled={isPlaying || props.disabled}
           onClick={onClickRecord}
           className="audio-recorder record-button"
         >
@@ -324,12 +324,13 @@ const AudioRecorder: React.FC = props => {
         <Button
           onClick={onClickToggleReverse}
           className="audio-recorder toggle-reverse-button"
-          disabled={isRecording || isPlaying}
+          disabled={isRecording || isPlaying || props.disabled}
         >
           {isReversed ? <GiClockwiseRotation /> : <GiAnticlockwiseRotation />}
         </Button>
         {/*List menu to select playback rate*/}
         <Dropdown
+          disabled = {props.disabled}
           className="audio-recorder button-container playback-rate-dropdown"
           onChange={(e) => {
             const rate = parseFloat(e.target.value);
@@ -352,6 +353,7 @@ AudioRecorder.propTypes = {
   className: PropType.string,
   audioName: PropType.string.isRequired,
   ffmpeg: PropType.object.isRequired,
+  disabled: PropType.bool,
 };
 
 export default AudioRecorder;
