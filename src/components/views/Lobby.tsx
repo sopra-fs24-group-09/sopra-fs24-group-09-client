@@ -5,10 +5,11 @@ import { Button } from "components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
-import "styles/views/Lobby.scss";
 import { User, Room } from "types";
 import Popup from "components/ui/Popup";
 import { Dropdown } from "components/ui/Dropdown";
+import "styles/views/Lobby.scss";
+import "styles/ui/Popup.scss";
 type PlayerProps = {
   user: User;
 };

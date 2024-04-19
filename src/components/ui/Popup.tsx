@@ -20,7 +20,6 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>((props, ref) => {
     >
       <div>
         {props.children}
-        <Button onClick={props.toggleDialog}>Close</Button>
       </div>
     </dialog>
   );
