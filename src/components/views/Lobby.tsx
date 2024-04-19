@@ -135,9 +135,9 @@ const Lobby = () => {
   const [user, setUser] = useState<User[]>(mockRoomPlayers[0]);
   const [username, setUsername] = useState<string | null>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
-  const [roomName, setRoomName] = useState('');
+  const [roomName, setRoomName] = useState("");
   const [numRounds, setNumRounds] = useState(0);
-  const [roomTheme, setRoomTheme] = useState('');
+  const [roomTheme, setRoomTheme] = useState("");
   const logout = async () => {
     const id = sessionStorage.getItem("id");
     sessionStorage.removeItem("token");
@@ -343,8 +343,8 @@ const Lobby = () => {
               Room.status === "In Game" ? "in-game" : "free"
             }`}
           >
-          {Room.status}
-        </span>
+            {Room.status}
+          </span>
         </div>
       </div>
     ));
