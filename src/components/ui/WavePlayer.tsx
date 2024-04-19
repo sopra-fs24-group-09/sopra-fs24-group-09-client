@@ -51,21 +51,25 @@ const WavePlayer = props => {
 
   // every time the audioBlob changes, load the new audio
   useEffect(() => {
-    if (props.audioBlob) {
-      wavesurfer.current?.loadBlob(props.audioBlob);
+    if (props.audioURL) {
+      try {
+        wavesurfer.current?.load(props.audioURL);
+      } catch (error) {
+        console.error(`[${props.className}]`,"WaveSurfer failed to load audioBlob", error);
+      }
     }
     console.log(`[${props.className}]`,"WaveSurfer loaded audioBlob");
   }
-  , [props.audioBlob]);
+  , [props.audioURL]);
 
   return (
     <div className={`wave-player ${props.className}`}>
       <div className="waveform" ref={waveformRef}/>
-      <div className="no-audio-placeholder" style={{display: props.audioBlob ? "none" : "block"}}>
+      <div className="no-audio-placeholder" style={{display: props.audioURL ? "none" : "block"}}>
         ........is recording......
       </div>
       <div className="btn-group"
-        style={{display: props.audioBlob ? "flex" : "none"}}>
+        style={{display: props.audioURL ? "flex" : "none"}}>
         <Button
           className={"x0.5"}
           onClick={() => {
@@ -116,7 +120,7 @@ const WavePlayer = props => {
 
 WavePlayer.propTypes = {
   className: propTypes.string,
-  audioBlob: propTypes.instanceOf(Blob),
+  audioURL: propTypes.string,
 }
 
 export default WavePlayer;
