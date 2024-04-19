@@ -7,6 +7,7 @@ export const Dropdown = (props) => {
     <div className={`primary-dropdown ${props.className}`}
       style={props.style}>
       <select 
+        disabled={props.disabled}
         style={props.style}
         onChange={props.onChange}
         defaultValue={props.defaultValue}>
@@ -26,6 +27,7 @@ Dropdown.propTypes = {
   style: PropTypes.string,
   className: PropTypes.string,
   defaultValue: PropTypes.number,
+  disabled: PropTypes.bool,
 };
 
 export default Dropdown;
