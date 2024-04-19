@@ -561,6 +561,7 @@ const Gameroom = () => {
                     </div>
                   </>
                 )}
+                {testAudioURL && <ButtonPlayer audioURL={testAudioURL} />}
               </div>
             );
           })}
