@@ -17,6 +17,7 @@ type PlayerProps = {
 type RoomComponentProps = {
   room: Room;
 };
+
 type RoomListProps = {
   rooms: Room[];
 };
