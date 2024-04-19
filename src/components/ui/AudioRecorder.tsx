@@ -288,6 +288,7 @@ const AudioRecorder: React.FC = props => {
   useLayoutEffect(() => {
     initializeWaveSurferWithRecorder();
     loadCachedAudio();
+    
     return () => {
       // clean up wavesurfer
       if (wavesurfer.current) {
