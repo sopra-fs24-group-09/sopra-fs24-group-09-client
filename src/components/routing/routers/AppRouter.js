@@ -5,6 +5,7 @@ import LobbyRouter from "./LobbyRouter";
 import {LoginGuard} from "../routeProtectors/LoginGuard";
 import Register from "../../views/Register";
 import Login from "../../views/Login";
+import Gameroom from "../../views/Gameroom";
 import Profile from "../../views/Profile";
 import EditProfile from "../../views/Editprofile";
 /**
@@ -38,6 +39,8 @@ const AppRouter = () => {
           <Route index element={<Profile />} />
         </Route>
 
+        {/*no guard for now*/}
+        
         <Route path="/editprofile" element={<LobbyGuard />}>
           <Route index element={<EditProfile />} />
         </Route>

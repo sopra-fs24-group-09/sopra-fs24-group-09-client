@@ -4,7 +4,7 @@
     "baseUrl": "src",
     "outDir": "build",
     "target": "es5",
-    "sourceMap": true, // Enable source maps for debugging
+    "sourceMap": true,
   },
   "include": [
     "src"

@@ -1,0 +1,216 @@
+@import "../theme";
+
+/* The '&' is a shorthand for the containing element,
+  so for example a '&.user-list' inside .game will compile to
+  .game.user-list
+
+  for more information visit https://sass-lang.com/guide
+ */
+
+.gameroom {
+  &.playercontainer {
+    position: absolute;
+    top:5vh;
+    left: 0;
+    width: 28vw;
+    height: 95vh;
+    background: $classicYellow;
+    padding: 1.5em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the start (left) */
+    justify-content: flex-start; /* Align content to the start (left) */
+    box-shadow: $dropShadow;
+    gap: 1rem;
+
+  }
+  &.roominfocontainer {
+    z-index:999;
+    position: absolute;
+    left:0;
+    top:0;
+    margin-left: 2rem;
+    height: 5vh;
+    width: 28vw;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  &.roominfo {
+    font-family: 'Inter';
+    font-weight: 400;
+    font-size: 1.4rem;
+    color: $darkBlue;
+  }
+  &.roomifotitle {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: bold;
+    font-size: 1.6rem;
+    color: $darkBlue;
+  }
+  &.singlePlayerContainer {
+    width:25vw;
+    height:15vh;
+    border-radius: 22px;
+    background-color: $lightYellow;
+    display: grid;
+    grid-template-columns: auto 1fr 0.2fr;
+    gap: 10px;
+  }
+  &.playerAvatar {
+    grid-column: 1;
+    height: 4.4rem;
+    width: 4.4rem;
+    position: relative;
+    top: 1rem;
+    left:1rem;
+    background-color: #D9D9D9;
+    border-radius: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .playerAvatar i {
+    font-size: 100%;
+  }
+  &.secondcolumn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    grid-column: 2;
+  }
+  &.playerName {
+    position: relative;
+    top: 1rem;
+    left:1.4rem;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color:$darkBlue;
+  }
+  &.secondRow {
+    display: flex;
+    flex-direction: row;
+  }
+  &.scoreTitle {
+    position: relative;
+    top: 2.8rem;
+    left:1.4rem;
+    font-weight: 700;
+    font-size: 1.0rem;
+    color:$darkBlue;
+  }
+  &.playerScore {
+    position: relative;
+    top: 2.8rem;
+    left:1.4rem;
+    font-weight: 700;
+    font-size: 1rem;
+    color:$darkBlue;
+    border-radius: 1.7rem;
+    width: 1.7rem;
+    height: 1.7rem;
+    background-color: $whiteYellow;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 0.4rem;
+  }
+  &.playerStatus {
+    grid-column: 3;
+    position: relative;
+    top: 1rem;
+  }
+  &.inputarea {
+    background-color: $greyBlue;
+    height: 22vh;
+    width: 72vw;
+    position: absolute;
+    left:28vw;
+    top:78vh;
+  }
+  &.readypopupbg {
+    background-color: $classicYellow;
+    height: 40vh;
+    width: 35vw;
+    position: absolute;
+    top: 19vh;
+    left: 48vw;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &.readypopupcontainer {
+    background-color: $lightYellow;
+    height: 37vh;
+    width: 33vw;
+    position: relative;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  &.popuptitle {
+    margin-top: 2rem;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 2rem;
+    color:$darkBlue;
+  }
+  &.popuptheme {
+    margin-top: 0rem;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.8rem;
+    color:$darkBlue;
+  }
+  &.popuptext {
+    margin-top: 1.4rem;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1rem;
+    color:$darkBlue;
+  }
+  &.buttonset{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:5rem;
+    margin-top: 3rem;
+  }
+  .readybutton,
+  .cancelbutton {
+    border-radius: 0.5rem;
+    width: 11vw;
+    height: 5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $whiteYellow;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+
+  .readybutton {
+    background-color: $classicYellow;
+  }
+
+  .cancelbutton {
+    background-color: rgba(129, 129, 129, 1);
+  }
+
+  .readybutton:hover {
+    background-color: darken($classicYellow, 10%);
+    cursor: pointer;
+  }
+  .cancelbutton:hover {
+    background-color: darken(rgba(129, 129, 129, 1), 10%);
+    cursor: pointer;
+  }
+
+}
