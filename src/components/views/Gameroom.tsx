@@ -18,12 +18,16 @@ import { over } from "stompjs";
 
 const Gameroom = () => {
   const navigate = useNavigate();
+  const [user,setUser] = useState();
   const [users, setUsers] = useState<User[]>(null);
   const [showScore, setShowScore] = useState(false);
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [currentSpeaker, setCurrentSpeaker] = useState(null);
   const [validateAnswer, setValidateAnswer] = useState(null);
+  const [playerLists, setPlayerLists] = useState([]);
+  const [gameInfo,setGameInfo] = useState();
+  const [roomInfo,setRoomInfo] = useState();
   const [currentStatus, setCurrentStatus] = useState< "speak" | "guess" | "reveal" >("speak");
   /**
    * Attention!!: Just for testing purposes
@@ -47,59 +51,152 @@ const Gameroom = () => {
     return ffmpeg;
   }, []);
 
+  var stompClient = null;
+
   useEffect(() => {
-    //fetch room info
-    // async function fetchData() {
-    //   try {
-    //     const response = await api.get("/users");
-    //     await new Promise((resolve) => setTimeout(resolve, 1000));
-    //     setUsers(response.data);
-    //     console.log(response);
-    //   } catch (error) {
-    //     console.error(
-    //       `Something went wrong while fetching the users: \n${handleError(
-    //         error
-    //       )}`
-    //     );
-    //     console.error("Details:", error);
-    //     alert(
-    //       "Something went wrong while fetching the users! See the console for details."
-    //     );
+    //const roomId = 5;
+    const connectWebSocket = () => {
+      let Sock = new SockJS('http://localhost:8080/ws');
+      //let Sock = new SockJS('https://sopra-fs23-group-01-server.oa.r.appspot.com/ws');
+      stompClient = over(Sock);
+      stompClient.connect({}, onConnected, onError);
+    };
+
+    const timestamp = new Date().getTime(); // Get current timestamp
+
+    const onConnected = () => {
+      //stompClient.subscribe('URL', onMessageReceived);
+      stompClient.subscribe('URL', onPlayerInfoReceived);
+      //stompClient.subscribe('', onRoomInfoReceived);
+      stompClient.subscribe('', onGameInfoReceived);
+      stompClient.subscribe('', onShareAudioReceived);
+      //connect or reconnect
+    };
+
+    const onPlayerInfoReceived = (payload) => {
+      const payloadData = JSON.parse(payload.body);
+      setPlayerLists(payloadData.message);
+      //resp success
+    }
+
+    const onGameInfoReceived = (payload) => {
+      const payloadData = JSON.parse(payload.body);
+      if(payloadData.message.gameStatus === "ready"){
+        setShowReadyPopup(true);
+      }else if (payloadData.message.gameStatus === "over"){
+        setShowReadyPopup(false);
+        setGameOver(true);
+      }else {
+        setShowReadyPopup(false);
+      }
+      setGameInfo(payloadData.message);
+    }
+
+    const onShareAudioReceived = (payload) => {
+      const payloadData = JSON.parse(payload.body);
+      //setRoomInfo(payloadData.message);
+    }
+
+    // const onMessageReceived = (payload) => {
+    //   var payloadData = JSON.parse(payload.body);
+    //   switch (payloadData.messageType) {
+    //     case "PLAYERS":
+    //       //jiaoyan
+    //       setPlayerLists(payloadData.message);
+    //       break;
+    //     case "GAME":
+    //       setGameInfo(payloadData.message);
+    //       break;
+    //     case "ROOM":
+    //       setRoomInfo(payloadData.message);
+    //       break;
+    //     case "AUIDOSHARE":
+    //       //function to deal with audio
+    //       break;
     //   }
     // }
-    // fetchData();
-    // Attention!!: Just for testing purposes
-    // async function fetchAudioBlob() {
-    //   try {
-    //     const audioBase64 = sessionStorage.getItem("user1_original");
-    //     if (!audioBase64) {
-    //       return;
-    //     }
-    //     const blob = new Blob(
-    //       [
-    //         new Uint8Array(
-    //           atob(audioBase64.split(",")[1])
-    //             .split("")
-    //             .map((c) => c.charCodeAt(0))
-    //         ),
-    //       ],
-    //       {type: "audio/webm"}
-    //     );
-    //     setTestAudioBlob(blob);
-    //     setTestAudioURL(URL.createObjectURL(blob));
-    //     console.log("Fetched audio blob", blob);
-    //   } catch (error) {
-    //     console.error(
-    //       `Something went wrong while fetching the audio blob: \n${error}`
-    //     );
-    //     console.error("Details:", error);
-    //     alert(
-    //       "Something went wrong while fetching the audio blob! See the console for details."
-    //     );
-    //   }
-    // }
-    // fetchAudioBlob();
+
+
+    const onError = (err) => {
+      console.error('WebSocket Error: ', err);
+      alert("WebSocket connection error. Check console for details.");
+    };
+
+    connectWebSocket();
+
+    // Cleanup on component unmount
+    return () => {
+      if (stompClient) {
+        stompClient.disconnect(() => {
+          console.log("Disconnected");
+        });
+      }
+    };
   }, []);
+
+  //debounce-throttle
+  //ready
+  const getReady = () => {
+    var chatMessage = {
+      senderName: user.username,
+      timestamp: null,
+      messageType: "READY",
+      message: null
+    };
+    stompClient.send(""/*URL*/, {}, JSON.stringify(chatMessage));
+  }
+
+  //cancel ready
+  const cancelReady = () => {
+    var chatMessage = {
+      senderName: user.username,
+      timestamp: null,
+      messageType: "UNREADY",
+      message: null
+    };
+    stompClient.send(""/*URL*/, {}, JSON.stringify(chatMessage));
+  }
+
+  //start game
+  const startGame = () => {
+    //写type
+
+    var chatMessage = {
+      senderName: user.username,
+      timestamp: null,
+      messageType: "STARTGAME",
+      message: null
+    };
+    stompClient.send(""/*URL*/, {}, JSON.stringify(chatMessage));
+  }
+
+
+
+
+  //start game
+  const submitAnswer = (validateAnswer : String) => {
+    let answer = validateAnswer.toLowerCase().replace(/\s/g, "");
+    var chatMessage = {
+      senderName: user.username,
+      timestamp: null,
+      messageType: "STARTGAME",
+      message: answer
+    };
+    stompClient.send(""/*URL*/, {}, JSON.stringify(chatMessage));
+  }
+
+  const uploadAudio = () => {
+    //写type
+
+    var chatMessage = {
+      senderName: user.username,
+      timestamp: null,
+      messageType: "STARTGAME",
+      message: null
+    };
+    stompClient.send(""/*URL*/, {}, JSON.stringify(chatMessage));
+  }
+
 
   const togglePopup = () => {
     setShowReadyPopup((prevState) => !prevState);
@@ -214,7 +311,7 @@ const Gameroom = () => {
     avatar: "grinning-face-with-sweat",
   };
 
-  let gameInfo = {
+  let mockgameInfo = {
     roomID: 5,
     currentSpeaker: {
       id: 2,
@@ -425,6 +522,8 @@ const Gameroom = () => {
     }).isRequired,
   };
 
+
+
   const LeaderBoard = ({ playerStatus }) => {
     return (
       <div className="gameroom leaderboarddiv">
@@ -488,7 +587,7 @@ const Gameroom = () => {
       <>
         <div className="gameroom roominfocontainer">
           <div className="gameroom roominfotitle">ROOM</div>
-          <div className="gameroom roominfo">#05 - Advanced</div>
+          <div className="gameroom roominfo">{"#"+roomInfo.roomId+ "-" + roomInfo.theme}</div>
         </div>
         <div className="gameroom playercontainer">
           {/*map begin*/}
@@ -652,8 +751,8 @@ const Gameroom = () => {
                 Ready to start the game?
               </span>
               <div className="gameroom buttonset">
-                <div className="gameroom readybutton">Confirm</div>
-                <div className="gameroom cancelbutton">Cancel</div>
+                <div className="gameroom readybutton" onClick={()=> getReady()}>Confirm</div>
+                <div className="gameroom cancelbutton" onClick={()=> cancelReady()}>Cancel</div>
               </div>
             </div>
           </div>
@@ -661,7 +760,7 @@ const Gameroom = () => {
         {gameOver && (
           <LeaderBoard playerStatus={playerReadyStatus}></LeaderBoard>
         )}
-        {!gameOver && !showReadyPopup && <Roundstatus gameInfo={gameInfo} />}
+        {!gameOver && !showReadyPopup && <Roundstatus gameInfo={mockgameInfo} />}
         <div className="gameroom inputarea">
           {!gameOver &&
             !showReadyPopup &&
@@ -678,7 +777,7 @@ const Gameroom = () => {
               <button
                 className="gameroom validateUpload"
                 disabled={!validateAnswer}
-                onClick={() => validateAnswer && submitValidateAnswer()}
+                onClick={() => validateAnswer && submitAnswer(validateAnswer)}
               >
                   Submit
               </button>
