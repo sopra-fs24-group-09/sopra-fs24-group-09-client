@@ -31,8 +31,12 @@
     // height: 100%;
     .inputarea {
       background-color: $greyBlue;
-      justify-self: flex-end;
+      justify-self: center;
       flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       width: 100%;
       max-height: 20vh;
     }
@@ -373,9 +377,9 @@
   &.leaderboarddiv {
     position: absolute;
     top:8vh;
-    left:28vw;
+    left:30vw;
     height:65vh;
-    width: 72vw;
+    width: 68vw;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -538,5 +542,38 @@
     font-size: 1.4rem;
     color:$darkBlue;
   }
+  .validateForm {
+    background-color: $whiteYellow;
+    border-radius: 5%;
+    width: 200%;
+    padding:0 0.6rem;
+    padding-right: 2rem;
+    border: 1px solid $classicYellow;
+  }
+
+  .validateUpload {
+    padding:0.4rem 0.8rem;
+    margin-left: 5%;
+    border-radius: 15%;
+    border: 0px;
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    background-color: $classicYellow;
+    color: $whiteYellow;
+    cursor: pointer;
+  }
+
+  .validateUpload:disabled {
+    background-color: grey;
+    color: $whiteYellow;
+    cursor: not-allowed;
+  }
+ // .validateUpload:active{
+ //   background-color: $lightYellow;
+ //}
 
 }

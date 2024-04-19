@@ -20,6 +20,7 @@ const Gameroom = () => {
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [currentSpeaker, setCurrentSpeaker] = useState(null);
+  const [validateAnswer,setValidateAnswer] = useState(null);
   const [currentStatus, setCurrentStatus] = useState<"speak" | "guess" | "reveal">('speak');
   // FFmpeg ref, loaded in useEffect once the page is loaded
   const ffmpegRef = useRef<FFmpeg | null>(new FFmpeg());
@@ -372,6 +373,11 @@ const Gameroom = () => {
     );
   };
 
+  const submitValidateAnswer = ()=>{
+    // TBD
+  }
+
+
   Roundstatus.propTypes = {
     gameInfo: PropTypes.shape({
       roomID: PropTypes.number.isRequired,
@@ -593,6 +599,21 @@ const Gameroom = () => {
         )}
         {!gameOver && !showReadyPopup && <Roundstatus gameInfo={gameInfo}/>}
         <div className="gameroom inputarea">
+          {!gameOver && !showReadyPopup && (
+            <div style={{display:"flex",flexDirection:"row"}}>
+              <input
+                value={validateAnswer}
+                onChange={e => setValidateAnswer(e.target.value)}
+                className="gameroom validateForm"
+                type="text" placeholder='Validate your answer...' />
+              <button className="gameroom validateUpload"
+                   disabled={!validateAnswer}
+                   onClick={() => validateAnswer && submitValidateAnswer()}
+              >
+                Submit
+              </button>
+            </div>
+          )}
           <button onClick={togglePopup}> show</button>
           <button onClick={toggleStatus}> status</button>
           <button onClick={() => setGameOver((prevState) => !prevState)}>
