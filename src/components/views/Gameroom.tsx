@@ -15,9 +15,18 @@ import { ButtonPlayer } from "components/ui/ButtonPlayer";
 // Stomp related imports
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
+import { Timestamped, PlayerAudio, PlayerAndRoomID, AnswerGuess, StompResponse } from "stomp_types";
+import { Base64audio } from "types";
+// type AudioBlobDict = { [userId: number]: Base64audio };
+type SharedAudioURL = {[userId: number]: string};
 
 const Gameroom = () => {
   const navigate = useNavigate();
+  const stompClientRef = useRef(null);
+  /**
+   * Question: why we need this user state here?
+   * if just for saving my id and name, we can make it a const prop
+   */
   const [user,setUser] = useState();
   const [users, setUsers] = useState<User[]>(null);
   const [showScore, setShowScore] = useState(false);
@@ -29,6 +38,9 @@ const Gameroom = () => {
   const [gameInfo,setGameInfo] = useState();
   const [roomInfo,setRoomInfo] = useState();
   const [currentStatus, setCurrentStatus] = useState< "speak" | "guess" | "reveal" >("speak");
+  const [sharedAudioList, setSharedAudioList] = useState<SharedAudioURL[]>([]);
+  const [currentSpeakerAudioURL, setCurrentSpeakerAudioURL] = useState<string | null>(null);
+  // const sharedAudioListRef = useRef<AudioBlobDict>({}); // store all shared audio blobs
   /**
    * Attention!!: Just for testing purposes
    * need to pass an audio blob to the WavePlayer like this:
@@ -51,25 +63,27 @@ const Gameroom = () => {
     return ffmpeg;
   }, []);
 
-  var stompClient = null;
-
   useEffect(() => {
+    // define subscription instances
+    let playerInfoSuber;
+    let gameInfoSuber;
+    let sharedAudioSuber;
+
     //const roomId = 5;
     const connectWebSocket = () => {
       let Sock = new SockJS('http://localhost:8080/ws');
       //let Sock = new SockJS('https://sopra-fs23-group-01-server.oa.r.appspot.com/ws');
-      stompClient = over(Sock);
-      stompClient.connect({}, onConnected, onError);
+      stompClientRef.current = over(Sock);
+      stompClientRef.current.connect({}, onConnected, onError);
     };
 
     const timestamp = new Date().getTime(); // Get current timestamp
 
     const onConnected = () => {
-      //stompClient.subscribe('URL', onMessageReceived);
-      stompClient.subscribe('URL', onPlayerInfoReceived);
-      //stompClient.subscribe('', onRoomInfoReceived);
-      stompClient.subscribe('', onGameInfoReceived);
-      stompClient.subscribe('', onShareAudioReceived);
+      // subscribe to the topic
+      playerInfoSuber = stompClientRef.current.subscribe('/plays/info', onPlayerInfoReceived);
+      gameInfoSuber = stompClientRef.current.subscribe('/games/info', onGameInfoReceived);
+      sharedAudioSuber = stompClientRef.current.subscribe('/plays/audio', onShareAudioReceived);
       //connect or reconnect
     };
 
@@ -93,8 +107,31 @@ const Gameroom = () => {
     }
 
     const onShareAudioReceived = (payload) => {
-      const payloadData = JSON.parse(payload.body);
-      //setRoomInfo(payloadData.message);
+      const payloadDataStamped = JSON.parse(payload.body) as Timestamped<PlayerAudio>;
+      const playerAudio = payloadDataStamped.message as PlayerAudio;
+      const userId = playerAudio.userID;
+      const audioData = playerAudio.audioData;
+      // create URL from base64 audio data
+      const blob = new Blob(
+        [
+          new Uint8Array(
+            atob(audioData.split(",")[1])
+              .split("")
+              .map((c) => c.charCodeAt(0))
+          ),
+        ],
+        { type: "audio/webm" }
+      );
+      const audioURL = URL.createObjectURL(blob);
+      if (userId === gameInfo.currentSpeaker.id) {
+        // if the audio is from the current speaker
+        setCurrentSpeakerAudioURL(audioURL);
+      } else {
+        // if it is shared audio
+        setSharedAudioList((prevState) => {
+        return { ...prevState, [userId]: audioURL }
+        });
+      }
     }
 
     // const onMessageReceived = (payload) => {
@@ -126,8 +163,17 @@ const Gameroom = () => {
 
     // Cleanup on component unmount
     return () => {
-      if (stompClient) {
-        stompClient.disconnect(() => {
+      if (playerInfoSuber) {
+        playerInfoSuber.unsubscribe();
+      }
+      if (gameInfoSuber) {
+        gameInfoSuber.unsubscribe();
+      }
+      if (sharedAudioSuber) {
+        sharedAudioSuber.unsubscribe();
+      }
+      if (stompClientRef.current) {
+        stompClientRef.current.disconnect(() => {
           console.log("Disconnected");
         });
       }
@@ -137,37 +183,58 @@ const Gameroom = () => {
   //debounce-throttle
   //ready
   const getReady = () => {
-    var chatMessage = {
-      senderName: user.username,
-      timestamp: null,
-      messageType: "READY",
-      message: null
+    const payload: Timestamped<PlayerAndRoomID> = {
+      // TODO: need to make sure the timestamp is UTC format
+      // and invariant to the time zone settings
+      timestamp: new Date().getTime(),
+      message: {
+        userID: user.id,
+        roomID: roomInfo.roomId,
+      },
     };
-    stompClient.send(""/*URL*/, {}, JSON.stringify(chatMessage));
+    stompClientRef.current?.send("/users/ready", {}, JSON.stringify(payload));
   }
 
-  //cancel ready
   const cancelReady = () => {
-    var chatMessage = {
-      senderName: user.username,
-      timestamp: null,
-      messageType: "UNREADY",
-      message: null
+    const payload: Timestamped<PlayerAndRoomID> = {
+      // TODO: need to make sure the timestamp is UTC format
+      // and invariant to the time zone settings
+      timestamp: new Date().getTime(),
+      message: {
+        userID: user.id,
+        roomID: roomInfo.roomId,
+      },
     };
-    stompClient.send(""/*URL*/, {}, JSON.stringify(chatMessage));
+    stompClientRef.current?.send("/users/unready", {}, JSON.stringify(payload));
   }
+
 
   //start game
   const startGame = () => {
-    //写type
-
-    var chatMessage = {
-      senderName: user.username,
-      timestamp: null,
-      messageType: "STARTGAME",
-      message: null
+    const payload: Timestamped<PlayerAndRoomID> = {
+      // TODO: need to make sure the timestamp is UTC format
+      // and invariant to the time zone settings
+      timestamp: new Date().getTime(),
+      message: {
+        userID: user.id,
+        roomID: roomInfo.roomId,
+      },
     };
-    stompClient.send(""/*URL*/, {}, JSON.stringify(chatMessage));
+    stompClientRef.current?.send("/games/start", {}, JSON.stringify(payload));
+  }
+
+  //exit room
+  const exitRoom = () => {
+    const payload: Timestamped<PlayerAndRoomID> = {
+      // TODO: need to make sure the timestamp is UTC format
+      // and invariant to the time zone settings
+      timestamp: new Date().getTime(),
+      message: {
+        userID: user.id,
+        roomID: roomInfo.roomId,
+      },
+    };
+    stompClientRef.current?.send("/games/exitRoom", {}, JSON.stringify(payload));
   }
 
 
@@ -175,26 +242,29 @@ const Gameroom = () => {
 
   //start game
   const submitAnswer = (validateAnswer : String) => {
-    let answer = validateAnswer.toLowerCase().replace(/\s/g, "");
-    var chatMessage = {
-      senderName: user.username,
-      timestamp: null,
-      messageType: "STARTGAME",
-      message: answer
+    const answer = validateAnswer.toLowerCase().replace(/\s/g, "");
+    const payload: Timestamped<AnswerGuess> = {
+      timestamp: new Date().getTime(),
+      message: {
+        userID: user.id,
+        roomID: roomInfo.roomId,
+        guess: answer,
+        roundNum: gameInfo.currentRoundNum,
+        currentSpeakerID: gameInfo.currentSpeaker.id,
+      },
     };
-    stompClient.send(""/*URL*/, {}, JSON.stringify(chatMessage));
+    stompClientRef.current?.send("/games/validate", {}, JSON.stringify(payload));
   }
 
-  const uploadAudio = () => {
-    //写type
-
-    var chatMessage = {
-      senderName: user.username,
-      timestamp: null,
-      messageType: "STARTGAME",
-      message: null
+  const uploadAudio = (audioReversedToShare : Base64audio) => {
+    const payload: Timestamped<PlayerAudio> = {
+      timestamp: new Date().getTime(),
+      message: {
+        userID: user.id,
+        audioData: audioReversedToShare,
+      },
     };
-    stompClient.send(""/*URL*/, {}, JSON.stringify(chatMessage));
+    stompClientRef.current?.send(""/*URL*/, {}, JSON.stringify(payload));
   }
 
 
@@ -217,10 +287,10 @@ const Gameroom = () => {
     });
   };
 
-  const userRecordings = [
-    { userId: 1, audioURL: null },
-    { userId: 3, audioURL: null },
-  ];
+  // const userRecordings = [
+  //   { userId: 1, audioURL: null },
+  //   { userId: 3, audioURL: null },
+  // ];
 
   const playerReadyStatus = [
     {
@@ -326,7 +396,7 @@ const Gameroom = () => {
     setShowReadyPopup((prevState) => !prevState);
   };
 
-  const Roundstatus = ({ gameInfo }) => {
+  const Roundstatus = ({ gameInfo, currentSpeakerAudioURL }) => {
     return (
       <>
         <div className="gameroom roundstatus">
@@ -407,7 +477,7 @@ const Gameroom = () => {
                     </div>
                     <WavePlayer
                       className="gameroom waveplayer"
-                      audioBlob={testAudioBlob}
+                      audioURL={currentSpeakerAudioURL}
                     />
                   </div>
                 </>
@@ -426,7 +496,7 @@ const Gameroom = () => {
                     </div>
                     <WavePlayer
                       className="gameroom waveplayer"
-                      audioBlob={testAudioBlob}
+                      audioURL={currentSpeakerAudioURL}
                     />
                   </div>
                 </>
@@ -450,7 +520,7 @@ const Gameroom = () => {
                     </div>
                     <WavePlayer
                       className="gameroom waveplayer"
-                      audioBlob={testAudioBlob}
+                      audioURL={currentSpeakerAudioURL}
                     />
                   </div>
                 </>
@@ -582,7 +652,7 @@ const Gameroom = () => {
     );
   };
 
-  const PlayerList = ({ playerStatus, userRecordings }) => {
+  const PlayerList = ({ playerStatus, sharedAudioList }) => {
     return (
       <>
         <div className="gameroom roominfocontainer">
@@ -592,14 +662,13 @@ const Gameroom = () => {
         <div className="gameroom playercontainer">
           {/*map begin*/}
           {playerStatus.map((playerInfo, index) => {
-            const hasRecording = userRecordings.some(
-              (recording) => recording.userId === playerInfo.user.id
-            );
-            let audioURL = null;
+            // const hasRecording = sharedAudioList.some(
+            //   (recording) => recording.userId === playerInfo.user.id
+            // );
+            const hasRecording = playerInfo.user.id in sharedAudioList;
+            let _audioURL = null;
             if (hasRecording) {
-              audioURL = userRecordings.find(
-                (recording) => recording.userId === playerInfo.user.id
-              ).audioURL;
+              _audioURL = sharedAudioList[playerInfo.user.id];
             }
 
             return (
@@ -640,7 +709,7 @@ const Gameroom = () => {
                           style={{ fontSize: "1.5rem" }}
                         />
                       )}
-                      {hasRecording && <ButtonPlayer audioURL={audioURL} />}
+                      {hasRecording && <ButtonPlayer audioURL={_audioURL} />}
                     </div>
                   </>
                 )}
@@ -725,10 +794,10 @@ const Gameroom = () => {
         ifGuess: PropTypes.bool.isRequired,
       })
     ).isRequired,
-    userRecordings: PropTypes.arrayOf(
+    sharedAudioList: PropTypes.arrayOf(
       PropTypes.shape({
         userId: PropTypes.number.isRequired,
-        audioFile: PropTypes.string.isRequired,
+        audioURL: PropTypes.string,
       })
     ).isRequired,
   };
@@ -738,7 +807,7 @@ const Gameroom = () => {
       <Header left="28vw" />
       <PlayerList
         playerStatus={playerReadyStatus}
-        userRecordings={userRecordings}
+        sharedAudioList={sharedAudioList}
       />
       <div className="gameroom right-area">
         {!gameOver && showReadyPopup && (

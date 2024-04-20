@@ -1,8 +1,8 @@
 import { Base64audio } from "types";
 
-type Timestamped<T> = {
+export type Timestamped<T> = {
     timestamp: number;
-    data: T;
+    message: T;
 }
 
 export type PlayerAudio = {
