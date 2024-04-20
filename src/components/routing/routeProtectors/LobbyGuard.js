@@ -16,8 +16,10 @@ export const LobbyGuard = () => {
     
     return <Outlet />;
   }
-  
-  return <Navigate to="/login" replace />;
+  // Debugging
+
+  return <Outlet />;
+  //return <Navigate to="/login" replace />;
 };
 
 LobbyGuard.propTypes = {
