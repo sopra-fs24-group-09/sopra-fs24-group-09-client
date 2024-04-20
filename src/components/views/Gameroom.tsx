@@ -16,6 +16,7 @@ import { ButtonPlayer } from "components/ui/ButtonPlayer";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import type { Timestamped, PlayerAudio, PlayerAndRoomID, AnswerGuess, StompResponse , Base64audio} from "stomp_types";
+import { v4 as uuidv4 } from "uuid";
 
 // type AudioBlobDict = { [userId: number]: Base64audio };
 type SharedAudioURL = {[userId: number]: string};
@@ -76,6 +77,7 @@ const Gameroom = () => {
     let playerInfoSuber;
     let gameInfoSuber;
     let sharedAudioSuber;
+    let responseSuber;
 
     //const roomId = 5;
     const connectWebSocket = () => {
@@ -92,8 +94,16 @@ const Gameroom = () => {
       playerInfoSuber = stompClientRef.current.subscribe("/plays/info", onPlayerInfoReceived);
       gameInfoSuber = stompClientRef.current.subscribe("/games/info", onGameInfoReceived);
       sharedAudioSuber = stompClientRef.current.subscribe("/plays/audio", onShareAudioReceived);
+      responseSuber = stompClientRef.current.subscribe("/response", onResponseReceived);
       //connect or reconnect
     };
+    const onResponseReceived = (payload) => {
+      // TODO: handle response
+      /// 1. filter the response by the receiptId
+      /// 2. if the response is success, do nothing
+      /// 3. if the response is failure, show the error message
+      /// 4. if the response is not received, do something to handle the timeout
+    }
 
     const onPlayerInfoReceived = (payload) => {
       const payloadData = JSON.parse(payload.body);
@@ -205,7 +215,9 @@ const Gameroom = () => {
         roomID: roomInfo.roomId,
       },
     };
-    stompClientRef.current?.send("/users/ready", {}, JSON.stringify(payload));
+    // get a random receipt uuid
+    const receiptId = uuidv4();
+    stompClientRef.current?.send("/users/ready", {receiptId:receiptId}, JSON.stringify(payload));
   }
 
   const cancelReady = () => {
@@ -218,7 +230,8 @@ const Gameroom = () => {
         roomID: roomInfo.roomId,
       },
     };
-    stompClientRef.current?.send("/users/unready", {}, JSON.stringify(payload));
+    const receiptId = uuidv4();
+    stompClientRef.current?.send("/users/unready", {receiptId: receiptId}, JSON.stringify(payload));
   }
 
 
@@ -233,7 +246,8 @@ const Gameroom = () => {
         roomID: roomInfo.roomId,
       },
     };
-    stompClientRef.current?.send("/games/start", {}, JSON.stringify(payload));
+    const receiptId = uuidv4();
+    stompClientRef.current?.send("/games/start", {receiptId:receiptId}, JSON.stringify(payload));
   }
 
   //exit room
@@ -247,7 +261,8 @@ const Gameroom = () => {
         roomID: roomInfo.roomId,
       },
     };
-    stompClientRef.current?.send("/games/exitRoom", {}, JSON.stringify(payload));
+    const receiptId = uuidv4();
+    stompClientRef.current?.send("/games/exitRoom", {receiptId:receiptId}, JSON.stringify(payload));
   }
 
   //start game
@@ -263,7 +278,8 @@ const Gameroom = () => {
         currentSpeakerID: gameInfo.currentSpeaker.id,
       },
     };
-    stompClientRef.current?.send("/games/validate", {}, JSON.stringify(payload));
+    const receiptId = uuidv4();
+    stompClientRef.current?.send("/games/validate", {receiptId:receiptId}, JSON.stringify(payload));
   }
 
   //upload audio
@@ -280,7 +296,8 @@ const Gameroom = () => {
         audioData: myRecordingReversedRef.current,
       },
     };
-    stompClientRef.current?.send("/games/audio/upload"/*URL*/, {}, JSON.stringify(payload));
+    const receiptId = uuidv4();
+    stompClientRef.current?.send("/games/audio/upload"/*URL*/, {receiptId:receiptId}, JSON.stringify(payload));
   }
   //#endregion -----------------WebSocket Send Functions-----------------
 
