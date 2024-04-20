@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo} from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { api, handleError } from "helpers/api";
 import { useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
@@ -15,11 +15,18 @@ import { ButtonPlayer } from "components/ui/ButtonPlayer";
 // Stomp related imports
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
-import type { Timestamped, PlayerAudio, PlayerAndRoomID, AnswerGuess, StompResponse , Base64audio} from "stomp_types";
+import type {
+  Timestamped,
+  PlayerAudio,
+  PlayerAndRoomID,
+  AnswerGuess,
+  StompResponse,
+  Base64audio,
+} from "stomp_types";
 import { v4 as uuidv4 } from "uuid";
 
 // type AudioBlobDict = { [userId: number]: Base64audio };
-type SharedAudioURL = {[userId: number]: string};
+type SharedAudioURL = { [userId: number]: string };
 
 const Gameroom = () => {
   const navigate = useNavigate();
@@ -28,7 +35,7 @@ const Gameroom = () => {
    * Question: why we need this user state here?
    * if just for saving my id and name, we can make it a const prop
    */
-  const [user,setUser] = useState();
+  const [user, setUser] = useState();
   const [users, setUsers] = useState<User[]>(null);
   const [showScore, setShowScore] = useState(false);
   const [showReadyPopup, setShowReadyPopup] = useState(false);
@@ -36,19 +43,36 @@ const Gameroom = () => {
   const [currentSpeaker, setCurrentSpeaker] = useState(null);
   const [validateAnswer, setValidateAnswer] = useState(null);
   const [playerLists, setPlayerLists] = useState([]);
-  const [gameInfo,setGameInfo] = useState();
-  const [roomInfo,setRoomInfo] = useState();
-  const [currentStatus, setCurrentStatus] = useState< "speak" | "guess" | "reveal" >("speak");
+  const [gameInfo, setGameInfo] = useState({
+    roomID: 5,
+    currentSpeaker: {
+      id: 2,
+      name: "Hanky",
+      avatar: "grinning-face-with-sweat",
+    },
+    currentAnswer: "Success",
+    roundStatus: "speak",
+    currentRoundNum: 2,
+  });
+  const [roomInfo, setRoomInfo] = useState({
+    roomID: 5,
+    theme: "Advanced",
+  });
+  const [currentStatus, setCurrentStatus] = useState<
+    "speak" | "guess" | "reveal"
+  >("speak");
   const [sharedAudioList, setSharedAudioList] = useState<SharedAudioURL[]>([]);
-  const [currentSpeakerAudioURL, setCurrentSpeakerAudioURL] = useState<string | null>(null);
+  const [currentSpeakerAudioURL, setCurrentSpeakerAudioURL] = useState<
+    string | null
+  >(null);
   const myRecordingReversedRef = useRef<Base64audio | null>(null);
   // const sharedAudioListRef = useRef<AudioBlobDict>({}); // store all shared audio blobs
   /**
    * Attention!!: Just for testing purposes
    * need to pass an audio blob to the WavePlayer like this:
    */
-  const [testAudioBlob, setTestAudioBlob] = useState<Blob | null>(null);
-  const [testAudioURL, setTestAudioURL] = useState<string | null>(null);
+  // const [testAudioBlob, setTestAudioBlob] = useState<Blob | null>(null);
+  // const [testAudioURL, setTestAudioURL] = useState<string | null>(null);
 
   // this ref is used to track the current speaker id in callback functions
   const currentSpeakerIdRef = useRef<number>();
@@ -63,14 +87,15 @@ const Gameroom = () => {
     try {
       ffmpeg.load();
       console.log("FFmpeg module loaded");
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Failed to load FFmpeg module", error);
       alert("Failed to load FFmpeg module");
     }
-    
+
     return ffmpeg;
   }, []);
+
+  console.log("GameInfo", gameInfo);
 
   useEffect(() => {
     // define subscription instances
@@ -91,10 +116,22 @@ const Gameroom = () => {
 
     const onConnected = () => {
       // subscribe to the topic
-      playerInfoSuber = stompClientRef.current.subscribe("/plays/info", onPlayerInfoReceived);
-      gameInfoSuber = stompClientRef.current.subscribe("/games/info", onGameInfoReceived);
-      sharedAudioSuber = stompClientRef.current.subscribe("/plays/audio", onShareAudioReceived);
-      responseSuber = stompClientRef.current.subscribe("/response", onResponseReceived);
+      playerInfoSuber = stompClientRef.current.subscribe(
+        "/plays/info",
+        onPlayerInfoReceived
+      );
+      gameInfoSuber = stompClientRef.current.subscribe(
+        "/games/info",
+        onGameInfoReceived
+      );
+      sharedAudioSuber = stompClientRef.current.subscribe(
+        "/plays/audio",
+        onShareAudioReceived
+      );
+      responseSuber = stompClientRef.current.subscribe(
+        "/response",
+        onResponseReceived
+      );
       //connect or reconnect
     };
     const onResponseReceived = (payload) => {
@@ -103,29 +140,31 @@ const Gameroom = () => {
       /// 2. if the response is success, do nothing
       /// 3. if the response is failure, show the error message
       /// 4. if the response is not received, do something to handle the timeout
-    }
+    };
 
     const onPlayerInfoReceived = (payload) => {
       const payloadData = JSON.parse(payload.body);
       setPlayerLists(payloadData.message);
       //resp success
-    }
+    };
 
     const onGameInfoReceived = (payload) => {
       const payloadData = JSON.parse(payload.body);
-      if(payloadData.message.gameStatus === "ready"){
+      if (payloadData.message.gameStatus === "ready") {
         setShowReadyPopup(true);
-      }else if (payloadData.message.gameStatus === "over"){
+      } else if (payloadData.message.gameStatus === "over") {
         setShowReadyPopup(false);
         setGameOver(true);
-      }else {
+      } else {
         setShowReadyPopup(false);
       }
       setGameInfo(payloadData.message);
-    }
+    };
 
     const onShareAudioReceived = (payload) => {
-      const payloadDataStamped = JSON.parse(payload.body) as Timestamped<PlayerAudio>;
+      const payloadDataStamped = JSON.parse(
+        payload.body
+      ) as Timestamped<PlayerAudio>;
       const playerAudio = payloadDataStamped.message as PlayerAudio;
       const userId = playerAudio.userID;
       const audioData = playerAudio.audioData;
@@ -144,16 +183,19 @@ const Gameroom = () => {
       // inside the callback function, we cannot directly read a state
       // since the state is always the initial state when the callback is created
       // so we use a ref to store the current speaker id
-      if (!!currentSpeakerIdRef.current && userId === currentSpeakerIdRef.current) {
+      if (
+        !!currentSpeakerIdRef.current &&
+        userId === currentSpeakerIdRef.current
+      ) {
         // if the audio is from the current speaker
         setCurrentSpeakerAudioURL(audioURL);
       } else {
         // if it is shared audio
         setSharedAudioList((prevState) => {
-          return { ...prevState, [userId]: audioURL }
+          return { ...prevState, [userId]: audioURL };
         });
       }
-    }
+    };
 
     // const onMessageReceived = (payload) => {
     //   var payloadData = JSON.parse(payload.body);
@@ -174,7 +216,6 @@ const Gameroom = () => {
     //   }
     // }
 
-
     const onError = (err) => {
       console.error("WebSocket Error: ", err);
       alert("WebSocket connection error. Check console for details.");
@@ -192,6 +233,9 @@ const Gameroom = () => {
       }
       if (sharedAudioSuber) {
         sharedAudioSuber.unsubscribe();
+      }
+      if (responseSuber) {
+        responseSuber.unsubscribe();
       }
       if (stompClientRef.current) {
         stompClientRef.current.disconnect(() => {
@@ -217,8 +261,12 @@ const Gameroom = () => {
     };
     // get a random receipt uuid
     const receiptId = uuidv4();
-    stompClientRef.current?.send("/users/ready", {receiptId:receiptId}, JSON.stringify(payload));
-  }
+    stompClientRef.current?.send(
+      "/users/ready",
+      { receiptId: receiptId },
+      JSON.stringify(payload)
+    );
+  };
 
   const cancelReady = () => {
     const payload: Timestamped<PlayerAndRoomID> = {
@@ -227,13 +275,16 @@ const Gameroom = () => {
       timestamp: new Date().getTime(),
       message: {
         userID: user.id,
-        roomID: roomInfo.roomId,
+        roomID: roomInfo.roomID,
       },
     };
     const receiptId = uuidv4();
-    stompClientRef.current?.send("/users/unready", {receiptId: receiptId}, JSON.stringify(payload));
-  }
-
+    stompClientRef.current?.send(
+      "/users/unready",
+      { receiptId: receiptId },
+      JSON.stringify(payload)
+    );
+  };
 
   //start game
   const startGame = () => {
@@ -247,8 +298,12 @@ const Gameroom = () => {
       },
     };
     const receiptId = uuidv4();
-    stompClientRef.current?.send("/games/start", {receiptId:receiptId}, JSON.stringify(payload));
-  }
+    stompClientRef.current?.send(
+      "/games/start",
+      { receiptId: receiptId },
+      JSON.stringify(payload)
+    );
+  };
 
   //exit room
   const exitRoom = () => {
@@ -258,35 +313,43 @@ const Gameroom = () => {
       timestamp: new Date().getTime(),
       message: {
         userID: user.id,
-        roomID: roomInfo.roomId,
+        roomID: roomInfo.roomID,
       },
     };
     const receiptId = uuidv4();
-    stompClientRef.current?.send("/games/exitRoom", {receiptId:receiptId}, JSON.stringify(payload));
-  }
+    stompClientRef.current?.send(
+      "/games/exitRoom",
+      { receiptId: receiptId },
+      JSON.stringify(payload)
+    );
+  };
 
   //start game
-  const submitAnswer = (validateAnswer : String) => {
+  const submitAnswer = (validateAnswer: String) => {
     const answer = validateAnswer.toLowerCase().replace(/\s/g, "");
     const payload: Timestamped<AnswerGuess> = {
       timestamp: new Date().getTime(),
       message: {
         userID: user.id,
-        roomID: roomInfo.roomId,
+        roomID: roomInfo.roomID,
         guess: answer,
         roundNum: gameInfo.currentRoundNum,
         currentSpeakerID: gameInfo.currentSpeaker.id,
       },
     };
     const receiptId = uuidv4();
-    stompClientRef.current?.send("/games/validate", {receiptId:receiptId}, JSON.stringify(payload));
-  }
+    stompClientRef.current?.send(
+      "/games/validate",
+      { receiptId: receiptId },
+      JSON.stringify(payload)
+    );
+  };
 
   //upload audio
   const uploadAudio = () => {
     if (!myRecordingReversedRef.current) {
       console.error("No audio to upload");
-      
+
       return;
     }
     const payload: Timestamped<PlayerAudio> = {
@@ -297,16 +360,21 @@ const Gameroom = () => {
       },
     };
     const receiptId = uuidv4();
-    stompClientRef.current?.send("/games/audio/upload"/*URL*/, {receiptId:receiptId}, JSON.stringify(payload));
-  }
+    stompClientRef.current?.send(
+      "/games/audio/upload" /*URL*/,
+      { receiptId: receiptId },
+      JSON.stringify(payload)
+    );
+  };
   //#endregion -----------------WebSocket Send Functions-----------------
 
   const handleAudioReversed = (audioReversed: Base64audio) => {
     if (audioReversed) {
       myRecordingReversedRef.current = audioReversed;
-      console.log("Get reversed audio from AudioRecorder Success");
+      console.log("[GameRoom]Get reversed audio from AudioRecorder Success");
+      console.log("Reversed Audio: ", myRecordingReversedRef.current);
     }
-  }
+  };
 
   const togglePopup = () => {
     setShowReadyPopup((prevState) => !prevState);
@@ -432,11 +500,14 @@ const Gameroom = () => {
     roundStatus: "speak",
     currentRoundNum: 2,
   };
+  
   const changeSpeaker = () => {
     setShowReadyPopup((prevState) => !prevState);
   };
 
   const Roundstatus = ({ gameInfo, currentSpeakerAudioURL }) => {
+    console.log("gameInfo", gameInfo);
+    
     return (
       <>
         <div className="gameroom roundstatus">
@@ -634,7 +705,6 @@ const Gameroom = () => {
     currentSpeakerAudioURL: PropTypes.string,
   };
 
-
   const LeaderBoard = ({ playerStatus }) => {
     return (
       <div className="gameroom leaderboarddiv">
@@ -698,7 +768,9 @@ const Gameroom = () => {
       <>
         <div className="gameroom roominfocontainer">
           <div className="gameroom roominfotitle">ROOM</div>
-          <div className="gameroom roominfo">{"#"+roomInfo.roomId+ "-" + roomInfo.theme}</div>
+          <div className="gameroom roominfo">
+            {"#" + roomInfo.roomID + "-" + roomInfo.theme}
+          </div>
         </div>
         <div className="gameroom playercontainer">
           {/*map begin*/}
@@ -861,8 +933,18 @@ const Gameroom = () => {
                 Ready to start the game?
               </span>
               <div className="gameroom buttonset">
-                <div className="gameroom readybutton" onClick={()=> getReady()}>Confirm</div>
-                <div className="gameroom cancelbutton" onClick={()=> cancelReady()}>Cancel</div>
+                <div
+                  className="gameroom readybutton"
+                  onClick={() => getReady()}
+                >
+                  Confirm
+                </div>
+                <div
+                  className="gameroom cancelbutton"
+                  onClick={() => cancelReady()}
+                >
+                  Cancel
+                </div>
               </div>
             </div>
           </div>
@@ -870,7 +952,12 @@ const Gameroom = () => {
         {gameOver && (
           <LeaderBoard playerStatus={playerReadyStatus}></LeaderBoard>
         )}
-        {!gameOver && !showReadyPopup && <Roundstatus gameInfo={mockgameInfo} currentSpeakerAudioURL={null}/>}
+        {!gameOver && !showReadyPopup && (
+          <Roundstatus
+            gameInfo={mockgameInfo}
+            currentSpeakerAudioURL={"mockURL"}
+          />
+        )}
         <div className="gameroom inputarea">
           {!gameOver &&
             !showReadyPopup &&
