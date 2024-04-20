@@ -1,6 +1,6 @@
 import WaveSurfer from "wavesurfer.js";
 import RecordPlugin from "wavesurfer.js/dist/plugins/record.esm.js";
-import React, { useLayoutEffect , useRef, useState } from "react";
+import React, { useLayoutEffect , useRef, useState , useEffect} from "react";
 import { Button } from "./Button";
 // import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { Dropdown } from "./Dropdown";
@@ -298,6 +298,11 @@ const AudioRecorder: React.FC = props => {
     }
   }, []);
 
+  useEffect(() => {
+    props.handleReversedAudioChange && props.handleReversedAudioChange(audioReversedBlobRef.current);
+    console.log(`[${props.audioName}]`,"reversed audio changed", audioReversedBlobRef.current);
+  }, [audioReversedBlobRef.current]);
+
 
   return (
     <div className={`audio-recorder ${props.className}`}>
@@ -354,6 +359,8 @@ AudioRecorder.propTypes = {
   audioName: PropType.string.isRequired,
   ffmpeg: PropType.object.isRequired,
   disabled: PropType.bool,
+  handleReversedAudioChange: PropType.func,
 };
+
 
 export default AudioRecorder;

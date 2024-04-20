@@ -15,8 +15,8 @@ import { ButtonPlayer } from "components/ui/ButtonPlayer";
 // Stomp related imports
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
-import { Timestamped, PlayerAudio, PlayerAndRoomID, AnswerGuess, StompResponse } from "stomp_types";
-import { Base64audio } from "types";
+import type { Timestamped, PlayerAudio, PlayerAndRoomID, AnswerGuess, StompResponse , Base64audio} from "stomp_types";
+
 // type AudioBlobDict = { [userId: number]: Base64audio };
 type SharedAudioURL = {[userId: number]: string};
 
@@ -40,6 +40,7 @@ const Gameroom = () => {
   const [currentStatus, setCurrentStatus] = useState< "speak" | "guess" | "reveal" >("speak");
   const [sharedAudioList, setSharedAudioList] = useState<SharedAudioURL[]>([]);
   const [currentSpeakerAudioURL, setCurrentSpeakerAudioURL] = useState<string | null>(null);
+  const myRecordingReversedRef = useRef<Base64audio | null>(null);
   // const sharedAudioListRef = useRef<AudioBlobDict>({}); // store all shared audio blobs
   /**
    * Attention!!: Just for testing purposes
@@ -66,6 +67,7 @@ const Gameroom = () => {
       console.error("Failed to load FFmpeg module", error);
       alert("Failed to load FFmpeg module");
     }
+    
     return ffmpeg;
   }, []);
 
@@ -77,7 +79,7 @@ const Gameroom = () => {
 
     //const roomId = 5;
     const connectWebSocket = () => {
-      let Sock = new SockJS('http://localhost:8080/ws');
+      let Sock = new SockJS("http://localhost:8080/ws/roomID/playerID");
       //let Sock = new SockJS('https://sopra-fs23-group-01-server.oa.r.appspot.com/ws');
       stompClientRef.current = over(Sock);
       stompClientRef.current.connect({}, onConnected, onError);
@@ -87,9 +89,9 @@ const Gameroom = () => {
 
     const onConnected = () => {
       // subscribe to the topic
-      playerInfoSuber = stompClientRef.current.subscribe('/plays/info', onPlayerInfoReceived);
-      gameInfoSuber = stompClientRef.current.subscribe('/games/info', onGameInfoReceived);
-      sharedAudioSuber = stompClientRef.current.subscribe('/plays/audio', onShareAudioReceived);
+      playerInfoSuber = stompClientRef.current.subscribe("/plays/info", onPlayerInfoReceived);
+      gameInfoSuber = stompClientRef.current.subscribe("/games/info", onGameInfoReceived);
+      sharedAudioSuber = stompClientRef.current.subscribe("/plays/audio", onShareAudioReceived);
       //connect or reconnect
     };
 
@@ -138,7 +140,7 @@ const Gameroom = () => {
       } else {
         // if it is shared audio
         setSharedAudioList((prevState) => {
-        return { ...prevState, [userId]: audioURL }
+          return { ...prevState, [userId]: audioURL }
         });
       }
     }
@@ -164,7 +166,7 @@ const Gameroom = () => {
 
 
     const onError = (err) => {
-      console.error('WebSocket Error: ', err);
+      console.error("WebSocket Error: ", err);
       alert("WebSocket connection error. Check console for details.");
     };
 
@@ -188,6 +190,8 @@ const Gameroom = () => {
       }
     };
   }, []);
+
+  //#region -----------------WebSocket Send Functions-----------------
 
   //debounce-throttle
   //ready
@@ -246,9 +250,6 @@ const Gameroom = () => {
     stompClientRef.current?.send("/games/exitRoom", {}, JSON.stringify(payload));
   }
 
-
-
-
   //start game
   const submitAnswer = (validateAnswer : String) => {
     const answer = validateAnswer.toLowerCase().replace(/\s/g, "");
@@ -265,17 +266,30 @@ const Gameroom = () => {
     stompClientRef.current?.send("/games/validate", {}, JSON.stringify(payload));
   }
 
-  const uploadAudio = (audioReversedToShare : Base64audio) => {
+  //upload audio
+  const uploadAudio = () => {
+    if (!myRecordingReversedRef.current) {
+      console.error("No audio to upload");
+      
+      return;
+    }
     const payload: Timestamped<PlayerAudio> = {
       timestamp: new Date().getTime(),
       message: {
         userID: user.id,
-        audioData: audioReversedToShare,
+        audioData: myRecordingReversedRef.current,
       },
     };
     stompClientRef.current?.send("/games/audio/upload"/*URL*/, {}, JSON.stringify(payload));
   }
+  //#endregion -----------------WebSocket Send Functions-----------------
 
+  const handleAudioReversed = (audioReversed: Base64audio) => {
+    if (audioReversed) {
+      myRecordingReversedRef.current = audioReversed;
+      console.log("Get reversed audio from AudioRecorder Success");
+    }
+  }
 
   const togglePopup = () => {
     setShowReadyPopup((prevState) => !prevState);
@@ -576,6 +590,7 @@ const Gameroom = () => {
               className="gameroom audiorecorder"
               ffmpeg={ffmpegObj}
               audioName="user1"
+              handleReversedAudioChange={handleAudioReversed}
             />
           </div>
         </div>
@@ -599,8 +614,8 @@ const Gameroom = () => {
       roundStatus: PropTypes.string.isRequired,
       currentRoundNum: PropTypes.number.isRequired,
     }).isRequired,
+    currentSpeakerAudioURL: PropTypes.string,
   };
-
 
 
   const LeaderBoard = ({ playerStatus }) => {
@@ -838,7 +853,7 @@ const Gameroom = () => {
         {gameOver && (
           <LeaderBoard playerStatus={playerReadyStatus}></LeaderBoard>
         )}
-        {!gameOver && !showReadyPopup && <Roundstatus gameInfo={mockgameInfo} />}
+        {!gameOver && !showReadyPopup && <Roundstatus gameInfo={mockgameInfo} currentSpeakerAudioURL={null}/>}
         <div className="gameroom inputarea">
           {!gameOver &&
             !showReadyPopup &&
