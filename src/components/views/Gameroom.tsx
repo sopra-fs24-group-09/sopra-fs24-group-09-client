@@ -48,6 +48,12 @@ const Gameroom = () => {
   const [testAudioBlob, setTestAudioBlob] = useState<Blob | null>(null);
   const [testAudioURL, setTestAudioURL] = useState<string | null>(null);
 
+  // this ref is used to track the current speaker id in callback functions
+  const currentSpeakerIdRef = useRef<number>();
+  if (gameInfo && gameInfo.currentSpeaker) {
+    currentSpeakerIdRef.current = gameInfo.currentSpeaker.id;
+  }
+
   // useMemo to initialize and load FFmpeg wasm module
   // load FFmpeg wasm module
   const ffmpegObj = useMemo(() => {
@@ -123,7 +129,10 @@ const Gameroom = () => {
         { type: "audio/webm" }
       );
       const audioURL = URL.createObjectURL(blob);
-      if (userId === gameInfo.currentSpeaker.id) {
+      // inside the callback function, we cannot directly read a state
+      // since the state is always the initial state when the callback is created
+      // so we use a ref to store the current speaker id
+      if (!!currentSpeakerIdRef.current && userId === currentSpeakerIdRef.current) {
         // if the audio is from the current speaker
         setCurrentSpeakerAudioURL(audioURL);
       } else {
@@ -264,7 +273,7 @@ const Gameroom = () => {
         audioData: audioReversedToShare,
       },
     };
-    stompClientRef.current?.send(""/*URL*/, {}, JSON.stringify(payload));
+    stompClientRef.current?.send("/games/audio/upload"/*URL*/, {}, JSON.stringify(payload));
   }
 
 
