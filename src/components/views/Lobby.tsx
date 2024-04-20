@@ -153,36 +153,49 @@ const Lobby = () => {
     navigate("/login");
   };
 
-  // useEffect(() => {
-  //    async function fetchData() {
-  //     try {
-  //       //get all rooms
-  //       const response = await api.get("/games/lobby");
-  //       await new Promise((resolve) => setTimeout(resolve, 1000));
-  //       setRooms(response.data);
-  //
-  //       console.log("request to:", response.request.responseURL);
-  //       console.log("status code:", response.status);
-  //       console.log("status text:", response.statusText);
-  //       console.log("requested data:", response.data);
-  //
-  //       // See here to get more data.
-  //       console.log(response);
-  //     } catch (error) {
-  //       console.error(
-  //         `Something went wrong while fetching the users: \n${handleError(
-  //           error
-  //         )}`
-  //       );
-  //       console.error("Details:", error);
-  //       alert(
-  //         "Something went wrong while fetching the users! See the console for details."
-  //       );
-  //     }
-  //   }
-  //
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+     async function fetchData() {
+      try {
+        //get all rooms
+        const response = await api.get("/games/lobby");
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setRooms(response.data);
+
+        console.log("request to:", response.request.responseURL);
+        console.log("status code:", response.status);
+        console.log("status text:", response.statusText);
+        console.log("requested data:", response.data);
+
+        // See here to get more data.
+        console.log(response);
+
+        // Get user ID from sessionStorage
+        const userId = sessionStorage.getItem("id");
+        if (userId) {
+          // Get current user's information
+          const userResponse = await api.get(`/users/${userId}`);
+          setUser(userResponse.data);  // Set user data from API
+          console.log("User data:", userResponse.data);
+        } else {
+          console.log("No user ID found in sessionStorage.");
+        }
+      } catch (error) {
+        console.error(
+          `Something went wrong while fetching the users: \n${handleError(
+            error
+          )}`
+        );
+        console.error("Details:", error);
+        alert(
+          "Something went wrong while fetching the users! See the console for details."
+        );
+      }
+    }
+
+    fetchData().catch(error => {
+      console.error('Unhandled error in fetchData:', error);
+    });
+  }, []);
 
   const doEdit = async () => {
     try {
@@ -314,7 +327,7 @@ const Lobby = () => {
 
 
   const renderRoomLists = () => {
-    return mockRooms.map((Room) => (
+    return rooms.map((Room) => (
       <div className="room-container" key={Room.id} onClick={(e) => {
         e.preventDefault();
         const currentId = sessionStorage.getItem("id");
