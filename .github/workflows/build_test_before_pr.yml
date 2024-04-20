@@ -3,7 +3,6 @@ name: Build and Test before merging
 on:
   pull_request:
     branches:
-      - main
       - dev
   workflow_dispatch:
 
