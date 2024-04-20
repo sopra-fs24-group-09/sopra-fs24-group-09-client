@@ -23,6 +23,7 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>((props, ref) => {
         }
       }
       role="dialog"
+      aria-hidden="true"
     >
       <div className={`popup-content ${props.className}`}>
         {props.children}
