@@ -47,9 +47,11 @@ const Register = () => {
       // Get the returned user and update a new object.
       const user = new User(response.data);
 
-      sessionStorage.setItem("token", user.token);
-      sessionStorage.setItem("id", user.id);
-      sessionStorage.setItem("username", user.username);
+      // Store the token into the local storage.
+      localStorage.setItem("token", user.token);
+      localStorage.setItem("id", user.id);
+      // Store the username into the local storage.
+      localStorage.setItem("username", user.username);
       // Login successfully worked --> navigate to the route /game in the LobbyRouter
       navigate("/lobby");
     } catch (error) {
@@ -62,7 +64,6 @@ const Register = () => {
   return (
     <BaseContainer>
       <div className="register container">
-        <div className="login kaeps-title">Kaeps</div>
         <div className="register form">
           <FormField
             label="Username"
@@ -79,7 +80,6 @@ const Register = () => {
               disabled={!username || !password ||password.indexOf(" ") !== -1|| username.indexOf(" ") !== -1}
               width="75%"
               onClick={() => doRegister()}
-              style={{ color: "black"}}
             >
               register
             </Button>

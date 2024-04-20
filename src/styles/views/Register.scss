@@ -20,7 +20,7 @@
     padding-top: 30px;
     padding-left: 37px;
     padding-right: 37px;
-    background-color: #C9D7DD;
+    background-color: $background;
     transition: opacity 0.5s ease, transform 0.5s ease;
     box-shadow: $dropShadow;
     border-radius: 1.5em;
@@ -57,13 +57,4 @@
     justify-content: center;
     margin-top: 0em;
   }
-}
-
-.kaeps-title{
-
-  top: 5%;           // 从顶部留下10%的空间以居中显示
-  font-size: 150px;
-  padding-bottom: 5%;
-  color: $classicYellow;
-  font-family: "Acme", sans-serif;
 }
