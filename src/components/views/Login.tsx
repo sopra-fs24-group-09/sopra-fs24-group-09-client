@@ -46,9 +46,12 @@ const Login = () => {
       // Get the returned user and update a new object.
       const user = new User(response.data);
 
-      sessionStorage.setItem("token", user.token);
-      sessionStorage.setItem("id", user.id);
-      sessionStorage.setItem("username", user.username);
+      // Store the token into the local storage.
+      localStorage.setItem("token", user.token);
+
+      // Store the username into the local storage for log out.
+      localStorage.setItem("id",user.id);
+      localStorage.setItem("username",user.username);
 
       // Login successfully worked --> navigate to the route /game in the LobbyRouter
       navigate("/lobby");
@@ -62,7 +65,6 @@ const Login = () => {
   return (
     <BaseContainer>
       <div className="login container">
-        <div className="login kaeps-title">Kaeps</div>
         <div className="login form">
           <FormField
             label="Username"
@@ -79,7 +81,6 @@ const Login = () => {
               disabled={!username || !password || username.trim() ===" " || password.trim() ===" "}
               width="100%"
               onClick={() => doLogin()}
-              style={{ color: "black"}}
             >
               Login
             </Button>

@@ -33,8 +33,8 @@ FormField.propTypes = {
 
 const EditProfile = () => {
   const navigate = useNavigate();
-  const userid = sessionStorage.getItem("id") ?? "";
-  const currentUsername = sessionStorage.getItem("username") ?? "";
+  const userid = localStorage.getItem("id") ?? "";
+  const currentUsername = localStorage.getItem("username") ?? "";
   const [id] = useState<string>(userid);
   const [username, setUsername] = useState<string | "">(currentUsername);
   const [birthday, setBirthday] = useState<string | "">("");
