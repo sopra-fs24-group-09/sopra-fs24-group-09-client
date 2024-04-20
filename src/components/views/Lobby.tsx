@@ -154,7 +154,7 @@ const Lobby = () => {
   };
 
   useEffect(() => {
-     async function fetchData() {
+    async function fetchData() {
       try {
         //get all rooms
         const response = await api.get("/games/lobby");
@@ -193,7 +193,7 @@ const Lobby = () => {
     }
 
     fetchData().catch(error => {
-      console.error('Unhandled error in fetchData:', error);
+      console.error("Unhandled error in fetchData:", error);
     });
   }, []);
 
