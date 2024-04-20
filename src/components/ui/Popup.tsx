@@ -22,6 +22,7 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>((props, ref) => {
           }
         }
       }
+      role="dialog"
     >
       <div className={`popup-content ${props.className}`}>
         {props.children}
