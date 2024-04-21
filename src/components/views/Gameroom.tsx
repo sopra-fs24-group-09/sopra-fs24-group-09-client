@@ -36,11 +36,9 @@ const Gameroom = () => {
    * if just for saving my id and name, we can make it a const prop
    */
   const [user, setUser] = useState();
-  const [users, setUsers] = useState<User[]>(null);
-  const [showScore, setShowScore] = useState(false);
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const [gameOver, setGameOver] = useState(false);
-  const [currentSpeaker, setCurrentSpeaker] = useState(null);
+  const [currentSpeakerID, setCurrentSpeakerID] = useState(null);
   const [validateAnswer, setValidateAnswer] = useState(null);
   const [playerLists, setPlayerLists] = useState([]);
   const [gameInfo, setGameInfo] = useState({
@@ -158,6 +156,16 @@ const Gameroom = () => {
       } else {
         setShowReadyPopup(false);
       }
+
+      setCurrentSpeakerID(payloadData.message.currentSpeaker.id);
+      //if(currentStatus === "reveal" && payloadData.message.roundStatus === "speak"){
+      if(payloadData.message.roundStatus === "speak"){
+        //empty all the audio
+        setCurrentSpeakerAudioURL(null);
+        setSharedAudioList([]);
+      }
+      //"speak" | "guess" | "reveal" only allowed
+      setCurrentStatus(payloadData.message.roundStatus);
       setGameInfo(payloadData.message);
     };
 
@@ -256,7 +264,7 @@ const Gameroom = () => {
       timestamp: new Date().getTime(),
       message: {
         userID: user.id,
-        roomID: roomInfo.roomId,
+        roomID: roomInfo.roomID,
       },
     };
     // get a random receipt uuid
@@ -294,7 +302,7 @@ const Gameroom = () => {
       timestamp: new Date().getTime(),
       message: {
         userID: user.id,
-        roomID: roomInfo.roomId,
+        roomID: roomInfo.roomID,
       },
     };
     const receiptId = uuidv4();
@@ -528,7 +536,7 @@ const Gameroom = () => {
                   style={{ fontSize: "2.2rem" }}
                 />
               </span>
-              {gameInfo.currentSpeaker.id === mePlayer.id &&
+              {currentSpeakerID === mePlayer.id &&
                 currentStatus === "speak" && (
                 <>
                   <div className={"gameroom secondcolumn"}>
@@ -552,7 +560,7 @@ const Gameroom = () => {
                   </div>
                 </>
               )}
-              {gameInfo.currentSpeaker.id !== mePlayer.id &&
+              {currentSpeakerID !== mePlayer.id &&
                 currentStatus === "speak" && (
                 <>
                   <div className={"gameroom secondcolumn"}>
@@ -574,7 +582,7 @@ const Gameroom = () => {
                   </div>
                 </>
               )}
-              {gameInfo.currentSpeaker.id !== mePlayer.id &&
+              {currentSpeakerID !== mePlayer.id &&
                 currentStatus === "guess" && (
                 <>
                   <div className={"gameroom secondcolumn"}>
@@ -593,7 +601,7 @@ const Gameroom = () => {
                   </div>
                 </>
               )}
-              {gameInfo.currentSpeaker.id === mePlayer.id &&
+              {currentSpeakerID === mePlayer.id &&
                 currentStatus === "guess" && (
                 <>
                   <div className={"gameroom secondcolumn"}>
@@ -641,38 +649,22 @@ const Gameroom = () => {
           <div className="gameroom remindermssg">
             {gameInfo.currentSpeaker.id === mePlayer.id &&
               currentStatus === "speak" && (
-              <span className="gameroom remindertext">
-                {"Try to read and record the word steadily and loudly!"}
-              </span>
+              <span className="gameroom remindertext">{"Try to read and record the word steadily and loudly!"}</span>
             )}
             {gameInfo.currentSpeaker.id !== mePlayer.id &&
               currentStatus === "speak" && (
-              <span className="gameroom remindertext">
-                {
-                  "Please wait until the speak player finishes recording and uploading!"
-                }
-              </span>
+              <span className="gameroom remindertext">{"Please wait until the speak player finishes recording and uploading!"}</span>
             )}
             {gameInfo.currentSpeaker.id !== mePlayer.id &&
               currentStatus === "guess" && (
-              <span className="gameroom remindertext">
-                {
-                  "Try to simulate the reversed audio and reverse again to figure out the word!"
-                }
-              </span>
+              <span className="gameroom remindertext">{"Try to simulate the reversed audio and reverse again to figure out the word!"}</span>
             )}
             {gameInfo.currentSpeaker.id === mePlayer.id &&
               currentStatus === "guess" && (
-              <span className="gameroom remindertext">
-                {
-                  "You can try to simulate the reversed audio or listen to others' audio!"
-                }
-              </span>
+              <span className="gameroom remindertext">{"You can try to simulate the reversed audio or listen to others' audio!"}</span>
             )}
             {currentStatus === "reveal" && (
-              <span className="gameroom remindertext">
-                {"Time is up and now reveals the answer!"}
-              </span>
+              <span className="gameroom remindertext">{"Time is up and now reveals the answer!"}</span>
             )}
             <AudioRecorder
               className="gameroom audiorecorder"
@@ -684,10 +676,6 @@ const Gameroom = () => {
         </div>
       </>
     );
-  };
-
-  const submitValidateAnswer = () => {
-    // TBD
   };
 
   Roundstatus.propTypes = {
