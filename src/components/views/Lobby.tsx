@@ -116,11 +116,11 @@ const mockRooms: Room[] = [
   {
     id: "2",
     roomOwnerId: "2",
-    roomPlayersList: [mockRoomPlayers[1]],
+    roomPlayersList: mockRoomPlayers,
     theme: "Food",
     status: "Free",
     maxPlayersNum: 4,
-    alivePlayersList: [mockRoomPlayers[1]],
+    alivePlayersList: mockRoomPlayers,
     currentPlayerIndex: 1,
     playToOuted: false,
   },
@@ -371,8 +371,10 @@ const Lobby = () => {
         <i className={"twa twa-" + user.avatar} style={{fontSize: "3.8rem", marginTop:"0.8rem"}}/>
         <div className="name">{user.username}</div>
       </div>
-      <div className="big-title">Kaeps</div>
-      <div className="information" onClick={toggleInfoPop}> i </div>
+      <div className="title-container">
+        <div className="big-title">Kaeps</div>
+        <div className="information" onClick={toggleInfoPop}>i</div>
+      </div>
       <div className="lobby room-list-wrapper">
         {/* for clip the scrollbar inside the border */}
         <div className="lobby room-list">
