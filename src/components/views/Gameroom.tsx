@@ -56,6 +56,7 @@ const Gameroom = () => {
     roomID: 5,
     theme: "Advanced",
   });
+  const prevStatus = useRef("start");
   const [currentStatus, setCurrentStatus] = useState<
     "speak" | "guess" | "reveal"
   >("speak");
@@ -158,12 +159,13 @@ const Gameroom = () => {
       }
 
       setCurrentSpeakerID(payloadData.message.currentSpeaker.id);
-      //if(currentStatus === "reveal" && payloadData.message.roundStatus === "speak"){
-      if(payloadData.message.roundStatus === "speak"){
+      if(prevStatus.current === "reveal" && payloadData.message.roundStatus === "speak"){
+      //if(payloadData.message.roundStatus === "speak"){
         //empty all the audio
         setCurrentSpeakerAudioURL(null);
         setSharedAudioList([]);
       }
+      prevStatus.current = payloadData.message.roundStatus;
       //"speak" | "guess" | "reveal" only allowed
       setCurrentStatus(payloadData.message.roundStatus);
       setGameInfo(payloadData.message);
