@@ -235,24 +235,6 @@ const Lobby = () => {
     }
   };
 
-
-  const doEdit = async () => {
-    try {
-      const requestBody = JSON.stringify({ username, avatar: avatar });
-      const id = sessionStorage.getItem("id");
-      console.log("Request body:", requestBody);
-      await api.put(`/users/${id}`, requestBody);
-      toggleProfilePop();
-    } catch (error) {
-      if (error.response && error.response.data) {
-        alert(error.response.data.message);
-      } else {
-        console.error("Error:", error.message);
-        alert("An unexpected error occurred.");
-      }
-    }
-  };
-
   const toggleRoomCreationPop = () => {
     // if the ref is not set, do nothing
     if (!roomCreationPopRef.current) {
