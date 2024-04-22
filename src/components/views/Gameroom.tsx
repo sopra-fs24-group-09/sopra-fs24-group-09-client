@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useEffect, useState, useRef, useMemo, useImperativeHandle } from "react";
 import { api, handleError } from "helpers/api";
 import { useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
@@ -9,7 +9,7 @@ import "styles/views/Header.scss";
 import "styles/twemoji-amazing.css";
 import Header from "./Header";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
-import AudioRecorder from "components/ui/AudioRecorder";
+import { AudioRecorder } from "components/ui/AudioRecorder";
 import WavePlayer from "components/ui/WavePlayer";
 import { ButtonPlayer } from "components/ui/ButtonPlayer";
 // Stomp related imports
@@ -65,6 +65,7 @@ const Gameroom = () => {
     string | null
   >(null);
   const myRecordingReversedRef = useRef<Base64audio | null>(null);
+  const roundStatusComponentRef = useRef(null);
   // const sharedAudioListRef = useRef<AudioBlobDict>({}); // store all shared audio blobs
   /**
    * Attention!!: Just for testing purposes
@@ -159,11 +160,16 @@ const Gameroom = () => {
       }
 
       setCurrentSpeakerID(payloadData.message.currentSpeaker.id);
-      if(prevStatus.current === "reveal" && payloadData.message.roundStatus === "speak"){
-      //if(payloadData.message.roundStatus === "speak"){
+      if (
+        prevStatus.current === "reveal" &&
+        payloadData.message.roundStatus === "speak"
+      ) {
+        //if(payloadData.message.roundStatus === "speak"){
         //empty all the audio
         setCurrentSpeakerAudioURL(null);
         setSharedAudioList([]);
+        roundStatusComponentRef.current?.clearAudio();
+        myRecordingReversedRef.current = null;
       }
       prevStatus.current = payloadData.message.roundStatus;
       //"speak" | "guess" | "reveal" only allowed
@@ -510,14 +516,22 @@ const Gameroom = () => {
     roundStatus: "speak",
     currentRoundNum: 2,
   };
-  
+
   const changeSpeaker = () => {
     setShowReadyPopup((prevState) => !prevState);
   };
 
-  const Roundstatus = ({ gameInfo, currentSpeakerAudioURL }) => {
+  const Roundstatus = React.forwardRef((props,ref) => {
+    const { gameInfo, currentSpeakerAudioURL } = props;
     console.log("gameInfo", gameInfo);
-    
+    const _audioRecorderRef = useRef(null);
+    useImperativeHandle(ref, () => ({
+      clearAudio: () => {
+        console.log("----clear audio");
+        _audioRecorderRef.current?.clearAudio();
+      }
+    }), []);
+
     return (
       <>
         <div className="gameroom roundstatus">
@@ -651,24 +665,41 @@ const Gameroom = () => {
           <div className="gameroom remindermssg">
             {gameInfo.currentSpeaker.id === mePlayer.id &&
               currentStatus === "speak" && (
-              <span className="gameroom remindertext">{"Try to read and record the word steadily and loudly!"}</span>
+              <span className="gameroom remindertext">
+                {"Try to read and record the word steadily and loudly!"}
+              </span>
             )}
             {gameInfo.currentSpeaker.id !== mePlayer.id &&
               currentStatus === "speak" && (
-              <span className="gameroom remindertext">{"Please wait until the speak player finishes recording and uploading!"}</span>
+              <span className="gameroom remindertext">
+                {
+                  "Please wait until the speak player finishes recording and uploading!"
+                }
+              </span>
             )}
             {gameInfo.currentSpeaker.id !== mePlayer.id &&
               currentStatus === "guess" && (
-              <span className="gameroom remindertext">{"Try to simulate the reversed audio and reverse again to figure out the word!"}</span>
+              <span className="gameroom remindertext">
+                {
+                  "Try to simulate the reversed audio and reverse again to figure out the word!"
+                }
+              </span>
             )}
             {gameInfo.currentSpeaker.id === mePlayer.id &&
               currentStatus === "guess" && (
-              <span className="gameroom remindertext">{"You can try to simulate the reversed audio or listen to others' audio!"}</span>
+              <span className="gameroom remindertext">
+                {
+                  "You can try to simulate the reversed audio or listen to others' audio!"
+                }
+              </span>
             )}
             {currentStatus === "reveal" && (
-              <span className="gameroom remindertext">{"Time is up and now reveals the answer!"}</span>
+              <span className="gameroom remindertext">
+                {"Time is up and now reveals the answer!"}
+              </span>
             )}
             <AudioRecorder
+              ref={_audioRecorderRef}
               className="gameroom audiorecorder"
               ffmpeg={ffmpegObj}
               audioName="user1"
@@ -678,7 +709,8 @@ const Gameroom = () => {
         </div>
       </>
     );
-  };
+  });
+  Roundstatus.displayName = "Roundstatus";
 
   Roundstatus.propTypes = {
     gameInfo: PropTypes.shape({
@@ -946,6 +978,7 @@ const Gameroom = () => {
           <Roundstatus
             gameInfo={mockgameInfo}
             currentSpeakerAudioURL={"mockURL"}
+            ref={roundStatusComponentRef}
           />
         )}
         <div className="gameroom inputarea">
@@ -975,6 +1008,14 @@ const Gameroom = () => {
           <button onClick={() => setGameOver((prevState) => !prevState)}>
             Over
           </button>
+          <button onClick={
+            () => {
+              console.log("clear audio");
+              console.log(roundStatusComponentRef.current);
+              roundStatusComponentRef.current?.clearAudio();
+              myRecordingReversedRef.current = null;
+            }
+          }>clear</button>
         </div>
       </div>
     </BaseContainer>

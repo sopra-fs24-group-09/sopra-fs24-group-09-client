@@ -1,6 +1,6 @@
 import WaveSurfer from "wavesurfer.js";
 import RecordPlugin from "wavesurfer.js/dist/plugins/record.esm.js";
-import React, { useLayoutEffect , useRef, useState , useEffect} from "react";
+import React, { useLayoutEffect , useRef, useState , useEffect, useImperativeHandle } from "react";
 import { Button } from "./Button";
 // import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { Dropdown } from "./Dropdown";
@@ -12,7 +12,7 @@ import PropType from "prop-types";
 import { Base64audio } from "types";
 
 
-const AudioRecorder: React.FC = props => {
+export const AudioRecorder = React.forwardRef((props,ref) => {
   const waveformRef = useRef<HTMLDivElement>(null);
   const audioBlobRef = useRef<Blob | null>(null);
   const audioReversedBlobRef = useRef<Blob | null>(null);
@@ -235,7 +235,9 @@ const AudioRecorder: React.FC = props => {
 
     wavesurfer.current?.on("click", () => {
       const duration = wavesurfer.current?.getDuration();
-      if (duration === 0) {
+      // console.log(`[${props.audioName}]`,"click", duration);
+      // Since wavesurfer.empty() will cause duration to be 0.001, we need to check if duration is smaller than 0.0011
+      if (duration < 0.0011) {
         return;
       }
       wavesurfer.current?.playPause();
@@ -265,6 +267,9 @@ const AudioRecorder: React.FC = props => {
         recorder.current?.startRecording();
         setIsRecording(true);
       });
+    // once recording is started, enable interaction
+    // should be placed in onRecordEnd event, but it's not working
+    wavesurfer.current?.toggleInteraction(true);
   };
 
   const onClickToggleReverse = () => {
@@ -290,19 +295,43 @@ const AudioRecorder: React.FC = props => {
     loadCachedAudio();
     
     return () => {
-      // clean up wavesurfer
-      if (wavesurfer.current) {
-        wavesurfer.current.destroy();
-        console.log(`[${props.audioName}]`,"destroy wavesurfer");
-      }
+      // // clean up wavesurfer
+      // if (wavesurfer.current) {
+      //   wavesurfer.current.destroy();
+      //   console.log(`[${props.audioName}]`,"destroy wavesurfer");
+      // }
     }
   }, []);
 
+  ///
+  /// clear wavesurwave and cached audio
+  /// called by parent component
+  ///
+  const clearAudio = () => {
+    if (wavesurfer.current) {
+      // wavesurfer.current.empty();
+      wavesurfer.current.empty();
+      wavesurfer.current.toggleInteraction(false);
+      setWaveAvailable(false);
+      console.log(`[${props.audioName}]`,"clear audio");
+    }
+    audioBlobRef.current = null;
+    audioReversedBlobRef.current = null;
+    sessionStorage.removeItem(cachedName);
+    sessionStorage.removeItem(cachedReversedName);
+    sessionStorage.removeItem(cachedIsReversedName);
+    console.log(`[${props.audioName}]`,"clear cached audio");
+  };
+
+  useImperativeHandle(ref, () => ({
+    clearAudio: clearAudio
+  }),[]);
+
+  // pass reversed audio to parent component
   useEffect(() => {
     props.handleReversedAudioChange && props.handleReversedAudioChange(audioReversedBlobRef.current);
     console.log(`[${props.audioName}]`,"reversed audio changed", audioReversedBlobRef.current);
   }, [audioReversedBlobRef.current]);
-
 
   return (
     <div className={`audio-recorder ${props.className}`}>
@@ -329,13 +358,13 @@ const AudioRecorder: React.FC = props => {
         <Button
           onClick={onClickToggleReverse}
           className="audio-recorder toggle-reverse-button"
-          disabled={isRecording || isPlaying || props.disabled}
+          disabled={isRecording || isPlaying || props.disabled || !waveAvailable}
         >
           {isReversed ? <GiClockwiseRotation /> : <GiAnticlockwiseRotation />}
         </Button>
         {/*List menu to select playback rate*/}
         <Dropdown
-          disabled = {props.disabled}
+          disabled = {props.disabled || !waveAvailable}
           className="audio-recorder button-container playback-rate-dropdown"
           onChange={(e) => {
             const rate = parseFloat(e.target.value);
@@ -352,7 +381,7 @@ const AudioRecorder: React.FC = props => {
       </div>
     </div>
   );
-};
+});
 
 AudioRecorder.propTypes = {
   className: PropType.string,
@@ -361,6 +390,8 @@ AudioRecorder.propTypes = {
   disabled: PropType.bool,
   handleReversedAudioChange: PropType.func,
 };
+
+AudioRecorder.displayName = "AudioRecorder";
 
 
 export default AudioRecorder;
