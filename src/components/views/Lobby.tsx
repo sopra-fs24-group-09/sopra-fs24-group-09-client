@@ -220,7 +220,7 @@ const Lobby = () => {
       const requestBody = JSON.stringify({
         name: roomName,
         num: numRounds,
-        ownerId: ownerId,
+        roomOwnerId: ownerId,
         theme: roomTheme
       });
 
