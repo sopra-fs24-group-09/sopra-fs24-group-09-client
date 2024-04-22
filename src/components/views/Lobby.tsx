@@ -9,8 +9,6 @@ import "styles/views/Lobby.scss";
 import { User, Room } from "types";
 import Popup from "components/ui/Popup";
 import { Dropdown } from "components/ui/Dropdown";
-
-
 type PlayerProps = {
   user: User;
 };
@@ -385,6 +383,33 @@ const Lobby = () => {
           </div>
         </div>
       </div>
+
+      <Popup
+        ref={roomCreationPopRef}
+        toggleDialog={toggleRoomCreationPop}
+        className="room-creation-popup"
+      >
+        <BaseContainer className="room-creation-popup content">
+          <div className="title">Create Room</div>
+          <input type="text" placeholder="Room Name" />
+          <input type="number" placeholder="Round" />
+          <Dropdown
+            className="theme-dropdown"
+            prompt="Select Theme"
+            options={[
+              { value: "Beginner", label: "Beginner"},
+              { value: "Food", label: "Food" },
+            ]}
+          />
+          <div className="room-creation-popup btn-container">
+            <Button className="create-room">Create Room</Button>
+            <Button className="cancel" onClick={toggleRoomCreationPop}>
+              Cancel
+            </Button>
+          </div>
+        </BaseContainer>
+      </Popup>
+
 
       <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className = "profile-popup">
         <BaseContainer className="profile-popup content">
