@@ -2,7 +2,6 @@ import WaveSurfer from "wavesurfer.js";
 import RecordPlugin from "wavesurfer.js/dist/plugins/record.esm.js";
 import React, { useLayoutEffect , useRef, useState , useEffect, useImperativeHandle } from "react";
 import { Button } from "./Button";
-// import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { Dropdown } from "./Dropdown";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { GiClockwiseRotation, GiAnticlockwiseRotation } from "react-icons/gi";

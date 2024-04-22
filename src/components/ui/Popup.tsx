@@ -1,5 +1,4 @@
 import React, { forwardRef } from "react";
-import { Button } from "./Button";
 import "../../styles/ui/Popup.scss";
 
 type PopupProps = {

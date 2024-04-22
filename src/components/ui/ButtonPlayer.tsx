@@ -1,8 +1,7 @@
 /**
  * this component is a button that will play an audio file when clicked
  */
-import React, { useState, useRef, useEffect, useMemo } from "react";
-import PropTypes from "prop-types";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "./Button";
 import { FaPause, FaPlay } from "react-icons/fa";
 import "../../styles/ui/ButtonPlayer.scss";
