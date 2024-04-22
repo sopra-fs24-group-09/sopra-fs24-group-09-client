@@ -3,7 +3,7 @@ export type User = {
   username: string;
   avatar: string;
   name: string;
-  id: number;
+  id: string;
   registerDate: Date;
   birthday: Date;
 };

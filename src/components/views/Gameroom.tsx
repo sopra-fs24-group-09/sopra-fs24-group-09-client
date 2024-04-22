@@ -36,7 +36,12 @@ const Gameroom = () => {
    * Question: why we need this user state here?
    * if just for saving my id and name, we can make it a const prop
    */
-  const [user, setUser] = useState();
+  const user = {
+    token: sessionStorage.getItem("token"),
+    id: sessionStorage.getItem("id"),
+    username: sessionStorage.getItem("username")
+  };
+  console.log(user)
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [currentSpeakerID, setCurrentSpeakerID] = useState(null);
@@ -416,6 +421,8 @@ const Gameroom = () => {
   //   { userId: 1, audioURL: null },
   //   { userId: 3, audioURL: null },
   // ];
+
+  console.log("the player list is" +playerLists);
 
   const playerReadyStatus = [
     {
@@ -942,7 +949,7 @@ const Gameroom = () => {
     <BaseContainer className="gameroom basecontainer">
       <Header left="28vw" />
       <PlayerList
-        playerStatus={playerReadyStatus}
+        playerStatus={playerLists}
         sharedAudioList={sharedAudioList}
       />
       <div className="gameroom right-area">
@@ -975,7 +982,7 @@ const Gameroom = () => {
           </div>
         )}
         {gameOver && (
-          <LeaderBoard playerStatus={playerReadyStatus}></LeaderBoard>
+          <LeaderBoard playerStatus={playerLists}></LeaderBoard>
         )}
         {!gameOver && !showReadyPopup && (
           <Roundstatus

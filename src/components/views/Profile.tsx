@@ -10,7 +10,7 @@ import { User } from "types";
 const Profile = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const localId = parseInt(sessionStorage.getItem("id") ?? "0", 10);
+  const localId = sessionStorage.getItem("id");
   const [user, setUser] = useState<User | "">("");
 
   useEffect(() => {

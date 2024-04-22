@@ -8,17 +8,17 @@ export type Timestamped<T> = {
 }
 
 export type PlayerAudio = {
-    userID: number;
+    userID: string;
     audioData: Base64audio;
 }
 
 export type PlayerAndRoomID = {
-    userID: number;
+    userID: string;
     roomID: number;
 }
 
 export type AnswerGuess = {
-    userID: number;
+    userID: string;
     roomID: number;
     guess: string;
     roundNum: number;
