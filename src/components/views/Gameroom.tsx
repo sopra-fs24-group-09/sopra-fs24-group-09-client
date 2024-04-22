@@ -340,7 +340,7 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/games/exitRoom",
+      "/app/message/games/exitRoom",
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
