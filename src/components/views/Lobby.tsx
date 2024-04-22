@@ -137,7 +137,7 @@ const Lobby = () => {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [roomName, setRoomName] = useState("");
   const [numRounds, setNumRounds] = useState(0);
-  const [roomTheme, setRoomTheme] = useState("");
+  const [roomTheme, setRoomTheme] = useState("food");
   
   const logout = async () => {
     const id = sessionStorage.getItem("id");
@@ -216,14 +216,15 @@ const Lobby = () => {
 
   const createRoom = async () => {
     try {
+      
       const ownerId = sessionStorage.getItem("id");  // 假设ownerId存储在sessionStorage中
       const requestBody = JSON.stringify({
         roomName: roomName,
         maxPlayersNum: numRounds,
         roomOwnerId: ownerId,
-        theme: roomTheme
+        theme: "FOOD"
       });
-
+      console.log(requestBody)
       const response = await api.post("/games", requestBody);
       console.log("Room created successfully:", response);
       console.log("Room ID:", response.data.roomId);
@@ -329,13 +330,13 @@ const Lobby = () => {
 
   const renderRoomLists = () => {
     return rooms.map((Room) => (
-      <div className="room-container" key={Room.id} onClick={(e) => {
+      <div className="room-container" key={Room.roomId} onClick={(e) => {
         e.preventDefault();
         const currentId = sessionStorage.getItem("id");
         // const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
-        enterRoom(Room.id, currentId)
+        enterRoom(Room.roomId, currentId)
           .then(() => {
-            navigate(`/room=${Room.id}`);
+            navigate(`/rooms/${Room.roomId}`);
           })
           .catch(error => {
             console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
@@ -351,14 +352,14 @@ const Lobby = () => {
           ))}
         </div>
         <div className="room-header">
-          ROOM #{Room.id}
+          ROOM #{Room.roomId}
           <div>{Room.theme}</div>
           <span
             className={`room-status ${
               Room.status === "In Game" ? "in-game" : "free"
             }`}
           >
-            {Room.status}
+            {Room.roomProperty}
           </span>
         </div>
       </div>
