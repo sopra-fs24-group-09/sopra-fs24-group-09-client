@@ -5,10 +5,11 @@ import { Button } from "components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
-import "styles/views/Lobby.scss";
 import { User, Room } from "types";
 import Popup from "components/ui/Popup";
 import { Dropdown } from "components/ui/Dropdown";
+import "styles/views/Lobby.scss";
+import "styles/ui/Popup.scss";
 type PlayerProps = {
   user: User;
 };
@@ -137,6 +138,7 @@ const Lobby = () => {
   const [roomName, setRoomName] = useState("");
   const [numRounds, setNumRounds] = useState(0);
   const [roomTheme, setRoomTheme] = useState("");
+  
   const logout = async () => {
     const id = sessionStorage.getItem("id");
     sessionStorage.removeItem("token");
@@ -233,7 +235,6 @@ const Lobby = () => {
     }
   };
 
-
   const toggleRoomCreationPop = () => {
     // if the ref is not set, do nothing
     if (!roomCreationPopRef.current) {
@@ -275,6 +276,7 @@ const Lobby = () => {
       ? changeAvatarPopRef.current.close()
       : changeAvatarPopRef.current.showModal();
   };
+
 
   const toggleInfoPop = () => {
     // if the ref is not set, do nothing
@@ -432,7 +434,6 @@ const Lobby = () => {
               onChange={e => setUsername(e)}
             />
           </div>
-
           <div>Name: {user.name}</div>
           <div>Status: {user.status}</div>
 
@@ -463,7 +464,6 @@ const Lobby = () => {
             <div className="player" key={index} >
               <i className={"twa twa-" + avatar} style={{fontSize: "3.8rem"}} onClick={() => {
                 changeAvatar(avatar).then(r => toggleProfilePop());
-
               }}/>
             </div>
           ))}

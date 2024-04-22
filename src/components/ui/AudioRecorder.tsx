@@ -1,16 +1,17 @@
 import WaveSurfer from "wavesurfer.js";
 import RecordPlugin from "wavesurfer.js/dist/plugins/record.esm.js";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useLayoutEffect , useRef, useState , useEffect, useImperativeHandle } from "react";
 import { Button } from "./Button";
-import { audioBuffer2wavBlob } from "helpers/audioUtilities";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { Dropdown } from "./Dropdown";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { GiClockwiseRotation, GiAnticlockwiseRotation } from "react-icons/gi";
 import { IoMdMicrophone, IoMdCheckmark } from "react-icons/io";
 import "../../styles/ui/AudioRecorder.scss";
+import PropType from "prop-types";
+import { Base64audio } from "types";
 
-const AudioRecorder: React.FC = () => {
+
+export const AudioRecorder = React.forwardRef((props,ref) => {
   const waveformRef = useRef<HTMLDivElement>(null);
   const audioBlobRef = useRef<Blob | null>(null);
   const audioReversedBlobRef = useRef<Blob | null>(null);
@@ -18,14 +19,18 @@ const AudioRecorder: React.FC = () => {
   const recorder = useRef<RecordPlugin | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState<Boolean>(false);
-  const ffmpegRef = useRef<FFmpeg | null>(new FFmpeg());
+  // const ffmpegRef = useRef<FFmpeg | null>(new FFmpeg());
   const [isReversed, setIsReversed] = useState(false);
   const [playbackRate, setPlaybackRate] = useState<Number>(1);
   const [waveAvailable, setWaveAvailable] = useState(false);
+  const cachedName = `${props.audioName}_original`;
+  const cachedReversedName = `${props.audioName}_reversed`;
+  const cachedIsReversedName = `${props.audioName}_isReversed`;
 
   // compress audio by FFmpeg
-  const compressAudioByFFmpeg = async (audioBase64: string) => {
-    const ffmpeg = ffmpegRef.current;
+  const compressAudioByFFmpegAndCacheIt = async (audioBase64: Base64audio) => {
+    // const ffmpeg = ffmpegRef.current;
+    const ffmpeg = props.ffmpeg;
     // check if ffmpeg is loaded
     if (!ffmpeg.loaded) {
       try {
@@ -59,11 +64,11 @@ const AudioRecorder: React.FC = () => {
       const data = await ffmpeg.readFile("compressed.webm");
       const blob = new Blob([data], { type: "audio/webm" });
       wavesurfer.current?.loadBlob(blob);
-      console.log("compressed audio", blob);
+      console.log(`[${props.audioName}]`,"compressed audio", blob);
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64data = reader.result as string;
-        localStorage.setItem("audio", base64data);
+        const base64data = reader.result as Base64audio;
+        sessionStorage.setItem(cachedName, base64data);
       }
       reader.readAsDataURL(blob);
       // clean ffmpeg files
@@ -74,8 +79,9 @@ const AudioRecorder: React.FC = () => {
     }
   }
 
-  const reverseAudioByFFmpeg = async (audioBase64: string) => {
-    const ffmpeg = ffmpegRef.current;
+  const reverseAudioByFFmpegAndCacheIt = async (audioBase64: Base64audio) => {
+    // const ffmpeg = ffmpegRef.current;
+    const ffmpeg = props.ffmpeg;
     // check if ffmpeg is loaded
     if (!ffmpeg.loaded) {
       try {
@@ -113,11 +119,11 @@ const AudioRecorder: React.FC = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64data = reader.result as string;
-        localStorage.setItem("audioReversed", base64data);
+        sessionStorage.setItem(cachedReversedName, base64data);
       };
       reader.readAsDataURL(audioReversedBlobRef.current);
       // wavesurfer.current?.loadBlob(blob);
-      console.log("reversed audio", audioReversedBlobRef.current);
+      console.log(`[${props.audioName}]`,"reversed audio", audioReversedBlobRef.current);
       // clean ffmpeg files
       await ffmpeg.deleteFile("audio.webm");
       await ffmpeg.deleteFile("reversed.webm");
@@ -128,12 +134,12 @@ const AudioRecorder: React.FC = () => {
   
   const loadCachedAudio = () => {
     // TODO: make it a prop parameter of the component
-    const cachedAudioBase64 = localStorage.getItem("audio");
-    const cachedAudioReversedBase64 = localStorage.getItem("audioReversed");
+    const cachedAudioBase64 = sessionStorage.getItem(cachedName);
+    const cachedAudioReversedBase64 = sessionStorage.getItem(cachedReversedName);
     // load cached isReversed flag as boolean
-    const cachedIsReversed = localStorage.getItem("isReversed");
+    const cachedIsReversed = sessionStorage.getItem(cachedIsReversedName);
     if (cachedAudioBase64) {
-      console.log("load cached audio");
+      console.log(`[${props.audioName}]`,"load cached audio");
       audioBlobRef.current = new Blob(
         [
           new Uint8Array(
@@ -146,7 +152,7 @@ const AudioRecorder: React.FC = () => {
       );
     }
     if (cachedAudioReversedBase64) {
-      console.log("load cached reversed audio");
+      console.log(`[${props.audioName}]`,"load cached reversed audio");
       audioReversedBlobRef.current = new Blob(
         [
           new Uint8Array(
@@ -158,26 +164,31 @@ const AudioRecorder: React.FC = () => {
         { type: "audio/webm" }
       );
     }
-    if (cachedIsReversed) {
+    if (cachedIsReversed
+    ) {
       const _flag = cachedIsReversed === "true";
-      wavesurfer.current.loadBlob(
-        _flag ? audioReversedBlobRef.current : audioBlobRef.current
-      );
+      if(_flag && audioReversedBlobRef.current){
+        wavesurfer.current.loadBlob(audioReversedBlobRef.current);
+      }else if(!_flag && audioBlobRef.current){
+        wavesurfer.current.loadBlob(audioBlobRef.current);
+      }else{
+        console.log("Failed to load cached audio");
+      }
       setIsReversed(_flag);
-      console.log("load cached isReversed", _flag);
-      console.log("load cached audio", _flag ? "reversed" : "original");
+      console.log(`[${props.audioName}]`,"load cached isReversed", _flag);
+      console.log(`[${props.audioName}]`,"load cached audio", _flag ? "reversed" : "original");
     }
   }
  
   // initialize wavesurfer
   const initializeWaveSurferWithRecorder = () => {
     if (wavesurfer.current) {
-      console.log("wavesurfer already initialized");
+      console.log(`[${props.audioName}]`,"wavesurfer already initialized");
       
       return;
     }
     if (waveformRef.current) {
-      console.log("initializeWaveSurfer");
+      console.log(`[${props.audioName}]`,"initializeWaveSurfer");
 
       wavesurfer.current = WaveSurfer.create({
         container: waveformRef.current,
@@ -203,14 +214,15 @@ const AudioRecorder: React.FC = () => {
       console.warn("record-end", blob);
       // save audio to local storage as encoded base64 string
       const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64data = reader.result as string;
-        localStorage.setItem("audio", base64data);
-        await reverseAudioByFFmpeg(base64data);
-        await compressAudioByFFmpeg(base64data);
+      reader.onloadend = () => {
+        const base64data = reader.result as Base64audio;
+        sessionStorage.setItem(cachedName, base64data);
+        reverseAudioByFFmpegAndCacheIt(base64data);
+        compressAudioByFFmpegAndCacheIt(base64data);
+        console.log(`[${props.audioName}]`,"save audio to local storage");
         // set isReverse to false
         setIsReversed(false);
-        localStorage.setItem("isReversed", "false");
+        sessionStorage.setItem(cachedIsReversedName, "false");
       };
       reader.readAsDataURL(blob);
     });
@@ -222,7 +234,9 @@ const AudioRecorder: React.FC = () => {
 
     wavesurfer.current?.on("click", () => {
       const duration = wavesurfer.current?.getDuration();
-      if (duration === 0) {
+      // console.log(`[${props.audioName}]`,"click", duration);
+      // Since wavesurfer.empty() will cause duration to be 0.001, we need to check if duration is smaller than 0.0011
+      if (duration < 0.0011) {
         return;
       }
       wavesurfer.current?.playPause();
@@ -238,13 +252,13 @@ const AudioRecorder: React.FC = () => {
   const onClickRecord = () => {
     // stop recording
     if (recorder.current?.isRecording()) {
-      console.log("stop recording");
+      console.log(`[${props.audioName}]`,"stop recording");
       recorder.current?.stopRecording();
       setIsRecording(false);
 
       return;
     }
-    console.log("start recording");
+    console.log(`[${props.audioName}]`,"start recording");
     // get microphone access
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: false })
@@ -252,6 +266,9 @@ const AudioRecorder: React.FC = () => {
         recorder.current?.startRecording();
         setIsRecording(true);
       });
+    // once recording is started, enable interaction
+    // should be placed in onRecordEnd event, but it's not working
+    wavesurfer.current?.toggleInteraction(true);
   };
 
   const onClickToggleReverse = () => {
@@ -262,39 +279,66 @@ const AudioRecorder: React.FC = () => {
     const currentIsReversed = !prevIsReversed;
     if (currentIsReversed && audioReversedBlobRef.current) {
       wavesurfer.current.loadBlob(audioReversedBlobRef.current);
-      console.log("load reversed audio");
+      console.log(`[${props.audioName}]`,"load reversed audio");
     } else if (!currentIsReversed && audioBlobRef.current) {
       wavesurfer.current.loadBlob(audioBlobRef.current);
-      console.log("load original audio");
+      console.log(`[${props.audioName}]`,"load original audio");
     }
     setIsReversed(currentIsReversed);
-    localStorage.setItem("isReversed", currentIsReversed.toString());
+    sessionStorage.setItem(cachedIsReversedName, currentIsReversed.toString());
   };
 
-  // load audio
-  useEffect(() => {
+  // load audio, layoutEffect is used to make sure the wavesurfer is initialized before loading audio
+  useLayoutEffect(() => {
     initializeWaveSurferWithRecorder();
     loadCachedAudio();
-    try {
-      if (!ffmpegRef.current?.loaded) {
-        ffmpegRef.current?.load();
-        console.log("load FFmpeg successfully");
-      }else{
-        console.log("FFmpeg already loaded");
-      }
-    } catch (error) {
-      console.error("Failed to load FFmpeg", error);
+    
+    return () => {
+      // // clean up wavesurfer
+      // if (wavesurfer.current) {
+      //   wavesurfer.current.destroy();
+      //   console.log(`[${props.audioName}]`,"destroy wavesurfer");
+      // }
     }
   }, []);
 
+  ///
+  /// clear wavesurwave and cached audio
+  /// called by parent component
+  ///
+  const clearAudio = () => {
+    if (wavesurfer.current) {
+      // wavesurfer.current.empty();
+      wavesurfer.current.empty();
+      wavesurfer.current.toggleInteraction(false);
+      setWaveAvailable(false);
+      console.log(`[${props.audioName}]`,"clear audio");
+    }
+    audioBlobRef.current = null;
+    audioReversedBlobRef.current = null;
+    sessionStorage.removeItem(cachedName);
+    sessionStorage.removeItem(cachedReversedName);
+    sessionStorage.removeItem(cachedIsReversedName);
+    console.log(`[${props.audioName}]`,"clear cached audio");
+  };
+
+  useImperativeHandle(ref, () => ({
+    clearAudio: clearAudio
+  }),[]);
+
+  // pass reversed audio to parent component
+  useEffect(() => {
+    props.handleReversedAudioChange && props.handleReversedAudioChange(audioReversedBlobRef.current);
+    console.log(`[${props.audioName}]`,"reversed audio changed", audioReversedBlobRef.current);
+  }, [audioReversedBlobRef.current]);
 
   return (
-    <div className="audio-recorder">
+    <div className={`audio-recorder ${props.className}`}>
       <div ref={waveformRef} className="audio-recorder wave-frame" />
       <div className="audio-recorder button-container">
         <Button
           className="audio-recorder play-button"
-          disabled={isRecording || !waveAvailable}
+          disabled={isRecording || !waveAvailable || props.disabled}
           onClick={() => {
             wavesurfer.current?.setPlaybackRate(playbackRate, true);
             wavesurfer.current?.playPause();
@@ -304,7 +348,7 @@ const AudioRecorder: React.FC = () => {
           {isPlaying ? <FaPause /> : <FaPlay />}
         </Button>
         <Button
-          disabled={isPlaying}
+          disabled={isPlaying || props.disabled}
           onClick={onClickRecord}
           className="audio-recorder record-button"
         >
@@ -313,12 +357,13 @@ const AudioRecorder: React.FC = () => {
         <Button
           onClick={onClickToggleReverse}
           className="audio-recorder toggle-reverse-button"
-          disabled={isRecording || isPlaying}
+          disabled={isRecording || isPlaying || props.disabled || !waveAvailable}
         >
           {isReversed ? <GiClockwiseRotation /> : <GiAnticlockwiseRotation />}
         </Button>
         {/*List menu to select playback rate*/}
         <Dropdown
+          disabled = {props.disabled || !waveAvailable}
           className="audio-recorder button-container playback-rate-dropdown"
           onChange={(e) => {
             const rate = parseFloat(e.target.value);
@@ -335,6 +380,17 @@ const AudioRecorder: React.FC = () => {
       </div>
     </div>
   );
+});
+
+AudioRecorder.propTypes = {
+  className: PropType.string,
+  audioName: PropType.string.isRequired,
+  ffmpeg: PropType.object.isRequired,
+  disabled: PropType.bool,
+  handleReversedAudioChange: PropType.func,
 };
+
+AudioRecorder.displayName = "AudioRecorder";
+
 
 export default AudioRecorder;

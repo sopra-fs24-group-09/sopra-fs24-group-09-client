@@ -1,0 +1,67 @@
+@import "../theme";
+
+.wave-player {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 100%;
+  // background-color: $darkBlue;
+  // z-index: 1;
+  .waveform {
+    width: 100%;
+    min-height: 0;
+    height: 100%;
+    flex-shrink: 1;
+    display: flex;
+    flex-direction: row;
+    // select all children of the waveform
+    > * {
+      flex-grow: 1;
+      min-height: 0;
+    }
+
+  }
+  .no-audio-placeholder {
+    position: absolute;
+    left: 1.5rem;
+    font-size: 1.5rem;
+    animation: pulse 10s infinite;
+    color: $classicYellow;
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.25;
+      }
+      50% {
+        transform: scale(1.25);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0.25;
+      }
+    }
+  }
+
+  .btn-group {
+    background-color: transparent;
+    position: absolute;
+    top: -10%;
+    right: 0;
+    // relative z-index
+    z-index: 2; 
+    Button{
+      // font color is setting by style prop in WavePlayer.tsx
+      padding-top: 0;
+      background-color: transparent;
+      font-size: 1rem;
+      border: none;
+      text-decoration: none;
+      &:hover {
+        color: $darkBlue;
+        background-color: transparent;
+      }
+    }
+  }
+}
+

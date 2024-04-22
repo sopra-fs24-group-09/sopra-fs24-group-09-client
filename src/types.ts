@@ -19,3 +19,5 @@ export type Room = {
   currentPlayerIndex: number | null;
   playToOuted: boolean | null;
 };
+
+export type Base64audio = `data:audio/${string};base64,${string}`;
