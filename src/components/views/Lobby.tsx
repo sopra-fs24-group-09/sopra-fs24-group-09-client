@@ -261,8 +261,8 @@ const Lobby = () => {
 
   async function enterRoom(roomId, userId) {
     try {
-      const requestBody = JSON.stringify({ userId, roomId });
-      await api.put("/games", requestBody);
+      const requestBody = JSON.stringify({ id: userId });
+      await api.put(`/games/${roomId}`, requestBody);
     } catch (error) {
       console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
     }
@@ -336,6 +336,7 @@ const Lobby = () => {
         // const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
         enterRoom(Room.roomId, currentId)
           .then(() => {
+            alert(currentId);
             navigate(`/rooms/${Room.roomId}`);
           })
           .catch(error => {
