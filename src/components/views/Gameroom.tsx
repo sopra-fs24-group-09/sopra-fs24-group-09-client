@@ -958,12 +958,14 @@ const Gameroom = () => {
                 <div
                   className="gameroom readybutton"
                   onClick={() => getReady()}
+                  onKeyDown={() => getReady()}
                 >
                   Confirm
                 </div>
                 <div
                   className="gameroom cancelbutton"
                   onClick={() => cancelReady()}
+                  onKeyDown={() => cancelReady()}
                 >
                   Cancel
                 </div>
