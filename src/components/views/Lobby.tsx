@@ -218,16 +218,17 @@ const Lobby = () => {
     try {
       const ownerId = sessionStorage.getItem("id");  // 假设ownerId存储在sessionStorage中
       const requestBody = JSON.stringify({
-        name: roomName,
-        num: numRounds,
+        roomName: roomName,
+        maxPlayersNum: numRounds,
         roomOwnerId: ownerId,
         theme: roomTheme
       });
 
       const response = await api.post("/games", requestBody);
       console.log("Room created successfully:", response);
-      const roomId = response.roomId;
-      navigate(`/room=${roomId}`);
+      console.log("Room ID:", response.data.roomId);
+      const roomId = response.data.roomId;
+      navigate(`/rooms/${roomId}`);
       //toggleRoomCreationPop();  // 关闭创建房间的弹窗
     } catch (error) {
       console.error("Error creating room:", handleError(error));
@@ -388,32 +389,6 @@ const Lobby = () => {
         </div>
       </div>
 
-      <Popup
-        ref={roomCreationPopRef}
-        toggleDialog={toggleRoomCreationPop}
-        className="room-creation-popup"
-      >
-        <BaseContainer className="room-creation-popup content">
-          <div className="title">Create Room</div>
-          <input type="text" placeholder="Room Name" />
-          <input type="number" placeholder="Round" />
-          <Dropdown
-            className="theme-dropdown"
-            prompt="Select Theme"
-            options={[
-              { value: "Beginner", label: "Beginner"},
-              { value: "Food", label: "Food" },
-            ]}
-          />
-          <div className="room-creation-popup btn-container">
-            <Button className="create-room">Create Room</Button>
-            <Button className="cancel" onClick={toggleRoomCreationPop}>
-              Cancel
-            </Button>
-          </div>
-        </BaseContainer>
-      </Popup>
-
 
       <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className = "profile-popup">
         <BaseContainer className="profile-popup content">
@@ -484,8 +459,10 @@ const Lobby = () => {
             prompt="Select Theme"
             value={roomTheme}
             options={[
-              { value: "Beginner", label: "Beginner"},
-              { value: "Food", label: "Food" }
+              { value: "JOB", label: "JOB"},
+              { value: "FOOD", label: "FOOD" },
+              { value: "SUPERHERO", label: "SUPERHERO" },
+              { value: "SPORTS", label: "SPORTS" },
             ]}
             onChange={(selectedOption) => setRoomTheme(selectedOption.value)}
           />
