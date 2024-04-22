@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo, useImperativeHandle } from "react";
 import { api, handleError } from "helpers/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 import { User } from "types";
@@ -30,6 +30,7 @@ type SharedAudioURL = { [userId: number]: string };
 
 const Gameroom = () => {
   const navigate = useNavigate();
+  const { currentRoomID } = useParams(); // get the room ID from the URL
   const stompClientRef = useRef(null);
   /**
    * Question: why we need this user state here?
@@ -53,7 +54,7 @@ const Gameroom = () => {
     currentRoundNum: 2,
   });
   const [roomInfo, setRoomInfo] = useState({
-    roomID: 5,
+    roomID: currentRoomID,
     theme: "Advanced",
   });
   const prevStatus = useRef("start");
@@ -106,7 +107,7 @@ const Gameroom = () => {
 
     //const roomId = 5;
     const connectWebSocket = () => {
-      let Sock = new SockJS("http://localhost:8080/ws/roomID/playerID");
+      let Sock = new SockJS(`http://localhost:8080/ws/${currentRoomID}`);
       //let Sock = new SockJS('https://sopra-fs23-group-01-server.oa.r.appspot.com/ws');
       stompClientRef.current = over(Sock);
       stompClientRef.current.connect({}, onConnected, onError);
