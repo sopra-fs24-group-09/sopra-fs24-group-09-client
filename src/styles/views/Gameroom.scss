@@ -28,6 +28,7 @@
     justify-content: space-between;
     align-items: center;
     margin-top: 5vh;
+    flex-grow: 1;
     // height: 100%;
     .inputarea {
       background-color: $greyBlue;
@@ -49,6 +50,30 @@
       flex-direction: column;
       align-items: center;
       background-color: $whiteYellow;
+    }
+    .leaderboarddiv {
+      right:0;
+      flex-grow: 1;
+      min-height: fit-content;
+      // height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: $whiteYellow;
+      justify-content: center;
+    }
+    .readypopupbg {
+      // height: 40vh;
+      // width: 35vw;
+      // position: absolute;
+      // top: 19vh;
+      // left: 48vw;
+      background-color: transparent;
+      flex-grow: 1;
+      border-radius: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
   &.playercontainer {
@@ -200,27 +225,16 @@
   //   position: relative;
   //   top: 1rem;
   // }
-  &.readypopupbg {
-    background-color: $classicYellow;
-    height: 40vh;
-    width: 35vw;
-    position: absolute;
-    top: 19vh;
-    left: 48vw;
-    border-radius: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
   &.readypopupcontainer {
     background-color: $lightYellow;
-    height: 37vh;
-    width: 33vw;
-    position: relative;
+    // height: 37vh;
+    // width: 33vw;
+    // position: relative;
     border-radius: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-shadow: 0 0 0 10px $classicYellow;
   }
   &.popuptitle {
     margin-top: 2rem;
@@ -252,12 +266,17 @@
     align-items: center;
     gap:5rem;
     margin-top: 3rem;
+    margin-bottom: 2rem;
+    margin-right: 2rem;
+    margin-left: 2rem;
   }
   .readybutton,
   .cancelbutton {
     border-radius: 0.5rem;
     width: 11vw;
     height: 5vh;
+    min-height: fit-content;
+    min-width: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -296,7 +315,8 @@
     align-items: center;
     justify-content: center;
   }
-  &.counternum {
+  &
+  .counternum {
     margin-left: 0.5rem;
     font-family: 'Inter';
     font-weight: 900;
@@ -373,16 +393,6 @@
     border-radius: 1rem;
     font-weight: 500;
     color: $darkBlue;
-  }
-  &.leaderboarddiv {
-    position: absolute;
-    top:8vh;
-    left:30vw;
-    height:65vh;
-    width: 68vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
   &.leaderboard {
     //background-color: $whiteYellow;
