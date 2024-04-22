@@ -344,6 +344,7 @@ const Gameroom = () => {
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
+    navigate("/lobby")
   };
 
   //start game
@@ -388,6 +389,8 @@ const Gameroom = () => {
       JSON.stringify(payload)
     );
   };
+
+
   //#endregion -----------------WebSocket Send Functions-----------------
 
   const handleAudioReversed = (audioReversed: Base64audio) => {
@@ -1013,19 +1016,34 @@ const Gameroom = () => {
               </button>
             </div>
           )}
-          <button onClick={togglePopup}> show</button>
-          <button onClick={toggleStatus}> status</button>
-          <button onClick={() => setGameOver((prevState) => !prevState)}>
-            Over
-          </button>
-          <button onClick={
-            () => {
-              console.log("clear audio");
-              console.log(roundStatusComponentRef.current);
-              roundStatusComponentRef.current?.clearAudio();
-              myRecordingReversedRef.current = null;
-            }
-          }>clear</button>
+          <div style={{display:"flex",flexDirection:"row"}}>
+            <button onClick={togglePopup}> show</button>
+            <button onClick={toggleStatus}> status</button>
+            <button onClick={() => setGameOver((prevState) => !prevState)}>
+              Over
+            </button>
+            <button onClick={
+              () => {
+                console.log("clear audio");
+                console.log(roundStatusComponentRef.current);
+                roundStatusComponentRef.current?.clearAudio();
+                myRecordingReversedRef.current = null;
+              }
+            }>clear</button>
+            <button onClick={
+              () => {
+                console.log("cleave room");
+                exitRoom();
+              }
+            }>leave</button>
+            <button onClick={
+              () => {
+                console.log("upload audio");
+                uploadAudio();
+              }
+            }>upload</button>
+          </div>
+
         </div>
       </div>
     </BaseContainer>
