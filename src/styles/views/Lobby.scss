@@ -117,7 +117,8 @@
   //overflow: hidden;
 
   .room-header{
-    flex: 1;                   // Allow both children to grow and take up equal space
+    margin-left: 10px;
+    flex-shrink: 0;     // Allow both children to grow and take up equal space
     display: flex;
     flex-direction: column;    // Stack the children of these containers vertically
     align-items: center;       // Center the items horizontally
@@ -125,18 +126,29 @@
     padding: 10px;
   }
 
-  .room-players {
-    align-items: flex-start;   // Align the players to the start of the flex container
-    flex: 1;                   // Allow both children to grow and take up equal space
-    display: flex;
-    flex-direction: row;    // Stack the children of these containers vertically
-    //align-items: center;       // Center the items horizontally
-    justify-content: center;   // Center the items vertically
-    padding: 10px;
-  }
+
+  //.room-players {
+  //  width: 70%;
+  //  align-items: flex-start;   // Align the players to the start of the flex container
+  //  flex: 1 1 auto;                // Allow both children to grow and take up equal space
+  //  display: flex;
+  //  flex-direction: row;    // Stack the children of these containers vertically
+  //  //align-items: center;       // Center the items horizontally
+  //  justify-content: center;   // Center the items vertically
+  //  padding: 10px;
+  //  overflow-x: auto;
+  //  white-space: nowrap;
+  //}
 
   .room-header {
-    align-items: flex-end;     // Align the room details to the end of the flex container
+    flex-shrink: 0;
+    flex-grow: 0;
+    display: flex;
+    margin-left: 10px;
+    flex-direction: column; /* 堆叠子元素 */
+    align-items: center; /* 水平居中 */
+    justify-content: center; /* 垂直居中 */
+    padding: 10px;    // Align the room details to the end of the flex container
   }
 
 
@@ -189,13 +201,17 @@
   }
 }
 .room-players {
-  align-items: flex-end;   // Align the players to the start of the flex container
-  flex: 1;                   // Allow both children to grow and take up equal space
+  //width: 70%;
+
+  align-items: flex-start;   // Align the players to the start of the flex container
+  flex: 1 1 auto;                // Allow both children to grow and take up equal space
   display: flex;
   flex-direction: row;    // Stack the children of these containers vertically
   //align-items: center;       // Center the items horizontally
-  justify-content: left;   // Center the items vertically
+  //justify-content: center;   // Center the items vertically
   padding: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 .status-container {
   width: 18%; /* 或者任何固定宽度 */
@@ -259,29 +275,36 @@
   background: #D9D9D9;
   border-radius: $borderRadius;
 }
-
-.big-title{
+.title-container {
   position: absolute;  // 使用绝对定位
   left: 15%;           // 定位到zuo边
   top: 25%;           // 从顶部留下10%的空间以居中显示
-  font-size: 250px;
+  font-size: 20rem; /* 设定容器的字体大小 */
+}
+
+.big-title {
+  /* 绝对定位可能不再需要，取决于布局需求 */
   color: $classicYellow;
   font-family: "Acme", sans-serif;
 }
 
-.information{
-  position: absolute;  // 使用绝对定位
-  left: 48%;           // 定位到zuo边
-  top: 24%;
-  font-size: 43px;
-  width: 50px;
+.information {
+  position: absolute;
+  top: 0; /* 顶部对齐 */
+  right: 0; /* 右侧对齐 */
+  width: 1.5rem; /* 定宽，可以用rem来调整 */
+  height: 2rem; /* 定高，保持图标正方形 */
+  font-size: 1.5rem; /* 可以根据需要调整 */
+  font-weight: bold;
+  //display: flex;
   text-align: center;
+  //line-height: 2rem;
   color: white;
-  font-family: "Acme", sans-serif;
   background: $classicYellow;
   border-radius: $borderRadius;
+  //padding: 0.25rem; /* 小间距增加点击区域 */
+  cursor: pointer;
 }
-
 .profile-popup{
   height:50%;
   &.content{
@@ -341,11 +364,11 @@
   &.input {
     height: 35px;
     padding-left: 15px;
-    margin-left: -4px;
+    margin-left: 4px;
     border: none;
     border-radius: 0.75em;
-    //margin-top: 20px;
-    background: transparentize(white, 0.85);
+    margin-top: 5px;
+    background: #FFF3CF;
     color: $textColor;
   }
 

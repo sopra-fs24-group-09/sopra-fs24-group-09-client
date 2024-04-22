@@ -11,6 +11,7 @@ export const Dropdown = (props) => {
         style={props.style}
         onChange={props.onChange}
         defaultValue={props.defaultValue}>
+        {props.prompt && <option hidden disabled selected value>{props.prompt}</option>}
         {props.options.map((option, index) => (
           <option key={index} value={option.value}>
             {option.label}
@@ -28,6 +29,7 @@ Dropdown.propTypes = {
   className: PropTypes.string,
   defaultValue: PropTypes.number,
   disabled: PropTypes.bool,
+  prompt: PropTypes.string,
 };
 
 export default Dropdown;
