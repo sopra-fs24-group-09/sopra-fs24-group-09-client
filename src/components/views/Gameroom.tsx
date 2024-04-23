@@ -117,25 +117,26 @@ const Gameroom = () => {
       stompClientRef.current = over(Sock);
       stompClientRef.current.connect({}, onConnected, onError);
     };
+    console.log(sessionStorage.getItem("id"));
 
     const timestamp = new Date().getTime(); // Get current timestamp
 
     const onConnected = () => {
       // subscribe to the topic
       playerInfoSuber = stompClientRef.current.subscribe(
-        "/plays/info",
+        `/plays/info/${currentRoomID}`,
         onPlayerInfoReceived
       );
       gameInfoSuber = stompClientRef.current.subscribe(
-        "/games/info",
+        `/games/info/${currentRoomID}`,
         onGameInfoReceived
       );
       sharedAudioSuber = stompClientRef.current.subscribe(
-        "/plays/audio",
+        `/plays/audio/${currentRoomID}`,
         onShareAudioReceived
       );
       responseSuber = stompClientRef.current.subscribe(
-        "/response",
+        `/response/${currentRoomID}`,
         onResponseReceived
       );
       //connect or reconnect
@@ -155,6 +156,7 @@ const Gameroom = () => {
     };
 
     const onGameInfoReceived = (payload) => {
+      console.log(payload.body)
       const payloadData = JSON.parse(payload.body);
       if (payloadData.message.gameStatus === "ready") {
         setShowReadyPopup(true);
@@ -165,7 +167,7 @@ const Gameroom = () => {
         setShowReadyPopup(false);
       }
 
-      setCurrentSpeakerID(payloadData.message.currentSpeaker.id);
+      // setCurrentSpeakerID(payloadData.message.currentSpeaker.id);
       if (
         prevStatus.current === "reveal" &&
         payloadData.message.roundStatus === "speak"
@@ -284,7 +286,7 @@ const Gameroom = () => {
     // get a random receipt uuid
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/users/ready",
+      "/app/message/users/ready",
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
@@ -302,7 +304,7 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/users/unready",
+      "/app/message/users/ready",
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
@@ -340,7 +342,7 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/games/exitRoom",
+      "/app/message/games/exitroom",
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
