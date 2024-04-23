@@ -959,27 +959,48 @@ const Gameroom = () => {
         {!gameOver && showReadyPopup && (
           <div className="gameroom readypopupbg">
             <div className="gameroom readypopupcontainer">
-              <span className="gameroom popuptitle"> Room#05</span>
+              <span className="gameroom popuptitle"> {"Room#" + currentRoomID}</span>
               <span className="gameroom popuptheme"> Advanced</span>
               <span className="gameroom popuptext">
                 {" "}
                 Ready to start the game?
               </span>
               <div className="gameroom buttonset">
-                <div
-                  className="gameroom readybutton"
-                  onClick={() => getReady()}
-                  onKeyDown={() => getReady()}
-                >
-                  Confirm
-                </div>
-                <div
-                  className="gameroom cancelbutton"
-                  onClick={() => cancelReady()}
-                  onKeyDown={() => cancelReady()}
-                >
-                  Cancel
-                </div>
+                {roomInfo.roomOwnerId === user.id &&(
+                  <>
+                    <div
+                      className="gameroom readybutton"
+                      onClick={() => startGame()}
+                      //onKeyDown={() => getReady()}
+                    >
+                      Start
+                    </div>
+                    <div
+                      className="gameroom cancelbutton"
+                      //onClick={() => cancelReady()}
+                    >
+                      Quit
+                    </div>
+                  </>
+                )}
+                {roomInfo.roomOwnerId !== user.id &&(
+                  <>
+                    <div
+                      className="gameroom readybutton"
+                      onClick={() => getReady()}
+                      onKeyDown={() => getReady()}
+                    >
+                      Confirm
+                    </div>
+                    <div
+                      className="gameroom cancelbutton"
+                      onClick={() => cancelReady()}
+                      onKeyDown={() => cancelReady()}
+                    >
+                      Cancel
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
