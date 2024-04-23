@@ -199,10 +199,11 @@ const Lobby = () => {
 
   const doEdit = async () => {
     try {
-      const requestBody = JSON.stringify({ username, avatar: avatar });
+      const requestBody = JSON.stringify({ username: username, avatar: avatar });
       const id = sessionStorage.getItem("id");
       console.log("Request body:", requestBody);
       await api.put(`/users/${id}`, requestBody);
+      updateUsername(username);
       toggleProfilePop();
     } catch (error) {
       if (error.response && error.response.data) {
@@ -297,15 +298,12 @@ const Lobby = () => {
       setAvatar(newAvatar);
 
       // 构造请求体，只包含 avatar 更改
-      const requestBody = JSON.stringify({ username, avatar: newAvatar });
+      const requestBody = JSON.stringify({ avatar: newAvatar });
       const id = sessionStorage.getItem("id");
       console.log("Request body:", requestBody);
-      // 执行更新请求
       await api.put(`/users/${id}`, requestBody);
-
-      // 可能需要关闭弹窗或执行其他 UI 反馈
-
       console.log("Avatar changed successfully");
+      updateAvatar(newAvatar);
     } catch (error) {
       if (error.response && error.response.data) {
         alert(error.response.data.message);
@@ -323,6 +321,12 @@ const Lobby = () => {
     }));
   };
 
+  const updateUsername = (newUsername) => {
+    setUser(prevUser => ({
+      ...prevUser, // 复制 prevUser 对象的所有现有属性
+      username: newUsername // 更新 avatar 属性
+    }));
+  };
   const userinfo = () => {
     return;
   };
@@ -396,7 +400,7 @@ const Lobby = () => {
         <BaseContainer className="profile-popup content">
           <div className="avatar-container" onClick={() => {
             toggleAvatarPop();
-            // toggleProfilePop();
+            toggleProfilePop();
           }}>
             <i className={"twa twa-" + user.avatar} style={{fontSize: "10rem", marginTop:"0.8rem", textAlign:"center"}}/>
           </div>
@@ -408,7 +412,7 @@ const Lobby = () => {
               // className="profile-popup input"
               //value={user.username}
               type="text"
-              onChange={e => setUsername(e)}
+              onChange={e => setUsername(e.target.value)}
             />
           </div>
           <div>Name: {user.name}</div>
@@ -440,7 +444,8 @@ const Lobby = () => {
           {avatarList?.map((avatar,index) => (
             <div className="player" key={index} >
               <i className={"twa twa-" + avatar} style={{fontSize: "3.8rem"}} onClick={() => {
-                changeAvatar(avatar).then(r => toggleProfilePop());
+                changeAvatar(avatar).then(r => toggleAvatarPop);
+                toggleAvatarPop();
               }}/>
             </div>
           ))}
