@@ -65,11 +65,11 @@ const WavePlayer = props => {
   return (
     <div className={`wave-player ${props.className}`}>
       <div className="waveform" ref={waveformRef}/>
-      <div className="no-audio-placeholder" style={{display: props.audioURL ? "none" : "block"}}>
+      <div className="no-audio-placeholder" style={{display: props.audioURL ? "none":"block"}}>
         ........is recording......
       </div>
       <div className="btn-group"
-        style={{display: props.audioURL ? "flex" : "none"}}>
+        style={{display: props.audioURL ? "flex":"none"}}>
         <Button
           className={"x0.5"}
           onClick={() => {
