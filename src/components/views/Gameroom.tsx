@@ -47,6 +47,8 @@ const Gameroom = () => {
   const [currentSpeakerID, setCurrentSpeakerID] = useState(null);
   const [validateAnswer, setValidateAnswer] = useState(null);
   const [playerLists, setPlayerLists] = useState([]);
+
+
   const [gameInfo, setGameInfo] = useState({
     roomID: 5,
     currentSpeaker: {
@@ -800,7 +802,7 @@ const Gameroom = () => {
 
   const PlayerList = ({ playerStatus, sharedAudioList }) => {
     return (
-      <>
+      <div className="gameroom left-area">
         <div className="gameroom roominfocontainer">
           <div className="gameroom roominfotitle">ROOM</div>
           <div className="gameroom roominfo">
@@ -888,7 +890,7 @@ const Gameroom = () => {
             );
           })}
         </div>
-      </>
+      </div>
     );
   };
 
@@ -952,12 +954,13 @@ const Gameroom = () => {
 
   return (
     <BaseContainer className="gameroom basecontainer">
-      <Header left="28vw" />
+      {/* <Header left="28vw" /> */}
       <PlayerList
         playerStatus={playerLists}
         sharedAudioList={sharedAudioList}
       />
       <div className="gameroom right-area">
+        <Header />
         {!gameOver && showReadyPopup && (
           <div className="gameroom readypopupbg">
             <div className="gameroom readypopupcontainer">
@@ -1013,7 +1016,7 @@ const Gameroom = () => {
         {!gameOver && !showReadyPopup && (
           <Roundstatus
             gameInfo={mockgameInfo}
-            currentSpeakerAudioURL={"mockURL"}
+            currentSpeakerAudioURL={currentSpeakerAudioURL}
             ref={roundStatusComponentRef}
           />
         )}
