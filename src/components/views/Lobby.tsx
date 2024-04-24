@@ -164,6 +164,7 @@ const Lobby = () => {
           // 对每个房间的用户 ID 列表并发请求用户信息
           const playerDetails = await Promise.all(room.roomPlayersList.map(async (userId) => {
             const userResponse = await api.get(`/users/${userId}`);
+            
             return userResponse.data;  // 返回用户的详细信息
           }));
 
