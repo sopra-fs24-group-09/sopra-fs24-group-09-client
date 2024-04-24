@@ -139,6 +139,7 @@ const Gameroom = () => {
         `/response/${currentRoomID}`,
         onResponseReceived
       );
+      enterRoom();
       //connect or reconnect
     };
     const onResponseReceived = (payload) => {
@@ -249,6 +250,7 @@ const Gameroom = () => {
 
     // Cleanup on component unmount
     return () => {
+
       if (playerInfoSuber) {
         playerInfoSuber.unsubscribe();
       }
@@ -266,12 +268,29 @@ const Gameroom = () => {
           console.log("Disconnected");
         });
       }
+
     };
   }, []);
 
   //#region -----------------WebSocket Send Functions-----------------
 
   //debounce-throttle
+  const enterRoom = () => {
+    const payload: Timestamped<PlayerAndRoomID> = {
+      timestamp: new Date().getTime(),
+      message: {
+        userID: user.id,
+        roomID: roomInfo.roomID,
+      },
+    };
+    const receiptId = uuidv4();
+    stompClientRef.current?.send(
+      "/app/message/users/enterroom",
+      { receiptId: receiptId },
+      JSON.stringify(payload)
+    );
+  }
+
   //ready
   const getReady = () => {
     const payload: Timestamped<PlayerAndRoomID> = {
@@ -323,7 +342,7 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/games/start",
+      "/app/message/games/start",
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
@@ -342,7 +361,7 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/games/exitroom",
+      "/app/message/users/exitroom",
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
@@ -364,7 +383,7 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/games/validate",
+      "/app/message/games/validate",
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
@@ -386,7 +405,7 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/games/audio/upload" /*URL*/,
+      "/app/message/games/audio/upload" /*URL*/,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
@@ -968,7 +987,7 @@ const Gameroom = () => {
                 Ready to start the game?
               </span>
               <div className="gameroom buttonset">
-                {roomInfo.roomOwnerId === user.id &&(
+                {gameInfo.roomOwner.id === user.id &&(
                   <>
                     <div
                       className="gameroom readybutton"
@@ -985,14 +1004,14 @@ const Gameroom = () => {
                     </div>
                   </>
                 )}
-                {roomInfo.roomOwnerId !== user.id &&(
+                {gameInfo.roomOwner.id !== user.id &&(
                   <>
                     <div
                       className="gameroom readybutton"
                       onClick={() => getReady()}
                       onKeyDown={() => getReady()}
                     >
-                      Confirm
+                      Confirm, {gameInfo.roomOwner.id},{user.id}
                     </div>
                     <div
                       className="gameroom cancelbutton"
