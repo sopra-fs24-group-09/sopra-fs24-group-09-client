@@ -323,7 +323,11 @@ export const AudioRecorder = React.forwardRef((props,ref) => {
   };
 
   useImperativeHandle(ref, () => ({
-    clearAudio: clearAudio
+    clearAudio: clearAudio,
+    setVolume: (volume: number) => {
+      wavesurfer.current?.setVolume(volume);
+      console.log(`[${props.audioName}]`,"set volume to", volume);
+    }
   }),[]);
 
   // pass reversed audio to parent component

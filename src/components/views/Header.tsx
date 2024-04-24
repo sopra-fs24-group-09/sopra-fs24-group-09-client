@@ -13,12 +13,13 @@ import "../../styles/views/Header.scss";
  */
 const Header = props => (
   <div  className="header container" style={{left:props.left}}>
-    <VolumeBar />
+    <VolumeBar onChange={props.onChange}/>
   </div>
 );
 
 Header.propTypes = {
   left: PropTypes.string,
+  onChange: PropTypes.func,
 };
 
 /**
