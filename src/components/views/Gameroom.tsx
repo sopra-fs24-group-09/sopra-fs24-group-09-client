@@ -399,24 +399,31 @@ const Gameroom = () => {
 
   //upload audio
   const uploadAudio = () => {
+    console.log("[uploadAudio], myRecordingReversedRef.current", myRecordingReversedRef.current);
     if (!myRecordingReversedRef.current) {
       console.error("No audio to upload");
-
+      
       return;
     }
-    const payload: Timestamped<PlayerAudio> = {
-      timestamp: new Date().getTime(),
-      message: {
-        userID: user.id,
-        audioData: myRecordingReversedRef.current,
-      },
+    // covert the audio blob to base64 string
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64data = reader.result as Base64audio;
+      const payload: Timestamped<PlayerAudio> = {
+        timestamp: new Date().getTime(),
+        message: {
+          userID: user.id,
+          audioData:base64data,
+        },
+      };
+      const receiptId = uuidv4();
+      stompClientRef.current?.send(
+        "/app/message/games/audio/upload" /*URL*/,
+        { receiptId: receiptId },
+        JSON.stringify(payload)
+      );
     };
-    const receiptId = uuidv4();
-    stompClientRef.current?.send(
-      "/app/message/games/audio/upload" /*URL*/,
-      { receiptId: receiptId },
-      JSON.stringify(payload)
-    );
+    reader.readAsDataURL(myRecordingReversedRef.current);
   };
 
 

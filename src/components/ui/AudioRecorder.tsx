@@ -214,15 +214,18 @@ export const AudioRecorder = React.forwardRef((props,ref) => {
       console.warn("record-end", blob);
       // save audio to local storage as encoded base64 string
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () =>{
         const base64data = reader.result as Base64audio;
         sessionStorage.setItem(cachedName, base64data);
-        reverseAudioByFFmpegAndCacheIt(base64data);
+        await reverseAudioByFFmpegAndCacheIt(base64data);
         compressAudioByFFmpegAndCacheIt(base64data);
         console.log(`[${props.audioName}]`,"save audio to local storage");
         // set isReverse to false
         setIsReversed(false);
         sessionStorage.setItem(cachedIsReversedName, "false");
+        // pass audio to parent component
+        props.handleReversedAudioChange && props.handleReversedAudioChange(blob);
+        console.log(`[${props.audioName}]`,"reversed audio passing to parent", blob);
       };
       reader.readAsDataURL(blob);
     });
@@ -331,10 +334,10 @@ export const AudioRecorder = React.forwardRef((props,ref) => {
   }),[]);
 
   // pass reversed audio to parent component
-  useEffect(() => {
-    props.handleReversedAudioChange && props.handleReversedAudioChange(audioReversedBlobRef.current);
-    console.log(`[${props.audioName}]`,"reversed audio changed", audioReversedBlobRef.current);
-  }, [audioReversedBlobRef.current]);
+  // useEffect(() => {
+  //   props.handleReversedAudioChange && props.handleReversedAudioChange(audioReversedBlobRef.current);
+  //   console.log(`[${props.audioName}]`,"reversed audio changed", audioReversedBlobRef.current);
+  // }, [audioReversedBlobRef.current]);
 
   return (
     <div className={`audio-recorder ${props.className}`}>
