@@ -156,18 +156,34 @@ const Lobby = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        //get all rooms
-        const response = await api.get("/games/lobby");
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setRooms(response.data);
+        // 获取所有房间信息
+        const roomsResponse = await api.get("/games/lobby");
+        console.log("Rooms data:", roomsResponse.data);
 
-        console.log("request to:", response.request.responseURL);
-        console.log("status code:", response.status);
-        console.log("status text:", response.statusText);
-        console.log("requested data:", response.data);
+        // 使用 Promise.all 来并发获取每个房间的用户详细信息
+        const roomsWithPlayerDetails = await Promise.all(roomsResponse.data.map(async (room) => {
+          // 对每个房间的用户 ID 列表并发请求用户信息
+          const playerDetails = await Promise.all(room.roomPlayersList.map(async (userId) => {
+            const userResponse = await api.get(`/users/${userId}`);
+            return userResponse.data;  // 返回用户的详细信息
+          }));
+
+          return {
+            ...room,
+            roomPlayersList: playerDetails  // 替换房间中的用户 ID 列表为用户详细信息
+          };
+        }));
+
+        // 更新房间状态，包含了用户的详细信息
+        setRooms(roomsWithPlayerDetails);
+
+        console.log("request to:", roomsResponse.request.responseURL);
+        console.log("status code:", roomsResponse.status);
+        console.log("status text:", roomsResponse.statusText);
+        console.log("requested data:", roomsResponse.data);
 
         // See here to get more data.
-        console.log(response);
+        console.log(roomsResponse);
 
         // Get user ID from sessionStorage
         const userId = sessionStorage.getItem("id");
