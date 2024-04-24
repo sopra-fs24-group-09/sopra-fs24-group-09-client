@@ -85,6 +85,7 @@ const Gameroom = () => {
   if (gameInfo && gameInfo.currentSpeaker) {
     currentSpeakerIdRef.current = gameInfo.currentSpeaker.id;
   }
+  const [globalVolume, setGlobalVolume] = useState(0.5);
 
   // useMemo to initialize and load FFmpeg wasm module
   // load FFmpeg wasm module
@@ -273,6 +274,13 @@ const Gameroom = () => {
   }, []);
 
   //#region -----------------WebSocket Send Functions-----------------
+  
+  // when volume changes, apply the change to all audio players
+  useEffect(() => {
+    if(roundStatusComponentRef.current){
+      roundStatusComponentRef.current.setVolumeTo(globalVolume);
+    }
+  }, [globalVolume]);
 
   //debounce-throttle
   const enterRoom = () => {
@@ -561,6 +569,10 @@ const Gameroom = () => {
       clearAudio: () => {
         console.log("----clear audio");
         _audioRecorderRef.current?.clearAudio();
+      },
+      setVolumeTo: (volume) => {
+        console.log("----set volume to", volume);
+        _audioRecorderRef.current?.setVolume(volume);
       }
     }), []);
 
@@ -645,6 +657,7 @@ const Gameroom = () => {
                     <WavePlayer
                       className="gameroom waveplayer"
                       audioURL={currentSpeakerAudioURL}
+                      volume={globalVolume}
                     />
                   </div>
                 </>
@@ -664,6 +677,7 @@ const Gameroom = () => {
                     <WavePlayer
                       className="gameroom waveplayer"
                       audioURL={currentSpeakerAudioURL}
+                      volume={globalVolume}
                     />
                   </div>
                 </>
@@ -688,6 +702,7 @@ const Gameroom = () => {
                     <WavePlayer
                       className="gameroom waveplayer"
                       audioURL={currentSpeakerAudioURL}
+                      volume={globalVolume}
                     />
                   </div>
                 </>
@@ -734,7 +749,7 @@ const Gameroom = () => {
               ref={_audioRecorderRef}
               className="gameroom audiorecorder"
               ffmpeg={ffmpegObj}
-              audioName="user1"
+              audioName={`recording-${mePlayer.id}`}
               handleReversedAudioChange={handleAudioReversed}
             />
           </div>
@@ -819,7 +834,7 @@ const Gameroom = () => {
 
   const PlayerList = ({ playerStatus, sharedAudioList }) => {
     return (
-      <>
+      <div className="gameroom left-area">
         <div className="gameroom roominfocontainer">
           <div className="gameroom roominfotitle">ROOM</div>
           <div className="gameroom roominfo">
@@ -876,7 +891,7 @@ const Gameroom = () => {
                           style={{ fontSize: "1.5rem" }}
                         />
                       )}
-                      {hasRecording && <ButtonPlayer audioURL={_audioURL} />}
+                      {hasRecording && <ButtonPlayer audioURL={_audioURL} volume={globalVolume}/>}
                     </div>
                   </>
                 )}
@@ -907,7 +922,7 @@ const Gameroom = () => {
             );
           })}
         </div>
-      </>
+      </div>
     );
   };
 
@@ -971,12 +986,18 @@ const Gameroom = () => {
 
   return (
     <BaseContainer className="gameroom basecontainer">
-      <Header left="28vw" />
+      {/* <Header left="28vw" /> */}
       <PlayerList
         playerStatus={playerLists}
         sharedAudioList={sharedAudioList}
       />
       <div className="gameroom right-area">
+        <Header onChange={
+          e => {
+            setGlobalVolume(e.target.value);
+            console.log("[volume] set to", e.target.value);
+          }
+        } />
         {!gameOver && showReadyPopup && (
           <div className="gameroom readypopupbg">
             <div className="gameroom readypopupcontainer">
@@ -1032,7 +1053,7 @@ const Gameroom = () => {
         {!gameOver && !showReadyPopup && (
           <Roundstatus
             gameInfo={mockgameInfo}
-            currentSpeakerAudioURL={"mockURL"}
+            currentSpeakerAudioURL={currentSpeakerAudioURL}
             ref={roundStatusComponentRef}
           />
         )}

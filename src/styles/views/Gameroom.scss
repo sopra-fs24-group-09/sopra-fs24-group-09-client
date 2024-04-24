@@ -21,13 +21,21 @@
     flex-direction: row;
     justify-content: space-between;
     overflow: auto;
+    .header.container{
+      padding-left: 10%;
+    }
+  }
+  &.left-area{
+    display: flex;
+    height: 100%;
+    flex-direction: column;
   }
   &.right-area{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    margin-top: 5vh;
+    // margin-top: 5vh;
     flex-grow: 1;
     // height: 100%;
     .inputarea {
@@ -79,7 +87,7 @@
   &.playercontainer {
     // position: relative;
     // top:5vh;
-    margin-top: 5vh;
+    // margin-top: 5vh;
     left: 0;
     width: 28vw;
     min-width: min-content;
@@ -91,15 +99,17 @@
     align-items: flex-start; /* Align items to the start (left) */
     justify-content: flex-start; /* Align content to the start (left) */
     box-shadow: $dropShadow;
+    flex-grow: 1;
     gap: 1rem;
   }
   &.roominfocontainer {
     z-index:999;
-    position: fixed;
+    // position: fixed;
+    position: sticky;
     left:0;
     top:0;
     height: 5vh;
-    width: 28vw;
+    width: 100%;
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
@@ -116,8 +126,7 @@
     font-family: 'Inter';
     font-style: normal;
     font-weight: bold;
-    font-size: 1.6rem
-    ;
+    font-size: 1.6rem;
     color: $darkBlue;
   }
   &.singlePlayerContainer {

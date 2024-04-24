@@ -14,6 +14,14 @@ const WavePlayer = props => {
   const initializeWaveSurfer = () => {
     if (wavesurfer.current) {
       console.log(`[${props.className}]`,"WaveSurfer already initialized");
+      // console.log(`[${props.className}]`,"WaveSurfer set volume to", props.volume);
+      if (Number.isFinite(props.volume) && props.volume >= 0 && props.volume <= 1)
+      {
+        wavesurfer.current.setVolume(props.volume);
+        console.log(`[${props.className}]`,"WaveSurfer set volume to", props.volume);
+      } else {
+        console.error(`[${props.className}]`,"WaveSurfer failed to set volume to", props.volume);
+      }
       
       return;
     }
@@ -42,6 +50,14 @@ const WavePlayer = props => {
       // setIsPlaying(prev => !prev);
     }
     );
+
+    if (Number.isFinite(props.volume) && props.volume >= 0 && props.volume <= 1)
+    {
+      wavesurfer.current.setVolume(props.volume);
+      console.log(`[${props.className}]`,"WaveSurfer set volume to", props.volume);
+    } else {
+      console.error(`[${props.className}]`,"WaveSurfer failed to set volume to", props.volume);
+    }
         
   };
 
@@ -65,11 +81,11 @@ const WavePlayer = props => {
   return (
     <div className={`wave-player ${props.className}`}>
       <div className="waveform" ref={waveformRef}/>
-      <div className="no-audio-placeholder" style={{display: props.audioURL ? "none" : "block"}}>
+      <div className="no-audio-placeholder" style={{display: props.audioURL ? "none":"block"}}>
         ........is recording......
       </div>
       <div className="btn-group"
-        style={{display: props.audioURL ? "flex" : "none"}}>
+        style={{display: props.audioURL ? "flex":"none"}}>
         <Button
           className={"x0.5"}
           onClick={() => {
@@ -121,6 +137,7 @@ const WavePlayer = props => {
 WavePlayer.propTypes = {
   className: propTypes.string,
   audioURL: propTypes.string,
+  volume: propTypes.number.isRequired,
 }
 
 export default WavePlayer;
