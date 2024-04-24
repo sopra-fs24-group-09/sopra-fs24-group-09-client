@@ -584,7 +584,7 @@ const Gameroom = () => {
                   style={{ fontSize: "2.2rem" }}
                 />
               </span>
-              {currentSpeakerID === mePlayer.id &&
+              {currentSpeakerID === user.id &&
                 currentStatus === "speak" && (
                 <>
                   <div className={"gameroom secondcolumn"}>
@@ -608,7 +608,7 @@ const Gameroom = () => {
                   </div>
                 </>
               )}
-              {currentSpeakerID !== mePlayer.id &&
+              {currentSpeakerID !== user.id &&
                 currentStatus === "speak" && (
                 <>
                   <div className={"gameroom secondcolumn"}>
@@ -630,7 +630,7 @@ const Gameroom = () => {
                   </div>
                 </>
               )}
-              {currentSpeakerID !== mePlayer.id &&
+              {currentSpeakerID !== user.id &&
                 currentStatus === "guess" && (
                 <>
                   <div className={"gameroom secondcolumn"}>
@@ -649,7 +649,7 @@ const Gameroom = () => {
                   </div>
                 </>
               )}
-              {currentSpeakerID === mePlayer.id &&
+              {currentSpeakerID === user.id &&
                 currentStatus === "guess" && (
                 <>
                   <div className={"gameroom secondcolumn"}>
@@ -695,13 +695,13 @@ const Gameroom = () => {
             </div>
           </div>
           <div className="gameroom remindermssg">
-            {gameInfo.currentSpeaker.id === mePlayer.id &&
+            {gameInfo.currentSpeaker.id === user.id &&
               currentStatus === "speak" && (
               <span className="gameroom remindertext">
                 {"Try to read and record the word steadily and loudly!"}
               </span>
             )}
-            {gameInfo.currentSpeaker.id !== mePlayer.id &&
+            {gameInfo.currentSpeaker.id !== user.id &&
               currentStatus === "speak" && (
               <span className="gameroom remindertext">
                 {
@@ -709,7 +709,7 @@ const Gameroom = () => {
                 }
               </span>
             )}
-            {gameInfo.currentSpeaker.id !== mePlayer.id &&
+            {gameInfo.currentSpeaker.id !== user.id &&
               currentStatus === "guess" && (
               <span className="gameroom remindertext">
                 {
@@ -717,7 +717,7 @@ const Gameroom = () => {
                 }
               </span>
             )}
-            {gameInfo.currentSpeaker.id === mePlayer.id &&
+            {gameInfo.currentSpeaker.id === user.id &&
               currentStatus === "guess" && (
               <span className="gameroom remindertext">
                 {
@@ -1039,7 +1039,7 @@ const Gameroom = () => {
         <div className="gameroom inputarea">
           {!gameOver &&
             !showReadyPopup &&
-            gameInfo.currentSpeaker.id !== mePlayer.id &&
+            gameInfo.currentSpeaker.id !== user.id &&
             currentStatus === "guess" && (
             <div style={{ display: "flex", flexDirection: "row" }}>
               <input
