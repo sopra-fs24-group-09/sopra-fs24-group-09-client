@@ -50,6 +50,7 @@ const Gameroom = () => {
   const [playerLists, setPlayerLists] = useState([]);
   const roundFinished = useRef(false);
   const [endTime, setEndTime] = useState(null);
+  const gameTheme = useRef(null);
 
   const [gameInfo, setGameInfo] = useState(null);
   const [roomInfo, setRoomInfo] = useState({
@@ -185,6 +186,9 @@ const Gameroom = () => {
       // const now = new Date().getTime();
       // console.log(`[onGameInfoReceived-${now}] payload: ${payload.body}`);
       const payloadData = JSON.parse(payload.body);
+      if (gameTheme.current !== payloadData.message.theme){
+        gameTheme.current = payloadData.message.theme
+      }
       // const diff = now - payloadData.timestamp;
       // console.log(`[onGameInfoReceived-${now}] diff: ${diff}`);
       if (payloadData.message.gameStatus === "ready") {
@@ -1129,7 +1133,7 @@ const Gameroom = () => {
           <div className="gameroom readypopupbg">
             <div className="gameroom readypopupcontainer">
               <span className="gameroom popuptitle"> {"Room#" + currentRoomName}</span>
-              <span className="gameroom popuptheme"> Advanced</span>
+              <span className="gameroom popuptheme"> {gameTheme.current}</span>
               <span className="gameroom popuptext">
                 {" "}
                 Ready to start the game?
