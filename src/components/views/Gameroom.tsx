@@ -50,15 +50,15 @@ const Gameroom = () => {
   const [endTime, setEndTime] = useState(null);
   const [remainingTime, setRemainingTime] = useState(null);
   const [gameInfo, setGameInfo] = useState({
-    roomID: 5,
-    currentSpeaker: {
-      id: 2,
-      name: "Hanky",
-      avatar: "grinning-face-with-sweat",
-    },
-    currentAnswer: "Success",
-    roundStatus: "speak",
-    currentRoundNum: 2,
+    // roomID: 5,
+    // currentSpeaker: {
+    //   id: 2,
+    //   name: "Hanky",
+    //   avatar: "grinning-face-with-sweat",
+    // },
+    // currentAnswer: "Success",
+    // roundStatus: "speak",
+    // currentRoundNum: 2,
   });
   const [roomInfo, setRoomInfo] = useState({
     roomID: currentRoomID,
@@ -186,7 +186,7 @@ const Gameroom = () => {
         setShowReadyPopup(false);
       }
 
-      // setCurrentSpeakerID(payloadData.message.currentSpeaker.id);
+      setCurrentSpeakerID(payloadData.message.currentSpeaker.id);
       if (
         prevStatus.current === "reveal" &&
         payloadData.message.roundStatus === "speak"
@@ -1145,6 +1145,15 @@ const Gameroom = () => {
                   }
                 }>upload</div>
                 )}
+            {currentSpeakerID !== user.id &&
+              currentStatus === "guess" && (
+                <div className="gameroom readybutton" onClick={
+                  () => {
+                    console.log("upload audio");
+                    uploadAudio();
+                  }
+                }>share</div>
+              )}
           </div>
 
         </div>
