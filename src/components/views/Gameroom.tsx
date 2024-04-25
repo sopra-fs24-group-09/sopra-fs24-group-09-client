@@ -47,6 +47,7 @@ const Gameroom = () => {
   const [currentSpeakerID, setCurrentSpeakerID] = useState(null);
   const [validateAnswer, setValidateAnswer] = useState(null);
   const [playerLists, setPlayerLists] = useState([]);
+  const roundFinished = useRef(false);
   const [endTime, setEndTime] = useState(null);
   const [remainingTime, setRemainingTime] = useState(null);
   const [gameInfo, setGameInfo] = useState(null);
@@ -99,23 +100,25 @@ const Gameroom = () => {
   function calculateRemainingTime(roundDue) {
     roundDue = roundDue.split('[')[0];
     const endTime = new Date(roundDue).getTime();
-    console.log("ENDTIME IS " + endTime);
+    //console.log("ENDTIME IS " + endTime);
     const currentTime = Date.now();
-    console.log("CURRENT TIME IS " + currentTime);
+    //console.log("CURRENT TIME IS " + currentTime);
     const remainingSeconds = Math.max(0, Math.floor((endTime - currentTime) / 1000));
-    console.log("REMAINING SECONDS: " + remainingSeconds);
+    //console.log("REMAINING SECONDS: " + remainingSeconds);
 
     return remainingSeconds;
   }
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRemainingTime(calculateRemainingTime(endTime));
-      console.log(remainingTime)
-      console.log("!!!!")
-    }, 1000);
+    if(endTime !== null){
+      const interval = setInterval(() => {
+        setRemainingTime(calculateRemainingTime(endTime));
+        //console.log(remainingTime)
+        //console.log("!!!!")
+      }, 1000);
 
-    return () => clearInterval(interval);
+      return () => clearInterval(interval);
+    }
   }, [endTime]);
 
   useEffect(() => {
@@ -174,7 +177,14 @@ const Gameroom = () => {
     const onPlayerInfoReceived = (payload) => {
       const payloadData = JSON.parse(payload.body);
       setPlayerLists(payloadData.message);
-      //resp success
+      if (!showReadyPopup && !gameOver){
+        const myInfo = payloadData.message.find(item => item.user.id = user.id);
+        console.log(myInfo);
+        if (myInfo.roundFinished && myInfo.roundFinished !== null){
+          roundFinished.current = myInfo.roundFinished;
+          console.log(roundFinished);
+        }
+      }
     };
 
     const onGameInfoReceived = (payload) => {
@@ -482,7 +492,8 @@ const Gameroom = () => {
   //   { userId: 3, audioURL: null },
   // ];
 
-  console.log("the player list is" +playerLists);
+  console.log("the player list is")
+  console.log(playerLists);
 
   // #region -----------------playerlist mock----------------
 
@@ -1117,7 +1128,7 @@ const Gameroom = () => {
               />
               <button
                 className="gameroom validateUpload"
-                disabled={!validateAnswer}
+                disabled={!validateAnswer || roundFinished}
                 onClick={() => validateAnswer && submitAnswer(validateAnswer)}
               >
                   Submit
