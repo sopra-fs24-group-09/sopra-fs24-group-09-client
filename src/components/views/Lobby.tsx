@@ -353,16 +353,20 @@ const Lobby = () => {
       <div className="room-container" key={Room.roomId} onClick={(e) => {
         e.preventDefault();
         const currentId = sessionStorage.getItem("id");
-        // const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
+        const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
         enterRoom(Room.roomId, currentId)
           .then(() => {
             //alert(currentId);
-            navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
+            if(Room.roomPlayersList.length===Room.maxPlayersNum)
+              alert("Room is Full, please enter another room!")
+            else
+              navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
           })
           .catch(error => {
             console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
             alert(`Something went wrong during the enterRoom: \n${handleError(error)}`);
           });
+        
       }}>
         <div className="room-players">
           {Room.roomPlayersList?.map((user, index) => (
@@ -512,8 +516,14 @@ const Lobby = () => {
       <Popup ref={infoPopRef} toggleDialog={toggleInfoPop} className="intro-popup">
         <div className="intro-cnt">
           <h1>Welcome to KAEPS!</h1>
-          <p>KAEPS is a multiplayer game that offers a unique auditory challenge. Players take turns retrieving random words or phrases, recording them, and then invert the audio. Challengers must attempt their best mimicry and try to decipher the original word from the inverted playback. The system checks the accuracy of their submitted answers.</p>
-          <p>Are you ready for the challenge? Join us and start your auditory adventure now!</p>
+          <p>Here are some guides for playing this game:</p>
+          <ul>
+            <li><strong>Speaker:</strong> Receives a word, records it, inverts the audio, and sends it to other players.</li>
+            <li><strong>Challenger:</strong> Listens to the inverted audio and tries to guess the original word.</li>
+            <li><strong>Scoring:</strong> Correctly deciphering the word scores you points.</li>
+            <li><strong>Turns:</strong> Each round has one Speaker and multiple Challengers. Players take turns to be the Speaker.</li>
+          </ul>
+          <p>Join a room or create one to play with friends!</p>
         </div>
         <div className="intro-popup btn-container">
           <Button className="cancel" onClick={toggleInfoPop}>
