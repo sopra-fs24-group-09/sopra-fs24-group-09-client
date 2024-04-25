@@ -500,7 +500,8 @@ const Lobby = () => {
             onChange={(value) => setRoomTheme(value)}
           />
           <div className="room-creation-popup btn-container">
-            <Button disabled={roomTheme===""} className="create-room" onClick={createRoom}>Create Room</Button>
+            <Button disabled={roomName === "" || numRounds < 2 || numRounds > 10 || roomTheme === ""}
+                    className="create-room" onClick={createRoom}>Create Room</Button>
             <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </div>
         </BaseContainer>
