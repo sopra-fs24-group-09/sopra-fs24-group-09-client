@@ -492,7 +492,7 @@ const Lobby = () => {
           <Dropdown
             className="theme-dropdown"
             prompt="Select Theme"
-            defaultValue={roomTheme}
+            // defaultValue={roomTheme}
             options={[
               { value: "JOB", label: "JOB"},
               { value: "FOOD", label: "FOOD" },
@@ -502,7 +502,7 @@ const Lobby = () => {
             onChange={(value) => setRoomTheme(value)}
           />
           <div className="room-creation-popup btn-container">
-            <Button className="create-room" onClick={createRoom}>Create Room</Button>
+            <Button disabled={roomTheme===""} className="create-room" onClick={createRoom}>Create Room</Button>
             <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </div>
         </BaseContainer>
