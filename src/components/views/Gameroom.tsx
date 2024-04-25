@@ -781,6 +781,10 @@ const Gameroom = () => {
               ffmpeg={ffmpegObj}
               audioName={"my_recording"}
               handleReversedAudioChange={handleAudioReversed}
+              disabled={
+                (currentSpeakerID !== user.id && currentStatus === "speak") ||
+                currentStatus === "reveal"
+              }
             />
           </div>
         </div>
