@@ -605,6 +605,7 @@ const Gameroom = () => {
     if (!gameInfo) {
       return <div>loading...</div>;
     }
+    
     return (
       <>
         <div className="gameroom roundstatus">
@@ -778,7 +779,7 @@ const Gameroom = () => {
               ref={_audioRecorderRef}
               className="gameroom audiorecorder"
               ffmpeg={ffmpegObj}
-              audioName={`my_recording`}
+              audioName={"my_recording"}
               handleReversedAudioChange={handleAudioReversed}
             />
           </div>

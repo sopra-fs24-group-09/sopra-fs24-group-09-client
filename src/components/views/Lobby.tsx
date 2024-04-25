@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
 import { api, handleError } from "helpers/api";
-import { Spinner } from "components/ui/Spinner";
 import { Button } from "components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
@@ -234,7 +233,7 @@ const Lobby = () => {
 
   const createRoom = async () => {
     try {
-      console.log('Current theme:', roomTheme);
+      console.log("Current theme:", roomTheme);
       const ownerId = sessionStorage.getItem("id");  // 假设ownerId存储在sessionStorage中
       const requestBody = JSON.stringify({
         roomName: roomName,
@@ -484,7 +483,7 @@ const Lobby = () => {
             value={numRounds}
             onChange={e => {
               const value = parseInt(e.target.value, 10);
-              setNumRounds(value >= 2 && value <= 10 ? value : '');
+              setNumRounds(value >= 2 && value <= 10 ? value : "");
             }}
             min={2}
             max={10}
