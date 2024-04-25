@@ -110,7 +110,7 @@ const Gameroom = () => {
 
   //const [endTime, setEndTime] = useState("2024-04-30T12:00:00"); // Example initial value
 
- // Only rerun the effect if endTime actually changes
+  // Only rerun the effect if endTime actually changes
 
 
   useEffect(() => {
@@ -181,11 +181,11 @@ const Gameroom = () => {
     };
 
     const onGameInfoReceived = (payload) => {
-      const now = new Date().getTime();
-      console.log(`[onGameInfoReceived-${now}] payload: ${payload.body}`);
+      // const now = new Date().getTime();
+      // console.log(`[onGameInfoReceived-${now}] payload: ${payload.body}`);
       const payloadData = JSON.parse(payload.body);
-      const diff = now - payloadData.timestamp;
-      console.log(`[onGameInfoReceived-${now}] diff: ${diff}`);
+      // const diff = now - payloadData.timestamp;
+      // console.log(`[onGameInfoReceived-${now}] diff: ${diff}`);
       if (payloadData.message.gameStatus === "ready") {
         setShowReadyPopup(true);
       } else if (payloadData.message.gameStatus === "over") {
