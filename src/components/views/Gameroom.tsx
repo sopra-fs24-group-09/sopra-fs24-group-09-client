@@ -49,7 +49,7 @@ const Gameroom = () => {
   const [playerLists, setPlayerLists] = useState([]);
   const roundFinished = useRef(false);
   const [endTime, setEndTime] = useState(null);
-  const [remainingTime, setRemainingTime] = useState(null);
+
   const [gameInfo, setGameInfo] = useState(null);
   const [roomInfo, setRoomInfo] = useState({
     roomID: currentRoomID,
@@ -109,19 +109,7 @@ const Gameroom = () => {
 
   //const [endTime, setEndTime] = useState("2024-04-30T12:00:00"); // Example initial value
 
-  useEffect(() => {
-    if (endTime !== null && endTime !== "None") {
-      const interval = setInterval(() => {
-        setRemainingTime(calculateRemainingTime(endTime));
-        console.log("Interval triggered");
-      }, 1000);
-
-      return () => {
-        console.log("Clearing interval");
-        clearInterval(interval);
-      };
-    }
-  }, [endTime]); // Only rerun the effect if endTime actually changes
+ // Only rerun the effect if endTime actually changes
 
 
   useEffect(() => {
@@ -607,6 +595,38 @@ const Gameroom = () => {
     setShowReadyPopup((prevState) => !prevState);
   };
 
+  type CounterProps = {
+    endTimeString: String;
+  };
+
+  const Counter: React.FC<CounterProps> = ({ endTimeString }) => {
+    const [remainingTime, setRemainingTime] = useState(null);
+
+    useEffect(() => {
+      if (endTime !== null && endTime !== "None") {
+        const interval = setInterval(() => {
+          setRemainingTime(calculateRemainingTime(endTime));
+          console.log("Interval triggered");
+        }, 1000);
+
+        return () => {
+          console.log("Clearing interval");
+          clearInterval(interval);
+        };
+      }
+    }, [endTime]);
+
+    return (
+      <>
+        <div className="gameroom counterdiv">
+          <i className={"twa twa-stopwatch"} style={{ fontSize: "2.6rem" }} />
+          <span className="gameroom counternum">{remainingTime}</span>
+        </div>
+      </>
+    );
+  };
+
+
   const Roundstatus = React.forwardRef((props,ref) => {
     const { gameInfo, currentSpeakerAudioURL } = props;
     console.log("gameInfo", gameInfo);
@@ -629,10 +649,7 @@ const Gameroom = () => {
     return (
       <>
         <div className="gameroom roundstatus">
-          <div className="gameroom counterdiv">
-            <i className={"twa twa-stopwatch"} style={{ fontSize: "2.6rem" }} />
-            <span className="gameroom counternum">{remainingTime}</span>
-          </div>
+          <Counter remainingSecTime={endTime}/>
           <div className="gameroom statusdiv">
             <div className="gameroom speakPlayerContainer">
               {/*<img src={playerInfo.user.avatar} alt={playerInfo.user.name} />*/}
