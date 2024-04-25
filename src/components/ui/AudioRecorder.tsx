@@ -294,7 +294,7 @@ export const AudioRecorder = React.forwardRef((props,ref) => {
   // load audio, layoutEffect is used to make sure the wavesurfer is initialized before loading audio
   useLayoutEffect(() => {
     initializeWaveSurferWithRecorder();
-    loadCachedAudio();
+    // loadCachedAudio();
     
     return () => {
       // // clean up wavesurfer

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo, useImperativeHandle } from "react";
+import React, { useEffect, useLayoutEffect, useState, useRef, useMemo, useImperativeHandle } from "react";
 import { api, handleError } from "helpers/api";
 import { useNavigate, useParams } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
@@ -10,6 +10,7 @@ import "styles/twemoji-amazing.css";
 import Header from "./Header";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { AudioRecorder } from "components/ui/AudioRecorder";
+import { CounterDown } from "components/ui/CounterDown";
 import WavePlayer from "components/ui/WavePlayer";
 import { ButtonPlayer } from "components/ui/ButtonPlayer";
 // Stomp related imports
@@ -97,15 +98,15 @@ const Gameroom = () => {
 
   console.log("GameInfo", gameInfo);
 
-  function calculateRemainingTime(roundDue) {
-    //console.log("Calculating");
-    roundDue = roundDue.split("[")[0];
-    const endTime = new Date(roundDue).getTime();
-    const currentTime = Date.now();
-    const remainingSeconds = Math.max(0, Math.floor((endTime - currentTime) / 1000));
+  // function calculateRemainingTime(roundDue) {
+  //   //console.log("Calculating");
+  //   roundDue = roundDue.split("[")[0];
+  //   const endTime = new Date(roundDue).getTime();
+  //   const currentTime = Date.now();
+  //   const remainingSeconds = Math.max(0, Math.floor((endTime - currentTime) / 1000));
 
-    return remainingSeconds;
-  }
+  //   return remainingSeconds;
+  // }
 
   //const [endTime, setEndTime] = useState("2024-04-30T12:00:00"); // Example initial value
 
@@ -180,8 +181,11 @@ const Gameroom = () => {
     };
 
     const onGameInfoReceived = (payload) => {
-      console.log(payload.body)
+      const now = new Date().getTime();
+      console.log(`[onGameInfoReceived-${now}] payload: ${payload.body}`);
       const payloadData = JSON.parse(payload.body);
+      const diff = now - payloadData.timestamp;
+      console.log(`[onGameInfoReceived-${now}] diff: ${diff}`);
       if (payloadData.message.gameStatus === "ready") {
         setShowReadyPopup(true);
       } else if (payloadData.message.gameStatus === "over") {
@@ -596,36 +600,36 @@ const Gameroom = () => {
     setShowReadyPopup((prevState) => !prevState);
   };
 
-  type CounterProps = {
-    endTimeString: String;
-  };
+  // type CounterProps = {
+  //   endTimeString: String;
+  // };
 
-  const Counter: React.FC<CounterProps> = ({ endTimeString }) => {
-    const [remainingTime, setRemainingTime] = useState(null);
+  // const Counter: React.FC<CounterProps> = ({ endTimeString }) => {
+  //   const [remainingTime, setRemainingTime] = useState(null);
 
-    useEffect(() => {
-      if (endTime !== null && endTime !== "None") {
-        const interval = setInterval(() => {
-          setRemainingTime(calculateRemainingTime(endTime));
-          //console.log("Interval triggered");
-        }, 1000);
+  //   useLayoutEffect(() => {
+  //     if (endTime !== null && endTime !== "None") {
+  //       const interval = setInterval(() => {
+  //         setRemainingTime(calculateRemainingTime(endTime));
+  //         //console.log("Interval triggered");
+  //       }, 1000);
 
-        return () => {
-          //console.log("Clearing interval");
-          clearInterval(interval);
-        };
-      }
-    }, [endTime]);
+  //       return () => {
+  //         //console.log("Clearing interval");
+  //         clearInterval(interval);
+  //       };
+  //     }
+  //   }, [endTime]);
 
-    return (
-      <>
-        <div className="gameroom counterdiv">
-          <i className={"twa twa-stopwatch"} style={{ fontSize: "2.6rem" }} />
-          <span className="gameroom counternum">{remainingTime}</span>
-        </div>
-      </>
-    );
-  };
+  //   return (
+  //     <>
+  //       <div className="gameroom counterdiv">
+  //         <i className={"twa twa-stopwatch"} style={{ fontSize: "2.6rem" }} />
+  //         <span className="gameroom counternum">{remainingTime}</span>
+  //       </div>
+  //     </>
+  //   );
+  // };
 
 
   const Roundstatus = React.forwardRef((props,ref) => {
@@ -650,7 +654,7 @@ const Gameroom = () => {
     return (
       <>
         <div className="gameroom roundstatus">
-          <Counter remainingSecTime={endTime}/>
+          <CounterDown endTimeString={endTime}/>
           <div className="gameroom statusdiv">
             <div className="gameroom speakPlayerContainer">
               {/*<img src={playerInfo.user.avatar} alt={playerInfo.user.name} />*/}
