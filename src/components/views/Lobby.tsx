@@ -353,20 +353,20 @@ const Lobby = () => {
       <div className="room-container" key={Room.roomId} onClick={(e) => {
         e.preventDefault();
         const currentId = sessionStorage.getItem("id");
-        // const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
-        // enterRoom(Room.roomId, currentId)
-        //   .then(() => {
-        //     //alert(currentId);
-        //     navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
-        //   })
-        //   .catch(error => {
-        //     console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
-        //     alert(`Something went wrong during the enterRoom: \n${handleError(error)}`);
-        //   });
-        if(Room.roomPlayersList.length===Room.maxPlayersNum)
-          alert("Room is Full, please enter another room!")
-        else
-          navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
+        const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
+        enterRoom(Room.roomId, currentId)
+          .then(() => {
+            //alert(currentId);
+            if(Room.roomPlayersList.length===Room.maxPlayersNum)
+              alert("Room is Full, please enter another room!")
+            else
+              navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
+          })
+          .catch(error => {
+            console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+            alert(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+          });
+        
       }}>
         <div className="room-players">
           {Room.roomPlayersList?.map((user, index) => (
