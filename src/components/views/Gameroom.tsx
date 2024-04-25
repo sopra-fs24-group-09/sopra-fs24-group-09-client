@@ -98,28 +98,31 @@ const Gameroom = () => {
   console.log("GameInfo", gameInfo);
 
   function calculateRemainingTime(roundDue) {
+    console.log("Calculating");
     roundDue = roundDue.split("[")[0];
     const endTime = new Date(roundDue).getTime();
-    //console.log("ENDTIME IS " + endTime);
     const currentTime = Date.now();
-    //console.log("CURRENT TIME IS " + currentTime);
     const remainingSeconds = Math.max(0, Math.floor((endTime - currentTime) / 1000));
-    //console.log("REMAINING SECONDS: " + remainingSeconds);
 
     return remainingSeconds;
   }
 
+  //const [endTime, setEndTime] = useState("2024-04-30T12:00:00"); // Example initial value
+
   useEffect(() => {
-    if(endTime !== null){
+    if (endTime !== null && endTime !== "None") {
       const interval = setInterval(() => {
         setRemainingTime(calculateRemainingTime(endTime));
-        //console.log(remainingTime)
-        //console.log("!!!!")
+        console.log("Interval triggered");
       }, 1000);
 
-      return () => clearInterval(interval);
+      return () => {
+        console.log("Clearing interval");
+        clearInterval(interval);
+      };
     }
-  }, [endTime]);
+  }, [endTime]); // Only rerun the effect if endTime actually changes
+
 
   useEffect(() => {
     // define subscription instances
