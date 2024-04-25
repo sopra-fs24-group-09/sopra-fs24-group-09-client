@@ -170,11 +170,12 @@ const Gameroom = () => {
       const payloadData = JSON.parse(payload.body);
       setPlayerLists(payloadData.message);
       if (!showReadyPopup && !gameOver){
-        const myInfo = payloadData.message.find(item => item.user.id = user.id);
+        const myInfo = payloadData.message.find(item => item.user.id === user.id);
         console.log("set info for myself")
         console.log(myInfo);
         if (myInfo.roundFinished && myInfo.roundFinished !== null){
           roundFinished.current = myInfo.roundFinished;
+          console.log("roundFinished?")
           console.log(roundFinished);
         }
       }
@@ -1061,7 +1062,7 @@ const Gameroom = () => {
         />
         <button
           className="gameroom validateUpload"
-          disabled={!validateAnswer}
+          disabled={!validateAnswer|| roundFinished.current}
           onClick={() => validateAnswer && submitAnswer(validateAnswer)}
         >
           Submit
@@ -1227,12 +1228,14 @@ const Gameroom = () => {
             )}
             {currentSpeakerID === user.id &&
               currentStatus === "speak" && (
-              <div className="gameroom readybutton" onClick={
+              <button className="gameroom readybutton"
+                   disabled={roundFinished.current}
+                   onClick={
                 () => {
                   console.log("upload audio");
                   uploadAudio();
                 }
-              }>upload</div>
+              }>upload</button>
             )}
             {currentSpeakerID !== user.id &&
               currentStatus === "guess" && (
