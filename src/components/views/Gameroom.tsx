@@ -1045,7 +1045,7 @@ const Gameroom = () => {
   };
 
   const ValidateAnswerForm = ({ submitAnswer }) => {
-    const [validateAnswer, setValidateAnswer] = useState('');
+    const [validateAnswer, setValidateAnswer] = useState("");
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setValidateAnswer(e.target.value);
@@ -1229,13 +1229,13 @@ const Gameroom = () => {
             {currentSpeakerID === user.id &&
               currentStatus === "speak" && (
               <button className="gameroom readybutton"
-                   disabled={roundFinished.current}
-                   onClick={
-                () => {
-                  console.log("upload audio");
-                  uploadAudio();
-                }
-              }>upload</button>
+                disabled={roundFinished.current}
+                onClick={
+                  () => {
+                    console.log("upload audio");
+                    uploadAudio();
+                  }
+                }>upload</button>
             )}
             {currentSpeakerID !== user.id &&
               currentStatus === "guess" && (
