@@ -1,3 +1,5 @@
+
+
 @import "../theme";
 // define color variables
 .audio-recorder {
@@ -43,7 +45,7 @@
             overflow-x: auto;
         }
         button{
-            background-color: $greyBlue;
+            background-color: $middleBlue;
             outline: none;
             border: none;
             box-shadow: none;
@@ -69,7 +71,7 @@
             max-width: 200px;
             
             select{
-                background-color: $greyBlue;
+                background-color: $middleBlue;
                 border-radius: 6px;
                 color: $darkBlue;
                 font-size: 1em;

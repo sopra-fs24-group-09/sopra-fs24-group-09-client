@@ -17,7 +17,22 @@
     align-items: center;
     box-shadow: $dropShadow;
   }
-  &.room-list{
+  &.room-list::-webkit-scrollbar{
+      width: 10px;
+      height: 10px;
+
+      &-track{
+        background: $whiteYellow;
+        border-radius: 5px;
+      }
+
+      &-thumb{
+        background: $greyBlue;
+        -webkit-border-radius: 10px;
+        border-radius: 10px;
+      }
+    }
+  &.room-list-wrapper{
     position: absolute;  // 使用绝对定位
     right: 3%;           // 定位到右边
     top: 10%;           // 从顶部留下10%的空间以居中显示
@@ -25,11 +40,50 @@
     height: 80%;        // 高度为视口高度的80%
     display: flex;
     flex-direction: column;
-    background-color: #ffcc66;
+    background-color: $classicYellow;
     padding: 10px;
     border-radius: 1.5em;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-y: hidden;
+  }
+  &.room-list{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
     overflow-y: auto;
+    &.btn-container{
+      all: initial; // avoid the inherited styles
+      position: relative; // absolute pos relative to the parent      
+      background-color: transparent; // use Btn's color
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: center;
+      height: auto;
+      width: 100%;
+      bottom: 1.5%;
+      left: 0%;
+      margin-top: 30px;
+      flex-grow: 1;
+      .create-room-btn{
+        bottom: 0%;
+        min-width: fit-content;
+        width: 20%;
+        min-height: 50px;
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        justify-content: center;
+        align-content: center;
+        font-size: 1.3em;
+        background-color: $darkBlue;
+        color: white;
+        // dont capitalize the text
+        text-transform: none;
+        // make the text bold
+        font-weight: bolder;
+      }
+    }
   }
   &.user-list {
     list-style: none;
@@ -48,49 +102,60 @@
 .room-container{
   display: flex;
   margin-bottom: 20px;
-  background: #fff6e5;
+  background: white;
+  box-shadow: 0 0 0 4px $whiteYellow;
   border-radius: 10px;
   padding: 10px;
+  margin-inline: 5%;
   justify-content: space-between;
+  flex-direction: row;
+  text-align: center;
 }
 .room {
   background-color: #fff;
   margin-bottom: 10px;
   border-radius: 8px;
+  text-align: center;
   //overflow: hidden;
 
-  .room-header, .room-players {
-    flex: 1;                   // Allow both children to grow and take up equal space
+  .room-header{
+    margin-left: 10px;
+    flex-shrink: 0;     // Allow both children to grow and take up equal space
     display: flex;
     flex-direction: column;    // Stack the children of these containers vertically
     align-items: center;       // Center the items horizontally
     justify-content: center;   // Center the items vertically
     padding: 10px;
+    text-align: center;
   }
 
-  .room-players {
-    align-items: flex-start;   // Align the players to the start of the flex container
-  }
+
+  //.room-players {
+  //  width: 70%;
+  //  align-items: flex-start;   // Align the players to the start of the flex container
+  //  flex: 1 1 auto;                // Allow both children to grow and take up equal space
+  //  display: flex;
+  //  flex-direction: row;    // Stack the children of these containers vertically
+  //  //align-items: center;       // Center the items horizontally
+  //  justify-content: center;   // Center the items vertically
+  //  padding: 10px;
+  //  overflow-x: auto;
+  //  white-space: nowrap;
+  //}
 
   .room-header {
-    align-items: flex-end;     // Align the room details to the end of the flex container
-  }
-
-  .player {
-    margin-right: 10px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    display: flex;
+    margin-left: 10px;
+    flex-direction: column; /* 堆叠子元素 */
+    align-items: center; /* 水平居中 */
+    justify-content: center; /* 垂直居中 */
     text-align: center;
-
-    .player-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #D9D9D9; // 默认背景色
-    }
-
-    .player-username {
-      font-size: 0.8em;
-    }
+    padding: 10px;    // Align the room details to the end of the flex container
   }
+
+
 
   .room-footer {
     display: flex;
@@ -103,6 +168,54 @@
     }
 
   }
+}
+.avatar-list {
+  display: flex;
+  flex-wrap: wrap; // 允许头像列表换行
+  justify-content: flex-start; // 头像左对齐
+  margin: 0 -10px; // 用于抵消每个头像的外边距，可以根据实际需求调整
+
+  .player {
+    width: 20%; // 四个头像一行，每个占总宽的25%
+    padding-left: 10%; // 每个头像周围的间距，可以根据实际需求调整
+    box-sizing: border-box; // 包括padding在内的宽度计算方式
+
+    i {
+      display: block; // 确保图标块状显示
+      font-size: 3.8rem; // 图标大小
+      cursor: pointer; // 鼠标悬停时显示指针
+      margin: 10px 0; // 上下间距，可以根据需要调整
+    }
+  }
+}
+.player {
+  margin-right: 10px;
+  margin-left: 10px;
+  text-align: center;
+
+  .player-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #D9D9D9; // 默认背景色
+  }
+
+  .player-username {
+    font-size: 0.8em;
+  }
+}
+.room-players {
+  //width: 70%;
+
+  align-items: flex-start;   // Align the players to the start of the flex container
+  flex: 1 1 auto;                // Allow both children to grow and take up equal space
+  display: flex;
+  flex-direction: row;    // Stack the children of these containers vertically
+  //align-items: center;       // Center the items horizontally
+  //justify-content: center;   // Center the items vertically
+  padding: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 .status-container {
   width: 18%; /* 或者任何固定宽度 */
@@ -166,25 +279,187 @@
   background: #D9D9D9;
   border-radius: $borderRadius;
 }
-
-.big-title{
+.title-container {
   position: absolute;  // 使用绝对定位
   left: 15%;           // 定位到zuo边
   top: 25%;           // 从顶部留下10%的空间以居中显示
-  font-size: 250px;
-  color: #ffcc66;
+  font-size: 15vw; /* 设定容器的字体大小 */
+}
+
+.big-title {
+  /* 绝对定位可能不再需要，取决于布局需求 */
+  color: $classicYellow;
   font-family: "Acme", sans-serif;
 }
 
-.information{
-  position: absolute;  // 使用绝对定位
-  left: 48%;           // 定位到zuo边
-  top: 24%;
-  font-size: 43px;
-  width: 50px;
+.information {
+  position: absolute;
+  top: 0; /* 顶部对齐 */
+  right: 0; /* 右侧对齐 */
+  width: 1.5rem; /* 定宽，可以用rem来调整 */
+  height: 2rem; /* 定高，保持图标正方形 */
+  font-size: 1.5rem; /* 可以根据需要调整 */
+  font-weight: bold;
+  //display: flex;
   text-align: center;
+  //line-height: 2rem;
   color: white;
-  font-family: "Acme", sans-serif;
-  background: #ffcc66;
+  background: $classicYellow;
   border-radius: $borderRadius;
+  //padding: 0.25rem; /* 小间距增加点击区域 */
+  cursor: pointer;
+}
+.intro-popup{
+  height:55%;
+  //width: 500px;
+  &.btn-container{
+    width: 200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    //margin-top: 10%;
+    Button{
+      height: auto;
+      font-size: 1em;
+      padding: 0.6em;
+      margin: 0 10px;
+      color: white;
+      background-color: $classicYellow;
+    }
+  }
+}
+.intro-cnt{
+  width: 450px;
+}
+.profile-popup{
+  height:70%;
+  &.content{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    font-size: 1.5em;
+    .title{
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      display: inline;
+      text-align: center;
+    }
+    .avatar-container {
+      display: flex;
+      justify-content: center; /* 水平居中 */
+      margin-bottom: 3rem;
+    }
+  }
+
+  &.header-cnt{
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    font-size: 2em;
+    .title{
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      display: inline;
+      text-align: center;
+    }
+  }
+  &.btn-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top: 10%;
+    Button{
+      height: auto;
+      font-size: 1em;
+      padding: 0.6em;
+      margin: 0 10px;
+      color: white;
+      background-color: $classicYellow;
+    }
+  }
+  &.label {
+    display: flex;
+    font-size: 32px;
+  }
+  &.field {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+  &.input {
+    height: 35px;
+    padding-left: 15px;
+    margin-left: 4px;
+    border: none;
+    border-radius: 0.75em;
+    margin-top: 5px;
+    background: #FFF3CF;
+    color: $textColor;
+  }
+
+}
+.room-creation-popup{
+  height: 80%;
+  &.content{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    font-size: 2em;
+    .title{
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      display: inline;
+      text-align: center;
+    }
+    input {
+      height: 100px;
+      width: 600px;
+      padding-left: 1px;
+      margin-left: 4px;
+      border: 1px solid black;
+      border-radius: 0.75em;
+      margin-bottom: 20px;
+      background: transparentize(white, 0.4);
+      color: $textColor;
+    }
+  }
+  .theme-dropdown{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    width: 600px;
+    height: 100px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    select{
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: $classicYellow;
+        text-align: center;        
+        border-radius: 0.75em;
+        option{
+            background-color: $classicYellow; //TODO: firefox not supporting this
+            outline: none;
+            text-align: center;
+        }
+    }
+  }
+  &.btn-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    Button{
+      height: auto;
+      font-size: 1em;
+      padding: 0.6em;
+      margin: 0 10px;
+      color: white;
+      background-color: $classicYellow;
+    }
+  }
 }

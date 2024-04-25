@@ -8,12 +8,91 @@
  */
 
 .gameroom {
+  &.basecontainer{
+    position: fixed;
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    max-width: 100vw;
+    padding: 0;
+    margin: 0;
+    z-index: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    overflow: auto;
+    .header.container{
+      padding-left: 10%;
+    }
+  }
+  &.left-area{
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+  }
+  &.right-area{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    // margin-top: 5vh;
+    flex-grow: 1;
+    // height: 100%;
+    .inputarea {
+      background-color: $greyBlue;
+      justify-self: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-height: 20vh;
+    }
+    .roundstatus {
+      right:0;
+      flex-grow: 1;
+      min-height: fit-content;
+      // height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: $whiteYellow;
+    }
+    .leaderboarddiv {
+      right:0;
+      flex-grow: 1;
+      min-height: fit-content;
+      // height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: $whiteYellow;
+      justify-content: center;
+    }
+    .readypopupbg {
+      // height: 40vh;
+      // width: 35vw;
+      // position: absolute;
+      // top: 19vh;
+      // left: 48vw;
+      background-color: transparent;
+      flex-grow: 1;
+      border-radius: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
   &.playercontainer {
-    position: absolute;
-    top:5vh;
+    // position: relative;
+    // top:5vh;
+    // margin-top: 5vh;
     left: 0;
-    width: 28vw;
-    height: 95vh;
+    // width: 28vw;
+    width: 100%;
+    min-width: min-content;
+    // height: 100%;
     background: $classicYellow;
     padding: 1.5em;
     display: flex;
@@ -21,20 +100,21 @@
     align-items: flex-start; /* Align items to the start (left) */
     justify-content: flex-start; /* Align content to the start (left) */
     box-shadow: $dropShadow;
+    flex-grow: 1;
     gap: 1rem;
-
   }
   &.roominfocontainer {
     z-index:999;
-    position: absolute;
+    // position: fixed;
+    position: sticky;
     left:0;
     top:0;
-    margin-left: 2rem;
     height: 5vh;
-    width: 28vw;
+    width: 100%;
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
+    background-color: $greyBlue;
   }
   &.roominfo {
     font-family: 'Inter';
@@ -43,6 +123,7 @@
     color: $darkBlue;
   }
   &.roomifotitle {
+    margin-left: 2rem;
     font-family: 'Inter';
     font-style: normal;
     font-weight: bold;
@@ -50,60 +131,93 @@
     color: $darkBlue;
   }
   &.singlePlayerContainer {
-    width:25vw;
-    height:15vh;
+    // width:25vw;
+    width: 100%;
+    min-width: fit-content;
+    min-height: fit-content;
     border-radius: 22px;
     background-color: $lightYellow;
     display: grid;
-    grid-template-columns: auto 1fr 0.2fr;
+    grid-template-columns: max-content auto max-content;
     gap: 10px;
+    padding: 0.8rem 1rem 0.8rem 1rem;
+    .playerStatus {
+      grid-column: 3;
+      position: relative;
+      left:0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
   }
   &.playerAvatar {
-    grid-column: 1;
-    height: 4.4rem;
-    width: 4.4rem;
-    position: relative;
-    top: 1rem;
-    left:1rem;
+    // height: 4.4rem;
+    // width: 4.4rem;
+    // position: relative;
+    // top: 1rem;
+    // left:1rem;
+    // align-items: center;
+    
     background-color: #D9D9D9;
     border-radius: 22px;
+    height: auto;
     display: flex;
     justify-content: center;
     align-items: center;
+    align-self: center;
+    height: 4.4rem;
+    width: 4.4rem;
+    position: relative;
+    .twa.twa-studio-microphone {
+      position: absolute;
+      bottom: -1rem;
+      right: -1rem;
+    }
   }
   .playerAvatar i {
     font-size: 100%;
   }
-  &.secondcolumn {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    grid-column: 2;
-  }
   &.playerName {
     position: relative;
-    top: 1rem;
-    left:1.4rem;
+    // top: 1rem;
+    // left:1.4rem;
     font-weight: 700;
     font-size: 1.2rem;
     color:$darkBlue;
   }
+  // for playerContainer
+  &.secondcolumn {
+    // position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
+    justify-content: space-between;
+  }
   &.secondRow {
     display: flex;
     flex-direction: row;
+    align-items: flex-end;
+    .twa{
+      margin-left: 7rem;
+      font-size: 2.7rem;
+      color: $darkBlue;
+    
+    }
   }
   &.scoreTitle {
     position: relative;
-    top: 2.8rem;
-    left:1.4rem;
+    // top: 2.8rem;
+    // left:1.4rem;
     font-weight: 700;
     font-size: 1.0rem;
     color:$darkBlue;
   }
   &.playerScore {
     position: relative;
-    top: 2.8rem;
-    left:1.4rem;
+    // top: 2.8rem;
+    // left:1.4rem;
     font-weight: 700;
     font-size: 1rem;
     color:$darkBlue;
@@ -116,40 +230,21 @@
     align-items: center;
     margin-left: 0.4rem;
   }
-  &.playerStatus {
-    grid-column: 3;
-    position: relative;
-    top: 1rem;
-  }
-  &.inputarea {
-    background-color: $greyBlue;
-    height: 22vh;
-    width: 72vw;
-    position: absolute;
-    left:28vw;
-    top:78vh;
-  }
-  &.readypopupbg {
-    background-color: $classicYellow;
-    height: 40vh;
-    width: 35vw;
-    position: absolute;
-    top: 19vh;
-    left: 48vw;
-    border-radius: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+  // &.playerStatus {
+  //   grid-column: 3;
+  //   position: relative;
+  //   top: 1rem;
+  // }
   &.readypopupcontainer {
     background-color: $lightYellow;
-    height: 37vh;
-    width: 33vw;
-    position: relative;
+    // height: 37vh;
+    // width: 33vw;
+    // position: relative;
     border-radius: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-shadow: 0 0 0 10px $classicYellow;
   }
   &.popuptitle {
     margin-top: 2rem;
@@ -181,12 +276,17 @@
     align-items: center;
     gap:5rem;
     margin-top: 3rem;
+    margin-bottom: 2rem;
+    margin-right: 2rem;
+    margin-left: 2rem;
   }
   .readybutton,
   .cancelbutton {
     border-radius: 0.5rem;
     width: 11vw;
     height: 5vh;
+    min-height: fit-content;
+    min-width: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -212,5 +312,288 @@
     background-color: darken(rgba(129, 129, 129, 1), 10%);
     cursor: pointer;
   }
+  &.counterdiv {
+    margin-top:1.5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &.statusdiv {
+    display: flex;
+    height: 30%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+  &
+  .counternum {
+    margin-left: 0.5rem;
+    font-family: 'Inter';
+    font-weight: 900;
+    font-size: 1.8rem;
+    color: $darkBlue;
+  }
+  &.speakPlayerContainer {
+    margin-top: 1vh;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 22px;
+    height: 100%;
+    max-height: 100px;
+    background-color: $lightYellow;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    padding: 0rem 1rem 0rem 1rem;
+    // display: grid;
+    // grid-template-columns: auto 1fr;
+    // gap: 10px;
+    // secondcolumn in speakPlayerContainer
+    .secondcolumn {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-height: 100px;
+      height: 100%;
+      .wave-player {
+        color:$darkBlue;
+        justify-self: center;
+        min-height: 0;
+        padding: 1rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+      .speakerName{
+        margin-left: 2rem;
+        margin-top: 0.5rem;
+      }
+      .playerName {
+        top: 0;
+      }
+      .revealAnswer {
+        color: black;
+        margin-left: 0.3rem;
+        font-weight: 1000;
+      }
+    }
+  }
+  &.remindermssg {
+    // position: absolute;
+    // top: 29.4vh;
+    // top: 40vh;
+    margin-top: auto;
+    justify-self: flex-end;
+    width: 72vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .audiorecorder {
+      width: 40%;
+    }
+  }
+  &.remindertext {
+    background-color: $greyBlue;
+    margin-top: 1.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 1rem;
+    font-weight: 500;
+    color: $darkBlue;
+  }
+  &.leaderboard {
+    //background-color: $whiteYellow;
+    background-color: $lightYellow;
+    border-style: solid;
+    border-width: 1rem;
+    border-radius: 2rem;
+    border-color: $classicYellow;
+    height:50vh;
+    width: 60vw;
+    overflow: auto;
+  }
+  &.singleScoreContainer {
+    height:13vh;
+    margin: 1.5vh 2vw;
+    border-radius: 22px;
+    background-color: $whiteYellow;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4vw, 1fr));
+    gap: 0.5rem;
+  }
+  &.ldPlayerAvatar {
+    grid-column: 2;
+    grid-row: 1;
+    height: 3.4rem;
+    width: 3.4rem;
+    position: relative;
+    top: 1rem;
+    left:1rem;
+    background-color: #D9D9D9;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &.ranking-0 {
+    grid-column: 1;
+    position: relative;
+    top: 3.9vh;
+    left: 1vw;
+    background-color: lighten($classicYellow,10%);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color:$darkBlue;
+  }
+  &.ranking-1 {
+    grid-column: 1;
+    position: relative;
+    top: 3.9vh;
+    left: 1vw;
+    background-color: lighten($classicYellow,18%);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color:$darkBlue;
+  }
+  &.ranking-2 {
+    grid-column: 1;
+    position: relative;
+    top: 3.9vh;
+    left: 1vw;
+    background-color: lighten($classicYellow,26%);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color:$darkBlue;
+  }
+  &.ranking-3 {
+    grid-column: 1;
+    position: relative;
+    top: 3.9vh;
+    left: 1vw;
+    background-color: lighten($greyBlue,10%);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color:$darkBlue;
+  }
+  &.ranking-4 {
+    grid-column: 1;
+    position: relative;
+    top: 3.9vh;
+    left: 1vw;
+    background-color: lighten($greyBlue,5%);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color:$darkBlue;
+  }
+  &.ldPlayerName {
+    grid-column: 2;
+    grid-row: 2;
+    position: relative;
+    top: 0.2rem;
+    left:1.4rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color:$darkBlue;
+  }
+  &.scorenum {
+    margin-left: 2rem;
+    position: relative;
+    top: 3.9vh;
+    left: 1vw;
+    background-color: lighten($greyBlue,5%);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color:$darkBlue;
+  }
+  &.ldtitle {
+    grid-row: 2;
+    margin-left: 2rem;
+    position: relative;
+    top: 0.2rem;
+    left:1.0rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color:lighten($darkBlue,20%);
+  }
+  &.currentAnswer {
+    position: relative;
+    top: 0%;
+    left: 35%;
+    font-weight: 1000;
+    font-size: 1.4rem;
+    color:$darkBlue;
+  }
+  .validateForm {
+    background-color: $whiteYellow;
+    border-radius: 5%;
+    width: 80%;
+    padding:0 0.6rem;
+    padding-right: 2rem;
+    border: 1px solid $classicYellow;
+  }
+
+  .validateUpload {
+    padding:0.4rem 0.8rem;
+    margin-left: 5%;
+    border-radius: 15%;
+    border: 0px;
+    width: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    background-color: $classicYellow;
+    color: $whiteYellow;
+    cursor: pointer;
+  }
+
+  .validateUpload:disabled {
+    background-color: grey;
+    color: $whiteYellow;
+    cursor: not-allowed;
+  }
+ // .validateUpload:active{
+ //   background-color: $lightYellow;
+ //}
 
 }

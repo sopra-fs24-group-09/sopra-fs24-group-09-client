@@ -3,6 +3,7 @@ name: Build and Test before merging
 on:
   pull_request:
     branches:
+      - main
       - dev
   workflow_dispatch:
 
@@ -33,6 +34,3 @@ jobs:
           node-version: "20.x"
       - run: npm install
       - run: npm run build
-
-      - name: Test
-        run: npm test

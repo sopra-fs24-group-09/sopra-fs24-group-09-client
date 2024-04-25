@@ -31,9 +31,10 @@ export const VolumeBar = props => {
         max="1"
         step="0.01"
         value={volume}
-        onChange={e => {
-          setVolume(e.target.value);
-        }}
+        // onChange={e => {
+        //   setVolume(e.target.value);
+        // }}
+        onChange={props.onChange}
       />
 
     </div>
@@ -42,6 +43,7 @@ export const VolumeBar = props => {
 
 VolumeBar.propTypes = {
   volume: Proptypes.number,
+  onChange: Proptypes.func,
 };
 
 

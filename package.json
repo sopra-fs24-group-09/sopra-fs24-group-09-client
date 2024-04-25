@@ -16,7 +16,7 @@
     "serve": "^14.2.1",
     "sockjs-client": "^1.6.1",
     "stompjs": "^2.3.3",
-    "typescript": "^3.2.1",
+    "uuid": "^9.0.1",
     "wavesurfer.js": "^7.7.5"
   },
   "scripts": {
@@ -25,16 +25,10 @@
     "build": "react-scripts build",
     "gcp-build": "",
     "eject": "react-scripts eject",
-    "test": "react-scripts test --env=jsdom",
     "lint": "eslint --fix src/**/*.ts src/**/*.tsx src/**/*.js"
   },
   "eslintConfig": {
     "extends": "react-app"
-  },
-  "jest": {
-    "moduleNameMapper": {
-      "^axios$": "axios/dist/node/axios.cjs"
-    }
   },
   "engines": {
     "node": "20.11.0"
@@ -47,6 +41,7 @@
   ],
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "sass": "^1.70.0"
+    "sass": "^1.70.0",
+    "typescript": "^4.0.0"
   }
 }

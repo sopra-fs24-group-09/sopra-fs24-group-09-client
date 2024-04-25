@@ -10,7 +10,7 @@ import { User } from "types";
 const Profile = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const localId = parseInt(localStorage.getItem("id") ?? "0", 10);
+  const localId = sessionStorage.getItem("id");
   const [user, setUser] = useState<User | "">("");
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const Profile = () => {
         const response = await api.get<User>(`/users/${id}`);
         setUser(response.data);
         //update the username after editing
-        localStorage.setItem("username", response.data.username);
+        sessionStorage.setItem("username", response.data.username);
       } catch (error) {
         console.error(`Fetching user data failed: ${handleError(error)}`);
         alert(`Something went wrong during Fetching user: \n${handleError(error)}`);

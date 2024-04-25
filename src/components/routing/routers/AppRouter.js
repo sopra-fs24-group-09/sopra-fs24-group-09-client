@@ -39,7 +39,9 @@ const AppRouter = () => {
           <Route index element={<Profile />} />
         </Route>
 
-        {/*no guard for now*/}
+        {/* no guard for gameroom page now*/}
+        {/* the parameter name should match with the useParam in the Gameroom */}
+        <Route path="/rooms/:currentRoomID/:currentRoomName" element={<Gameroom/>} />
         
         <Route path="/editprofile" element={<LobbyGuard />}>
           <Route index element={<EditProfile />} />

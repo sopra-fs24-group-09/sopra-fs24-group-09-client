@@ -1,6 +1,6 @@
 import React from "react";
-import {ReactLogo} from "../ui/ReactLogo";
 import PropTypes from "prop-types";
+import { VolumeBar } from "../ui/VolumeBar";
 import "../../styles/views/Header.scss";
 
 /**
@@ -12,13 +12,14 @@ import "../../styles/views/Header.scss";
  * @FunctionalComponent
  */
 const Header = props => (
-  <div  className="header container" style={{height: "5vh",width:"100vw"}}>
-    <h3 className="header title">state bar to be implemented</h3>
+  <div  className="header container" style={{left:props.left}}>
+    <VolumeBar onChange={props.onChange}/>
   </div>
 );
 
 Header.propTypes = {
-  height: PropTypes.string,
+  left: PropTypes.string,
+  onChange: PropTypes.func,
 };
 
 /**
