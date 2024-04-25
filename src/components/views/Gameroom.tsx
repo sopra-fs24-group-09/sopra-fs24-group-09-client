@@ -45,7 +45,7 @@ const Gameroom = () => {
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [currentSpeakerID, setCurrentSpeakerID] = useState(null);
-  const [validateAnswer, setValidateAnswer] = useState(null);
+  const [validateAnswer, setValidateAnswer] = useState("");
   const [playerLists, setPlayerLists] = useState([]);
   const [endTime, setEndTime] = useState(null);
   const [remainingTime, setRemainingTime] = useState(null);
@@ -97,7 +97,7 @@ const Gameroom = () => {
   console.log("GameInfo", gameInfo);
 
   function calculateRemainingTime(roundDue) {
-    roundDue = roundDue.split('[')[0];
+    roundDue = roundDue.split("[")[0];
     const endTime = new Date(roundDue).getTime();
     console.log("ENDTIME IS " + endTime);
     const currentTime = Date.now();
