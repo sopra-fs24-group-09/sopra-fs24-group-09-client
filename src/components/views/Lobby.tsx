@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { api, handleError } from "helpers/api";
+import { Spinner } from "components/ui/Spinner";
 import { Button } from "components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
@@ -130,14 +131,14 @@ const Lobby = () => {
   const profilePopRef = useRef<HTMLDialogElement>(null);
   const changeAvatarPopRef = useRef<HTMLDialogElement>(null);
   const infoPopRef = useRef<HTMLDialogElement>(null);
-  const [rooms, setRooms] = useState<Room[]>(mockRooms);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [user, setUser] = useState<User[]>(mockRoomPlayers[0]);
   const [username, setUsername] = useState<string | null>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
   const [roomName, setRoomName] = useState("");
-  const [numRounds, setNumRounds] = useState(0);
-  const [roomTheme, setRoomTheme] = useState("food");
-  
+  const [numRounds, setNumRounds] = useState(2);
+  const [roomTheme, setRoomTheme] = useState("");
+
   const logout = async () => {
     const id = sessionStorage.getItem("id");
     sessionStorage.removeItem("token");
@@ -164,7 +165,7 @@ const Lobby = () => {
           // 对每个房间的用户 ID 列表并发请求用户信息
           const playerDetails = await Promise.all(room.roomPlayersList.map(async (userId) => {
             const userResponse = await api.get(`/users/${userId}`);
-            
+
             return userResponse.data;  // 返回用户的详细信息
           }));
 
@@ -233,13 +234,13 @@ const Lobby = () => {
 
   const createRoom = async () => {
     try {
-      
+      console.log('Current theme:', roomTheme);
       const ownerId = sessionStorage.getItem("id");  // 假设ownerId存储在sessionStorage中
       const requestBody = JSON.stringify({
         roomName: roomName,
         maxPlayersNum: numRounds,
         roomOwnerId: ownerId,
-        theme: "FOOD"
+        theme: roomTheme
       });
       console.log(requestBody)
       const response = await api.post("/games", requestBody);
@@ -373,7 +374,7 @@ const Lobby = () => {
           ))}
         </div>
         <div className="room-header">
-          ROOM #{Room.roomId}
+          <div style={{fontWeight: "bold"}}>{Room.roomName}</div>
           <div>{Room.theme}</div>
           <span
             className={`room-status ${
@@ -403,11 +404,11 @@ const Lobby = () => {
         <div className="lobby room-list">
           <h1>Rooms</h1>
           {renderRoomLists()}
-          <div className="lobby room-list btn-container">
-            <Button className="create-room-btn" onClick={toggleRoomCreationPop}>
-              New Room
-            </Button>
-          </div>
+        </div>
+        <div className="lobby room-list btn-container">
+          <Button className="create-room-btn" onClick={toggleRoomCreationPop}>
+            New Room
+          </Button>
         </div>
       </div>
 
@@ -476,18 +477,29 @@ const Lobby = () => {
         <BaseContainer className="room-creation-popup content">
           <div className="title">Create Room</div>
           <input type="text" placeholder="Room Name" value={roomName} onChange={e => setRoomName(e.target.value)} />
-          <input type="number" placeholder="Number of Players" value={numRounds} onChange={e => setNumRounds(parseInt(e.target.value, 10))} />
+          <div>Number of Maximum Players: </div>
+          <input
+            type="number"
+            placeholder="2"
+            value={numRounds}
+            onChange={e => {
+              const value = parseInt(e.target.value, 10);
+              setNumRounds(value >= 2 && value <= 10 ? value : '');
+            }}
+            min={2}
+            max={10}
+          />
           <Dropdown
             className="theme-dropdown"
             prompt="Select Theme"
-            value={roomTheme}
+            defaultValue={roomTheme}
             options={[
               { value: "JOB", label: "JOB"},
               { value: "FOOD", label: "FOOD" },
               { value: "SUPERHERO", label: "SUPERHERO" },
               { value: "SPORTS", label: "SPORTS" },
             ]}
-            onChange={(selectedOption) => setRoomTheme(selectedOption.value)}
+            onChange={(value) => setRoomTheme(value)}
           />
           <div className="room-creation-popup btn-container">
             <Button className="create-room" onClick={createRoom}>Create Room</Button>

@@ -61,9 +61,9 @@
       justify-content: center;
       height: auto;
       width: 100%;
-      bottom: 3%;
+      bottom: 1.5%;
       left: 0%;
-      margin-top: 2%;
+      margin-top: 30px;
       flex-grow: 1;
       .create-room-btn{
         bottom: 0%;
@@ -109,11 +109,13 @@
   margin-inline: 5%;
   justify-content: space-between;
   flex-direction: row;
+  text-align: center;
 }
 .room {
   background-color: #fff;
   margin-bottom: 10px;
   border-radius: 8px;
+  text-align: center;
   //overflow: hidden;
 
   .room-header{
@@ -124,6 +126,7 @@
     align-items: center;       // Center the items horizontally
     justify-content: center;   // Center the items vertically
     padding: 10px;
+    text-align: center;
   }
 
 
@@ -148,6 +151,7 @@
     flex-direction: column; /* 堆叠子元素 */
     align-items: center; /* 水平居中 */
     justify-content: center; /* 垂直居中 */
+    text-align: center;
     padding: 10px;    // Align the room details to the end of the flex container
   }
 
@@ -279,7 +283,7 @@
   position: absolute;  // 使用绝对定位
   left: 15%;           // 定位到zuo边
   top: 25%;           // 从顶部留下10%的空间以居中显示
-  font-size: 20rem; /* 设定容器的字体大小 */
+  font-size: 15vw; /* 设定容器的字体大小 */
 }
 
 .big-title {
@@ -306,7 +310,7 @@
   cursor: pointer;
 }
 .profile-popup{
-  height:50%;
+  height:70%;
   &.content{
     display: flex;
     flex-direction: column;
@@ -374,7 +378,7 @@
 
 }
 .room-creation-popup{
-  height: 50%;
+  height: 80%;
   &.content{
     display: flex;
     flex-direction: column;
@@ -388,7 +392,7 @@
     }
     input {
       height: 100px;
-      width: 800px;
+      width: 600px;
       padding-left: 1px;
       margin-left: 4px;
       border: 1px solid black;
@@ -403,9 +407,10 @@
     display: flex;
     align-items: center;
     justify-items: center;
-    width: 800px;
+    width: 600px;
     height: 100px;
-    margin-bottom: 20px;
+    margin-top: 20px;
+    margin-bottom: 40px;
     select{
         appearance: none;
         -webkit-appearance: none;
