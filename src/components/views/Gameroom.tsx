@@ -31,7 +31,7 @@ type SharedAudioURL = { [userId: number]: string };
 
 const Gameroom = () => {
   const navigate = useNavigate();
-  const { currentRoomID } = useParams(); // get the room ID from the URL
+  const { currentRoomID,currentRoomName } = useParams(); // get the room ID from the URL
   const stompClientRef = useRef(null);
   /**
    * Question: why we need this user state here?
@@ -1128,7 +1128,7 @@ const Gameroom = () => {
         {!gameOver && showReadyPopup && (
           <div className="gameroom readypopupbg">
             <div className="gameroom readypopupcontainer">
-              <span className="gameroom popuptitle"> {"Room#" + currentRoomID}</span>
+              <span className="gameroom popuptitle"> {"Room#" + currentRoomName}</span>
               <span className="gameroom popuptheme"> Advanced</span>
               <span className="gameroom popuptext">
                 {" "}

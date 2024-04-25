@@ -246,7 +246,7 @@ const Lobby = () => {
       console.log("Room created successfully:", response);
       console.log("Room ID:", response.data.roomId);
       const roomId = response.data.roomId;
-      navigate(`/rooms/${roomId}`);
+      navigate(`/rooms/${roomId}/${roomName}`);
       //toggleRoomCreationPop();  // 关闭创建房间的弹窗
     } catch (error) {
       console.error("Error creating room:", handleError(error));
@@ -356,8 +356,8 @@ const Lobby = () => {
         // const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
         enterRoom(Room.roomId, currentId)
           .then(() => {
-            alert(currentId);
-            navigate(`/rooms/${Room.roomId}`);
+            //alert(currentId);
+            navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
           })
           .catch(error => {
             console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
