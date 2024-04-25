@@ -49,17 +49,7 @@ const Gameroom = () => {
   const [playerLists, setPlayerLists] = useState([]);
   const [endTime, setEndTime] = useState(null);
   const [remainingTime, setRemainingTime] = useState(null);
-  const [gameInfo, setGameInfo] = useState({
-    // roomID: 5,
-    // currentSpeaker: {
-    //   id: 2,
-    //   name: "Hanky",
-    //   avatar: "grinning-face-with-sweat",
-    // },
-    // currentAnswer: "Success",
-    // roundStatus: "speak",
-    // currentRoundNum: 2,
-  });
+  const [gameInfo, setGameInfo] = useState(null);
   const [roomInfo, setRoomInfo] = useState({
     roomID: currentRoomID,
     theme: "Advanced",
@@ -110,6 +100,7 @@ const Gameroom = () => {
     const endTime = new Date(roundDue).getTime();
     const currentTime = Date.now();
     const remainingSeconds = Math.max(0, Math.floor((endTime - currentTime) / 1000));
+    
     return remainingSeconds;
   }
 
@@ -160,6 +151,12 @@ const Gameroom = () => {
       enterRoom();
       //connect or reconnect
     };
+
+    const onError = (err) => {
+      console.error("WebSocket Error: ", err);
+      alert("WebSocket connection error. Check console for details.");
+    };
+
     const onResponseReceived = (payload) => {
       // TODO: handle response
       /// 1. filter the response by the receiptId
@@ -186,7 +183,11 @@ const Gameroom = () => {
         setShowReadyPopup(false);
       }
 
-      setCurrentSpeakerID(payloadData.message.currentSpeaker.id);
+      // if currentSpeaker is not null
+      if (payloadData.message.currentSpeaker) {
+        setCurrentSpeakerID(payloadData.message.currentSpeaker.id);
+      }
+      
       if (
         prevStatus.current === "reveal" &&
         payloadData.message.roundStatus === "speak"
@@ -260,10 +261,6 @@ const Gameroom = () => {
     //   }
     // }
 
-    const onError = (err) => {
-      console.error("WebSocket Error: ", err);
-      alert("WebSocket connection error. Check console for details.");
-    };
 
     connectWebSocket();
 
@@ -1009,6 +1006,10 @@ const Gameroom = () => {
     ).isRequired,
   };
 
+  if (playerLists === null) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <BaseContainer className="gameroom basecontainer">
       {/* <Header left="28vw" /> */}
@@ -1083,7 +1084,8 @@ const Gameroom = () => {
           />
         )}
         <div className="gameroom inputarea">
-          {!gameOver &&
+          { gameInfo !== null &&
+            !gameOver &&
             !showReadyPopup &&
             gameInfo.currentSpeaker.id !== user.id &&
             currentStatus === "guess" && (
@@ -1138,22 +1140,22 @@ const Gameroom = () => {
             )}
             {currentSpeakerID === user.id &&
               currentStatus === "speak" && (
-                <div className="gameroom readybutton" onClick={
-                  () => {
-                    console.log("upload audio");
-                    uploadAudio();
-                  }
-                }>upload</div>
-                )}
+              <div className="gameroom readybutton" onClick={
+                () => {
+                  console.log("upload audio");
+                  uploadAudio();
+                }
+              }>upload</div>
+            )}
             {currentSpeakerID !== user.id &&
               currentStatus === "guess" && (
-                <div className="gameroom readybutton" onClick={
-                  () => {
-                    console.log("upload audio");
-                    uploadAudio();
-                  }
-                }>share</div>
-              )}
+              <div className="gameroom readybutton" onClick={
+                () => {
+                  console.log("upload audio");
+                  uploadAudio();
+                }
+              }>share</div>
+            )}
           </div>
 
         </div>
