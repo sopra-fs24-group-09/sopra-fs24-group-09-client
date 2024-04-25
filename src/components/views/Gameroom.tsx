@@ -1105,31 +1105,46 @@ const Gameroom = () => {
             </div>
           )}
           <div style={{display:"flex",flexDirection:"row"}}>
-            <button onClick={togglePopup}> show</button>
-            <button onClick={toggleStatus}> status</button>
-            <button onClick={() => setGameOver((prevState) => !prevState)}>
-              Over
-            </button>
-            <button onClick={
-              () => {
-                console.log("clear audio");
-                console.log(roundStatusComponentRef.current);
-                roundStatusComponentRef.current?.clearAudio();
-                myRecordingReversedRef.current = null;
-              }
-            }>clear</button>
-            <button onClick={
-              () => {
-                console.log("cleave room");
-                exitRoom();
-              }
-            }>leave</button>
-            <button onClick={
-              () => {
-                console.log("upload audio");
-                uploadAudio();
-              }
-            }>upload</button>
+            {/*<button onClick={togglePopup}> show</button>*/}
+            {/*<button onClick={toggleStatus}> status</button>*/}
+            {/*<button onClick={() => setGameOver((prevState) => !prevState)}>*/}
+            {/*  Over*/}
+            {/*</button>*/}
+            {/*<button onClick={*/}
+            {/*  () => {*/}
+            {/*    console.log("clear audio");*/}
+            {/*    console.log(roundStatusComponentRef.current);*/}
+            {/*    roundStatusComponentRef.current?.clearAudio();*/}
+            {/*    myRecordingReversedRef.current = null;*/}
+            {/*  }*/}
+            {/*}>clear</button>*/}
+            {showReadyPopup === true &&(
+              // {showReadyPopup === true && user.id !== gameInfo.roomOwner.id &&(
+              <div className="gameroom cancelbutton" onClick={
+                () => {
+                  console.log("leave room");
+                  exitRoom();
+                }
+              }>leave</div>
+            )}
+            {gameOver === true &&(
+              <div className="gameroom cancelbutton" onClick={
+                () => {
+                  console.log("leave room after over");
+                  exitRoom();
+                  // navigate("/lobby");
+                }
+              }>leave</div>
+            )}
+            {currentSpeakerID === user.id &&
+              currentStatus === "speak" && (
+                <div className="gameroom readybutton" onClick={
+                  () => {
+                    console.log("upload audio");
+                    uploadAudio();
+                  }
+                }>upload</div>
+                )}
           </div>
 
         </div>
