@@ -177,10 +177,10 @@ const Gameroom = () => {
         const myInfo = payloadData.message.find(item => item.user.id === user.id);
         console.log("set info for myself")
         console.log(myInfo);
-        if (myInfo.roundFinished && myInfo.roundFinished !== null){
+        if (myInfo.roundFinished !== null){
           roundFinished.current = myInfo.roundFinished;
           console.log("roundFinished?")
-          console.log(roundFinished);
+          console.log(roundFinished.current);
         }
       }
     };
@@ -1074,7 +1074,7 @@ const Gameroom = () => {
         />
         <button
           className="gameroom validateUpload"
-          disabled={!validateAnswer|| roundFinished.current}
+          disabled={!validateAnswer || roundFinished.current}
           onClick={() => validateAnswer && submitAnswer(validateAnswer)}
         >
           Submit
