@@ -310,12 +310,12 @@
   cursor: pointer;
 }
 .profile-popup{
-  height:70%;
+  height:80%;
   &.content{
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    font-size: 2em;
+    font-size: 1.5em;
     .title{
       font-size: 1.5em;
       margin-bottom: 20px;
