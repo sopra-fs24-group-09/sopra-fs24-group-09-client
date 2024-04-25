@@ -224,8 +224,8 @@ export const AudioRecorder = React.forwardRef((props,ref) => {
         setIsReversed(false);
         sessionStorage.setItem(cachedIsReversedName, "false");
         // pass audio to parent component
-        props.handleReversedAudioChange && props.handleReversedAudioChange(blob);
-        console.log(`[${props.audioName}]`,"reversed audio passing to parent", blob);
+        props.handleReversedAudioChange && props.handleReversedAudioChange(audioReversedBlobRef.current);
+        console.log(`[${props.audioName}]`,"reversed audio passing to parent", audioReversedBlobRef.current);
       };
       reader.readAsDataURL(blob);
     });
