@@ -47,6 +47,8 @@ const Gameroom = () => {
   const [currentSpeakerID, setCurrentSpeakerID] = useState(null);
   const [validateAnswer, setValidateAnswer] = useState(null);
   const [playerLists, setPlayerLists] = useState([]);
+  const [endTime, setEndTime] = useState(null);
+  const [remainingTime, setRemainingTime] = useState(null);
   const [gameInfo, setGameInfo] = useState({
     roomID: 5,
     currentSpeaker: {
@@ -103,6 +105,21 @@ const Gameroom = () => {
   }, []);
 
   console.log("GameInfo", gameInfo);
+
+  function calculateRemainingTime(roundDue) {
+    const endTime = new Date(roundDue).getTime();
+    const currentTime = Date.now();
+    const remainingSeconds = Math.max(0, Math.floor((endTime - currentTime) / 1000));
+    return remainingSeconds;
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRemainingTime(calculateRemainingTime(endTime));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [endTime]);
 
   useEffect(() => {
     // define subscription instances
@@ -183,6 +200,7 @@ const Gameroom = () => {
       }
       prevStatus.current = payloadData.message.roundStatus;
       //"speak" | "guess" | "reveal" only allowed
+      setEndTime(payloadData.message.roundDue);
       setCurrentStatus(payloadData.message.roundStatus);
       setGameInfo(payloadData.message);
     };
@@ -588,7 +606,7 @@ const Gameroom = () => {
         <div className="gameroom roundstatus">
           <div className="gameroom counterdiv">
             <i className={"twa twa-stopwatch"} style={{ fontSize: "2.6rem" }} />
-            <span className="gameroom counternum">50</span>
+            <span className="gameroom counternum">{remainingTime}</span>
           </div>
           <div className="gameroom statusdiv">
             <div className="gameroom speakPlayerContainer">
