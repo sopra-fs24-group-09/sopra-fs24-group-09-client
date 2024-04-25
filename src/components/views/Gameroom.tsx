@@ -1146,7 +1146,7 @@ const Gameroom = () => {
                     </div>
                     <div
                       className="gameroom cancelbutton"
-                      //onClick={() => cancelReady()}
+                      onClick={() => exitRoom()}
                     >
                       Quit
                     </div>
