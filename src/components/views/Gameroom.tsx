@@ -937,7 +937,7 @@ const Gameroom = () => {
                     style={{ fontSize: "3.8rem" }}
                   />
                 </span>
-                {!showReadyPopup && (
+                {!showReadyPopup && !gameOver && (
                   <>
                     <div className="gameroom secondcolumn">
                       <span className="gameroom playerName">
@@ -968,6 +968,21 @@ const Gameroom = () => {
                         />
                       )}
                       {hasRecording && <ButtonPlayer audioURL={_audioURL} volume={globalVolume}/>}
+                    </div>
+                  </>
+                )}
+                {gameOver && (
+                  <>
+                    <div className="gameroom secondcolumn">
+                      <span className="gameroom playerName">
+                        {playerInfo.user.name}
+                      </span>
+                      <span className="gameroom secondRow">
+                        <span className="gameroom scoreTitle">Score:</span>
+                        <span className="gameroom playerScore">
+                          {playerInfo.score.total}
+                        </span>
+                      </span>
                     </div>
                   </>
                 )}
@@ -1026,6 +1041,37 @@ const Gameroom = () => {
         ifGuess: PropTypes.bool.isRequired,
       })
     ).isRequired,
+  };
+
+  const ValidateAnswerForm = ({ submitAnswer }) => {
+    const [validateAnswer, setValidateAnswer] = useState('');
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValidateAnswer(e.target.value);
+    };
+
+    return (
+      <div style={{display:"flex",flexDirection:"row"}}>
+        <input
+          value={validateAnswer}
+          onChange={handleInputChange}
+          className="gameroom validateForm"
+          type="text"
+          placeholder="Validate your answer..."
+        />
+        <button
+          className="gameroom validateUpload"
+          disabled={!validateAnswer}
+          onClick={() => validateAnswer && submitAnswer(validateAnswer)}
+        >
+          Submit
+        </button>
+      </div>
+    );
+  };
+
+  ValidateAnswerForm.propTypes = {
+    submitAnswer: PropTypes.func.isRequired,
   };
 
   PlayerList.propTypes = {
@@ -1144,20 +1190,7 @@ const Gameroom = () => {
             gameInfo.currentSpeaker.userID !== user.id &&
             currentStatus === "guess" && (
             <div style={{ display: "flex", flexDirection: "row" }}>
-              <input
-                value={validateAnswer}
-                onChange={(e) => setValidateAnswer(e.target.value)}
-                className="gameroom validateForm"
-                type="text"
-                placeholder="Validate your answer..."
-              />
-              <button
-                className="gameroom validateUpload"
-                disabled={!validateAnswer }//|| roundFinished
-                onClick={() => validateAnswer && submitAnswer(validateAnswer)}
-              >
-                  Submit
-              </button>
+              <ValidateAnswerForm submitAnswer={submitAnswer}/>
             </div>
           )}
           <div style={{display:"flex",flexDirection:"row"}}>
@@ -1203,12 +1236,12 @@ const Gameroom = () => {
             )}
             {currentSpeakerID !== user.id &&
               currentStatus === "guess" && (
-              <div className="gameroom readybutton" onClick={
+              <div style={{marginTop:"1rem"}} className="gameroom readybutton" onClick={
                 () => {
                   console.log("upload audio");
                   uploadAudio();
                 }
-              }>share</div>
+              }>share your audio</div>
             )}
           </div>
 
