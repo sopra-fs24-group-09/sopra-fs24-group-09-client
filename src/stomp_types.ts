@@ -14,15 +14,15 @@ export type PlayerAudio = {
 
 export type PlayerAndRoomID = {
     userID: string;
-    roomID: number;
+    roomID: string;
 }
 
 export type AnswerGuess = {
     userID: string;
-    roomID: number;
+    roomID: string;
     guess: string;
     roundNum: number;
-    currentSpeakerID: number;
+    currentSpeakerID: string;
 }
 
 export type StompResponse = {
