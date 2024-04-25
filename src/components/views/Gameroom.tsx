@@ -98,7 +98,7 @@ const Gameroom = () => {
   console.log("GameInfo", gameInfo);
 
   function calculateRemainingTime(roundDue) {
-    console.log("Calculating");
+    //console.log("Calculating");
     roundDue = roundDue.split("[")[0];
     const endTime = new Date(roundDue).getTime();
     const currentTime = Date.now();
@@ -170,6 +170,7 @@ const Gameroom = () => {
       setPlayerLists(payloadData.message);
       if (!showReadyPopup && !gameOver){
         const myInfo = payloadData.message.find(item => item.user.id = user.id);
+        console.log("set info for myself")
         console.log(myInfo);
         if (myInfo.roundFinished && myInfo.roundFinished !== null){
           roundFinished.current = myInfo.roundFinished;
@@ -606,11 +607,11 @@ const Gameroom = () => {
       if (endTime !== null && endTime !== "None") {
         const interval = setInterval(() => {
           setRemainingTime(calculateRemainingTime(endTime));
-          console.log("Interval triggered");
+          //console.log("Interval triggered");
         }, 1000);
 
         return () => {
-          console.log("Clearing interval");
+          //console.log("Clearing interval");
           clearInterval(interval);
         };
       }
@@ -1148,7 +1149,7 @@ const Gameroom = () => {
               />
               <button
                 className="gameroom validateUpload"
-                disabled={!validateAnswer || roundFinished}
+                disabled={!validateAnswer }//|| roundFinished
                 onClick={() => validateAnswer && submitAnswer(validateAnswer)}
               >
                   Submit
