@@ -333,12 +333,6 @@ export const AudioRecorder = React.forwardRef((props,ref) => {
     }
   }),[]);
 
-  // pass reversed audio to parent component
-  // useEffect(() => {
-  //   props.handleReversedAudioChange && props.handleReversedAudioChange(audioReversedBlobRef.current);
-  //   console.log(`[${props.audioName}]`,"reversed audio changed", audioReversedBlobRef.current);
-  // }, [audioReversedBlobRef.current]);
-
   return (
     <div className={`audio-recorder ${props.className}`}>
       <div ref={waveformRef} className="audio-recorder wave-frame" />

@@ -157,6 +157,7 @@ const Gameroom = () => {
     const onError = (err) => {
       console.error("WebSocket Error: ", err);
       alert("WebSocket connection error. Check console for details.");
+      navigate("/lobby");
     };
 
     const onResponseReceived = (payload) => {
@@ -205,12 +206,16 @@ const Gameroom = () => {
         setCurrentSpeakerID(payloadData.message.currentSpeaker.userID);
       }
       
+      // console.log("=============================");
+      // console.log("prevStatus.current", prevStatus.current);
+      // console.log("payloadData.message.roundStatus", payloadData.message.roundStatus);
       if (
         prevStatus.current === "reveal" &&
         payloadData.message.roundStatus === "speak"
       ) {
         //if(payloadData.message.roundStatus === "speak"){
         //empty all the audio
+        console.log("=====clear audio====");
         setCurrentSpeakerAudioURL(null);
         setSharedAudioList([]);
         roundStatusComponentRef.current?.clearAudio();
@@ -449,7 +454,7 @@ const Gameroom = () => {
         },
       };
       const receiptId = uuidv4();
-      stompClientRef.current?.send(
+      stompClientRef.current.send(
         "/app/message/games/audio/upload" /*URL*/,
         { receiptId: receiptId },
         JSON.stringify(payload)
@@ -461,13 +466,13 @@ const Gameroom = () => {
 
   //#endregion -----------------WebSocket Send Functions-----------------
 
-  const handleAudioReversed = (audioReversed: Base64audio) => {
-    if (audioReversed) {
-      myRecordingReversedRef.current = audioReversed;
+  const handleAudioReversed = useMemo(() => (audio: Base64audio) => {
+    if (audio) {
+      myRecordingReversedRef.current = audio;
       console.log("[GameRoom]Get reversed audio from AudioRecorder Success");
       console.log("Reversed Audio: ", myRecordingReversedRef.current);
     }
-  };
+  }, []);
 
   const togglePopup = () => {
     setShowReadyPopup((prevState) => !prevState);
@@ -827,6 +832,7 @@ const Gameroom = () => {
               className="gameroom audiorecorder"
               ffmpeg={ffmpegObj}
               audioName={"my_recording"}
+              // handleReversedAudioChange={handleAudioReversed}
               handleReversedAudioChange={handleAudioReversed}
               disabled={
                 (currentSpeakerID !== user.id && currentStatus === "speak") ||

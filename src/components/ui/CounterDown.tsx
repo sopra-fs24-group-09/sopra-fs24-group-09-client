@@ -17,7 +17,7 @@ export const CounterDown: React.FC<CounterDownProps> = ({ endTimeString }) => {
       const cleanedEndTimeString = endTimeString.replace("[UTC]", "").trim();
       const endTime = new Date(cleanedEndTimeString).getTime();
       const now = Date.now();
-      console.log(`[debug][${now}-countdown-interval]`, endTimeString);
+    //   console.log(`[debug][${now}-countdown-interval]`, endTimeString);
       const leftTimeSeconds = Math.max(0, Math.floor((endTime - now) / 1000));
       setTimeLeft(leftTimeSeconds);
     }
