@@ -478,106 +478,110 @@ const Gameroom = () => {
 
   console.log("the player list is" +playerLists);
 
-  const playerReadyStatus = [
-    {
-      user: {
-        id: 1,
-        name: "Maxwell",
-        avatar: "smiling-face-with-smiling-eyes",
-      },
-      score: {
-        total: 70,
-        guess: 50,
-        read: 20,
-        details: [
-          { word: "Lemon", role: 1, score: 20 },
-          { word: "Apple", role: 0, score: 30 },
-          { word: "Orange", role: 0, score: 20 },
-        ],
-      },
-      ready: true,
-      ifGuess: true,
-      roundFinished: true,
-    },
-    {
-      user: {
-        id: 2,
-        name: "Hanky",
-        avatar: "grinning-face-with-sweat",
-      },
-      score: {
-        total: 30,
-        guess: 30,
-        read: 0,
-        details: [
-          { word: "Lemon", role: 0, score: 10 },
-          { word: "Apple", role: 1, score: 0 },
-          { word: "Orange", role: 0, score: 20 },
-        ],
-      },
-      ready: true,
-      ifGuess: false,
-      roundFinished: true,
-    },
-    {
-      user: {
-        id: 3,
-        name: "Yang",
-        avatar: "face-with-monocle",
-      },
-      score: {
-        total: 50,
-        guess: 30,
-        read: 20,
-        details: [
-          { word: "Lemon", role: 0, score: 30 },
-          { word: "Apple", role: 0, score: 0 },
-          { word: "Orange", role: 1, score: 20 },
-        ],
-      },
-      ready: false,
-      ifGuess: true,
-      roundFinished: false,
-    },
-    {
-      user: {
-        id: 4,
-        name: "Sophia",
-        avatar: "grinning-squinting-face",
-      },
-      score: {
-        total: 60,
-        guess: 0,
-        read: 60,
-        details: [
-          { word: "Lemon", role: 0, score: 30 },
-          { word: "Apple", role: 0, score: 10 },
-          { word: "Orange", role: 0, score: 20 },
-        ],
-      },
-      ready: true,
-      ifGuess: true,
-      roundFinished: false,
-    },
-  ];
+  // #region -----------------playerlist mock----------------
 
-  let mePlayer = {
-    id: 3,
-    name: "Hanky",
-    avatar: "grinning-face-with-sweat",
-  };
+  // const playerReadyStatus = [
+  //   {
+  //     user: {
+  //       id: 1,
+  //       name: "Maxwell",
+  //       avatar: "smiling-face-with-smiling-eyes",
+  //     },
+  //     score: {
+  //       total: 70,
+  //       guess: 50,
+  //       read: 20,
+  //       details: [
+  //         { word: "Lemon", role: 1, score: 20 },
+  //         { word: "Apple", role: 0, score: 30 },
+  //         { word: "Orange", role: 0, score: 20 },
+  //       ],
+  //     },
+  //     ready: true,
+  //     ifGuess: true,
+  //     roundFinished: true,
+  //   },
+  //   {
+  //     user: {
+  //       id: 2,
+  //       name: "Hanky",
+  //       avatar: "grinning-face-with-sweat",
+  //     },
+  //     score: {
+  //       total: 30,
+  //       guess: 30,
+  //       read: 0,
+  //       details: [
+  //         { word: "Lemon", role: 0, score: 10 },
+  //         { word: "Apple", role: 1, score: 0 },
+  //         { word: "Orange", role: 0, score: 20 },
+  //       ],
+  //     },
+  //     ready: true,
+  //     ifGuess: false,
+  //     roundFinished: true,
+  //   },
+  //   {
+  //     user: {
+  //       id: 3,
+  //       name: "Yang",
+  //       avatar: "face-with-monocle",
+  //     },
+  //     score: {
+  //       total: 50,
+  //       guess: 30,
+  //       read: 20,
+  //       details: [
+  //         { word: "Lemon", role: 0, score: 30 },
+  //         { word: "Apple", role: 0, score: 0 },
+  //         { word: "Orange", role: 1, score: 20 },
+  //       ],
+  //     },
+  //     ready: false,
+  //     ifGuess: true,
+  //     roundFinished: false,
+  //   },
+  //   {
+  //     user: {
+  //       id: 4,
+  //       name: "Sophia",
+  //       avatar: "grinning-squinting-face",
+  //     },
+  //     score: {
+  //       total: 60,
+  //       guess: 0,
+  //       read: 60,
+  //       details: [
+  //         { word: "Lemon", role: 0, score: 30 },
+  //         { word: "Apple", role: 0, score: 10 },
+  //         { word: "Orange", role: 0, score: 20 },
+  //       ],
+  //     },
+  //     ready: true,
+  //     ifGuess: true,
+  //     roundFinished: false,
+  //   },
+  // ];
 
-  let mockgameInfo = {
-    roomID: 5,
-    currentSpeaker: {
-      id: 2,
-      name: "Hanky",
-      avatar: "grinning-face-with-sweat",
-    },
-    currentAnswer: "Success",
-    roundStatus: "speak",
-    currentRoundNum: 2,
-  };
+  // #endregion -----------------playerlist mock----------------
+
+  // let mePlayer = {
+  //   id: 3,
+  //   name: "Hanky",
+  //   avatar: "grinning-face-with-sweat",
+  // };
+
+  // let mockgameInfo = {
+  //   roomID: 5,
+  //   currentSpeaker: {
+  //     id: 2,
+  //     name: "Hanky",
+  //     avatar: "grinning-face-with-sweat",
+  //   },
+  //   currentAnswer: "Success",
+  //   roundStatus: "speak",
+  //   currentRoundNum: 2,
+  // };
 
   const changeSpeaker = () => {
     setShowReadyPopup((prevState) => !prevState);
@@ -597,7 +601,10 @@ const Gameroom = () => {
         _audioRecorderRef.current?.setVolume(volume);
       }
     }), []);
-
+    
+    if (!gameInfo) {
+      return <div>loading...</div>;
+    }
     return (
       <>
         <div className="gameroom roundstatus">
@@ -771,7 +778,7 @@ const Gameroom = () => {
               ref={_audioRecorderRef}
               className="gameroom audiorecorder"
               ffmpeg={ffmpegObj}
-              audioName={`recording-${mePlayer.id}`}
+              audioName={`my_recording`}
               handleReversedAudioChange={handleAudioReversed}
             />
           </div>
@@ -1078,7 +1085,7 @@ const Gameroom = () => {
         )}
         {!gameOver && !showReadyPopup && (
           <Roundstatus
-            gameInfo={mockgameInfo}
+            gameInfo={gameInfo}
             currentSpeakerAudioURL={currentSpeakerAudioURL}
             ref={roundStatusComponentRef}
           />
