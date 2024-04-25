@@ -925,7 +925,7 @@ const Gameroom = () => {
         <div className="gameroom roominfocontainer">
           <div className="gameroom roominfotitle">ROOM</div>
           <div className="gameroom roominfo">
-            {"#" + roomInfo.roomID + "-" + roomInfo.theme}
+            {"#" + currentRoomName + "-" + gameTheme.current}
           </div>
         </div>
         <div className="gameroom playercontainer">
