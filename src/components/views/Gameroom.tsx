@@ -776,11 +776,11 @@ const Gameroom = () => {
                         {gameInfo.currentAnswer}
                       </span>
                     </div>
-                    <WavePlayer
-                      className="gameroom waveplayer"
-                      audioURL={currentSpeakerAudioURL}
-                      volume={globalVolume}
-                    />
+                    {/*<WavePlayer*/}
+                    {/*  className="gameroom waveplayer"*/}
+                    {/*  audioURL={currentSpeakerAudioURL}*/}
+                    {/*  volume={globalVolume}*/}
+                    {/*/>*/}
                   </div>
                 </>
               )}
