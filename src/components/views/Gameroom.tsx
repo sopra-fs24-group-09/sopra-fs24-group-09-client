@@ -97,16 +97,22 @@ const Gameroom = () => {
   console.log("GameInfo", gameInfo);
 
   function calculateRemainingTime(roundDue) {
+    roundDue = roundDue.split('[')[0];
     const endTime = new Date(roundDue).getTime();
+    console.log("ENDTIME IS " + endTime);
     const currentTime = Date.now();
+    console.log("CURRENT TIME IS " + currentTime);
     const remainingSeconds = Math.max(0, Math.floor((endTime - currentTime) / 1000));
-    
+    console.log("REMAINING SECONDS: " + remainingSeconds);
+
     return remainingSeconds;
   }
 
   useEffect(() => {
     const interval = setInterval(() => {
       setRemainingTime(calculateRemainingTime(endTime));
+      console.log(remainingTime)
+      console.log("!!!!")
     }, 1000);
 
     return () => clearInterval(interval);
@@ -1066,7 +1072,7 @@ const Gameroom = () => {
                       onClick={() => getReady()}
                       onKeyDown={() => getReady()}
                     >
-                      Confirm, {gameInfo.roomOwner.id},{user.id}
+                      Confirm
                     </div>
                     <div
                       className="gameroom cancelbutton"
