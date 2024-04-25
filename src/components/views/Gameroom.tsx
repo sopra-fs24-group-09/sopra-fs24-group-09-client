@@ -25,6 +25,7 @@ import type {
   Base64audio,
 } from "stomp_types";
 import { v4 as uuidv4 } from "uuid";
+import { getDomain } from "helpers/getDomain";
 
 // type AudioBlobDict = { [userId: number]: Base64audio };
 type SharedAudioURL = { [userId: number]: string };
@@ -123,7 +124,8 @@ const Gameroom = () => {
 
     //const roomId = 5;
     const connectWebSocket = () => {
-      let Sock = new SockJS(`http://localhost:8080/ws/${currentRoomID}`);
+      const baseurl = getDomain();
+      let Sock = new SockJS(`${baseurl}/ws/${currentRoomID}`);
       //let Sock = new SockJS('https://sopra-fs23-group-01-server.oa.r.appspot.com/ws');
       stompClientRef.current = over(Sock);
       stompClientRef.current.connect({}, onConnected, onError);
