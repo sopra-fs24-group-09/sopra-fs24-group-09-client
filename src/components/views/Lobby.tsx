@@ -426,16 +426,15 @@ const Lobby = () => {
             </label>
             <input
               // className="profile-popup input"
-              //value={user.username}
+              placeholder={user.username}
               type="text"
               onChange={e => setUsername(e.target.value)}
             />
           </div>
-          <div>Name: {user.name}</div>
+          <div>Id: {user.id}</div>
           <div>Status: {user.status}</div>
 
-          <div>RegisterDate: {user && new Date(user.registerDate).toLocaleDateString()}</div>
-          <div>Birthday: {user && new Date(user.birthday).toLocaleDateString()}</div>
+          {/*<div>RegisterDate: {user && new Date(user.registerDate).toLocaleDateString()}</div>*/}
 
           <div className="profile-popup btn-container">
             <Button className="cancel" onClick={() => {
