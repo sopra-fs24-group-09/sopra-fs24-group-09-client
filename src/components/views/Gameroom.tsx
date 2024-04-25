@@ -75,7 +75,7 @@ const Gameroom = () => {
   // this ref is used to track the current speaker id in callback functions
   const currentSpeakerIdRef = useRef<number>();
   if (gameInfo && gameInfo.currentSpeaker) {
-    currentSpeakerIdRef.current = gameInfo.currentSpeaker.id;
+    currentSpeakerIdRef.current = gameInfo.currentSpeaker.userID;
   }
   const [globalVolume, setGlobalVolume] = useState(0.5);
 
@@ -185,7 +185,7 @@ const Gameroom = () => {
 
       // if currentSpeaker is not null
       if (payloadData.message.currentSpeaker) {
-        setCurrentSpeakerID(payloadData.message.currentSpeaker.id);
+        setCurrentSpeakerID(payloadData.message.currentSpeaker.userID);
       }
       
       if (
@@ -401,7 +401,7 @@ const Gameroom = () => {
         roomID: roomInfo.roomID,
         guess: answer,
         roundNum: gameInfo.currentRoundNum,
-        currentSpeakerID: gameInfo.currentSpeaker.id,
+        currentSpeakerID: gameInfo.currentSpeaker.userID,
       },
     };
     const receiptId = uuidv4();
@@ -637,7 +637,7 @@ const Gameroom = () => {
                         {"Round " + gameInfo.currentRoundNum + " "}
                       </span>
                       <span className="gameroom playerName">
-                        {gameInfo.currentSpeaker.name + ", please"}
+                        {gameInfo.currentSpeaker.username + ", please"}
                       </span>
                       <span className="gameroom playerName">
                         {" record:"}
@@ -661,7 +661,7 @@ const Gameroom = () => {
                         {"Round " + gameInfo.currentRoundNum + " "}
                       </span>
                       <span className="gameroom playerName">
-                        {gameInfo.currentSpeaker.name + "'s'"}
+                        {gameInfo.currentSpeaker.username + "'s'"}
                       </span>
                       <span className="gameroom playerName">
                         {"turn to record"}
@@ -680,7 +680,7 @@ const Gameroom = () => {
                       style={{ flexDirection: "row" }}
                     >
                       <span className="gameroom playerName">
-                        {gameInfo.currentSpeaker.name + "'s revesed audio:"}
+                        {gameInfo.currentSpeaker.username + "'s revesed audio:"}
                       </span>
                     </div>
                     <WavePlayer
@@ -720,7 +720,7 @@ const Gameroom = () => {
                     >
                       <span className="gameroom playerName">
                         {"The word " +
-                          gameInfo.currentSpeaker.name +
+                          gameInfo.currentSpeaker.username +
                           " recorded is "}
                       </span>
                       <span className="gameroom revealAnswer">
@@ -739,13 +739,13 @@ const Gameroom = () => {
             </div>
           </div>
           <div className="gameroom remindermssg">
-            {gameInfo.currentSpeaker.id === user.id &&
+            {gameInfo.currentSpeaker.userID === user.id &&
               currentStatus === "speak" && (
               <span className="gameroom remindertext">
                 {"Try to read and record the word steadily and loudly!"}
               </span>
             )}
-            {gameInfo.currentSpeaker.id !== user.id &&
+            {gameInfo.currentSpeaker.userID !== user.id &&
               currentStatus === "speak" && (
               <span className="gameroom remindertext">
                 {
@@ -753,7 +753,7 @@ const Gameroom = () => {
                 }
               </span>
             )}
-            {gameInfo.currentSpeaker.id !== user.id &&
+            {gameInfo.currentSpeaker.userID !== user.id &&
               currentStatus === "guess" && (
               <span className="gameroom remindertext">
                 {
@@ -761,7 +761,7 @@ const Gameroom = () => {
                 }
               </span>
             )}
-            {gameInfo.currentSpeaker.id === user.id &&
+            {gameInfo.currentSpeaker.userID === user.id &&
               currentStatus === "guess" && (
               <span className="gameroom remindertext">
                 {
@@ -792,8 +792,8 @@ const Gameroom = () => {
     gameInfo: PropTypes.shape({
       roomID: PropTypes.number.isRequired,
       currentSpeaker: PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
+        userID: PropTypes.number.isRequired,
+        username: PropTypes.string.isRequired,
         avatar: PropTypes.string.isRequired,
       }).isRequired,
       currentAnswer: PropTypes.string.isRequired,
@@ -1094,7 +1094,7 @@ const Gameroom = () => {
           { gameInfo !== null &&
             !gameOver &&
             !showReadyPopup &&
-            gameInfo.currentSpeaker.id !== user.id &&
+            gameInfo.currentSpeaker.userID !== user.id &&
             currentStatus === "guess" && (
             <div style={{ display: "flex", flexDirection: "row" }}>
               <input
