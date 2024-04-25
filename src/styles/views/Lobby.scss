@@ -309,8 +309,31 @@
   //padding: 0.25rem; /* 小间距增加点击区域 */
   cursor: pointer;
 }
+.intro-popup{
+  height:55%;
+  //width: 500px;
+  &.btn-container{
+    width: 200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    //margin-top: 10%;
+    Button{
+      height: auto;
+      font-size: 1em;
+      padding: 0.6em;
+      margin: 0 10px;
+      color: white;
+      background-color: $classicYellow;
+    }
+  }
+}
+.intro-cnt{
+  width: 450px;
+}
 .profile-popup{
-  height:80%;
+  height:70%;
   &.content{
     display: flex;
     flex-direction: column;

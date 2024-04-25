@@ -426,6 +426,7 @@ const Lobby = () => {
             </label>
             <input
               // className="profile-popup input"
+              style={{height:"40px"}}
               placeholder={user.username}
               type="text"
               onChange={e => setUsername(e.target.value)}
@@ -508,9 +509,13 @@ const Lobby = () => {
 
       </Popup>
 
-      <Popup ref={infoPopRef} toggleDialog={toggleInfoPop} className="profile-popup">
-        <div>Here is some Guidelines....</div>
-        <div className="profile-popup btn-container">
+      <Popup ref={infoPopRef} toggleDialog={toggleInfoPop} className="intro-popup">
+        <div className="intro-cnt">
+          <h1>Welcome to KAEPS!</h1>
+          <p>KAEPS is a multiplayer game that offers a unique auditory challenge. Players take turns retrieving random words or phrases, recording them, and then invert the audio. Challengers must attempt their best mimicry and try to decipher the original word from the inverted playback. The system checks the accuracy of their submitted answers.</p>
+          <p>Are you ready for the challenge? Join us and start your auditory adventure now!</p>
+        </div>
+        <div className="intro-popup btn-container">
           <Button className="cancel" onClick={toggleInfoPop}>
             Close
           </Button>
