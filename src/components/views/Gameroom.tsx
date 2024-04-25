@@ -49,7 +49,7 @@ const Gameroom = () => {
   const [playerLists, setPlayerLists] = useState([]);
   const roundFinished = useRef(false);
   const [endTime, setEndTime] = useState(null);
-  const [remainingTime, setRemainingTime] = useState(null);
+
   const [gameInfo, setGameInfo] = useState(null);
   const [roomInfo, setRoomInfo] = useState({
     roomID: currentRoomID,
@@ -98,7 +98,7 @@ const Gameroom = () => {
   console.log("GameInfo", gameInfo);
 
   function calculateRemainingTime(roundDue) {
-    console.log("Calculating");
+    //console.log("Calculating");
     roundDue = roundDue.split("[")[0];
     const endTime = new Date(roundDue).getTime();
     const currentTime = Date.now();
@@ -109,19 +109,7 @@ const Gameroom = () => {
 
   //const [endTime, setEndTime] = useState("2024-04-30T12:00:00"); // Example initial value
 
-  useEffect(() => {
-    if (endTime !== null && endTime !== "None") {
-      const interval = setInterval(() => {
-        setRemainingTime(calculateRemainingTime(endTime));
-        console.log("Interval triggered");
-      }, 1000);
-
-      return () => {
-        console.log("Clearing interval");
-        clearInterval(interval);
-      };
-    }
-  }, [endTime]); // Only rerun the effect if endTime actually changes
+ // Only rerun the effect if endTime actually changes
 
 
   useEffect(() => {
@@ -182,6 +170,7 @@ const Gameroom = () => {
       setPlayerLists(payloadData.message);
       if (!showReadyPopup && !gameOver){
         const myInfo = payloadData.message.find(item => item.user.id = user.id);
+        console.log("set info for myself")
         console.log(myInfo);
         if (myInfo.roundFinished && myInfo.roundFinished !== null){
           roundFinished.current = myInfo.roundFinished;
@@ -607,6 +596,38 @@ const Gameroom = () => {
     setShowReadyPopup((prevState) => !prevState);
   };
 
+  type CounterProps = {
+    endTimeString: String;
+  };
+
+  const Counter: React.FC<CounterProps> = ({ endTimeString }) => {
+    const [remainingTime, setRemainingTime] = useState(null);
+
+    useEffect(() => {
+      if (endTime !== null && endTime !== "None") {
+        const interval = setInterval(() => {
+          setRemainingTime(calculateRemainingTime(endTime));
+          //console.log("Interval triggered");
+        }, 1000);
+
+        return () => {
+          //console.log("Clearing interval");
+          clearInterval(interval);
+        };
+      }
+    }, [endTime]);
+
+    return (
+      <>
+        <div className="gameroom counterdiv">
+          <i className={"twa twa-stopwatch"} style={{ fontSize: "2.6rem" }} />
+          <span className="gameroom counternum">{remainingTime}</span>
+        </div>
+      </>
+    );
+  };
+
+
   const Roundstatus = React.forwardRef((props,ref) => {
     const { gameInfo, currentSpeakerAudioURL } = props;
     console.log("gameInfo", gameInfo);
@@ -629,10 +650,7 @@ const Gameroom = () => {
     return (
       <>
         <div className="gameroom roundstatus">
-          <div className="gameroom counterdiv">
-            <i className={"twa twa-stopwatch"} style={{ fontSize: "2.6rem" }} />
-            <span className="gameroom counternum">{remainingTime}</span>
-          </div>
+          <Counter remainingSecTime={endTime}/>
           <div className="gameroom statusdiv">
             <div className="gameroom speakPlayerContainer">
               {/*<img src={playerInfo.user.avatar} alt={playerInfo.user.name} />*/}
@@ -1131,7 +1149,7 @@ const Gameroom = () => {
               />
               <button
                 className="gameroom validateUpload"
-                disabled={!validateAnswer || roundFinished}
+                disabled={!validateAnswer }//|| roundFinished
                 onClick={() => validateAnswer && submitAnswer(validateAnswer)}
               >
                   Submit
