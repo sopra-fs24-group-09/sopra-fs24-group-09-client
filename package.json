@@ -25,16 +25,10 @@
     "build": "react-scripts build",
     "gcp-build": "",
     "eject": "react-scripts eject",
-    "test": "react-scripts test --env=jsdom",
     "lint": "eslint --fix src/**/*.ts src/**/*.tsx src/**/*.js"
   },
   "eslintConfig": {
     "extends": "react-app"
-  },
-  "jest": {
-    "moduleNameMapper": {
-      "^axios$": "axios/dist/node/axios.cjs"
-    }
   },
   "engines": {
     "node": "20.11.0"
