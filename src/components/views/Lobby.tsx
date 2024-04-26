@@ -131,7 +131,7 @@ const Lobby = () => {
   const changeAvatarPopRef = useRef<HTMLDialogElement>(null);
   const infoPopRef = useRef<HTMLDialogElement>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [user, setUser] = useState<User[]>(mockRoomPlayers[0]);
+  const [user, setUser] = useState<User[]>([]);
   const [username, setUsername] = useState<string | null>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
   const [roomName, setRoomName] = useState("");
@@ -366,7 +366,7 @@ const Lobby = () => {
             console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
             alert(`Something went wrong during the enterRoom: \n${handleError(error)}`);
           });
-        
+
       }}>
         <div className="room-players">
           {Room.roomPlayersList?.map((user, index) => (
