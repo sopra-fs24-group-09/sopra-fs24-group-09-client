@@ -100,7 +100,7 @@ const Gameroom = () => {
 
   useEffect(() => {
     const isChrome = (window as any).chrome;
-    console.error("ISCHROME",isChrome);
+    // console.error("ISCHROME",isChrome);
     if (!isChrome) {
       alert("Please use Chrome browser to play the game.");
       navigate("/lobby");
