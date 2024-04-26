@@ -56,7 +56,7 @@ const Gameroom = () => {
   const [gameInfo, setGameInfo] = useState(null);
   const [roomInfo, setRoomInfo] = useState({
     roomID: currentRoomID,
-    theme: "Advanced",
+    theme: "loading...",
   });
   const prevStatus = useRef("start");
   const [currentStatus, setCurrentStatus] = useState<
@@ -925,9 +925,9 @@ const Gameroom = () => {
     return (
       <div className="gameroom left-area">
         <div className="gameroom roominfocontainer">
-          <div className="gameroom roominfotitle">ROOM</div>
+          <div className="gameroom roominfo">ROOM</div>
           <div className="gameroom roominfo">
-            {"#" + currentRoomName + "-" + gameTheme.current}
+            {gameTheme.current ? ("#" + currentRoomName + "-" + gameTheme.current) : ("#" + currentRoomName + "-" + roomInfo.theme)}
           </div>
         </div>
         <div className="gameroom playercontainer">
@@ -1141,7 +1141,7 @@ const Gameroom = () => {
           <div className="gameroom readypopupbg">
             <div className="gameroom readypopupcontainer">
               <span className="gameroom popuptitle"> {"Room#" + currentRoomName}</span>
-              <span className="gameroom popuptheme"> {gameTheme.current}</span>
+              <span className="gameroom popuptheme">{gameTheme.current ? (gameTheme.current) : (roomInfo.theme)}</span>
               <span className="gameroom popuptext">
                 {" "}
                 Ready to start the game?
