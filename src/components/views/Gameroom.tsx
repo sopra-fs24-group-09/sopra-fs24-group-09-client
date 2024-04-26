@@ -151,14 +151,15 @@ const Gameroom = () => {
 
     const onError = (err) => {
       console.error("WebSocket Error: ", err);
-      alert("WebSocket connection error. Check console for details.");
-      navigate("/lobby");
+      // alert("WebSocket connection error. Check console for details.");
+      // navigate("/lobby");
     };
 
     const onResponseReceived = (payload) => {
       const payloadData = JSON.parse(payload.body);
-      alert("Response server side receive!"+payloadData.message)
-      navigate("/lobby");
+      console.error("Response received", payloadData.message);
+      // alert("Response server side receive!"+payloadData.message)
+      // navigate("/lobby");
       // TODO: handle response
       /// 1. filter the response by the receiptId
       /// 2. if the response is success, do nothing
