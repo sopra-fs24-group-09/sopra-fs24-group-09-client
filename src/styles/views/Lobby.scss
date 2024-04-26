@@ -83,6 +83,25 @@
         // make the text bold
         font-weight: bolder;
       }
+      .reload-room-btn{
+        margin-left: 20px;
+        bottom: 0%;
+        min-width: fit-content;
+        width: 20%;
+        min-height: 50px;
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        justify-content: center;
+        align-content: center;
+        font-size: 1.3em;
+        background-color: $darkBlue;
+        color: white;
+        // dont capitalize the text
+        text-transform: none;
+        // make the text bold
+        font-weight: bolder;
+      }
     }
   }
   &.user-list {

@@ -151,63 +151,62 @@ const Lobby = () => {
     }
     navigate("/login");
   };
+  async function fetchData() {
+    try {
+      // 获取所有房间信息
+      const roomsResponse = await api.get("/games/lobby");
+      console.log("Rooms data:", roomsResponse.data);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        // 获取所有房间信息
-        const roomsResponse = await api.get("/games/lobby");
-        console.log("Rooms data:", roomsResponse.data);
+      // 使用 Promise.all 来并发获取每个房间的用户详细信息
+      const roomsWithPlayerDetails = await Promise.all(roomsResponse.data.map(async (room) => {
+        // 对每个房间的用户 ID 列表并发请求用户信息
+        const playerDetails = await Promise.all(room.roomPlayersList.map(async (userId) => {
+          const userResponse = await api.get(`/users/${userId}`);
 
-        // 使用 Promise.all 来并发获取每个房间的用户详细信息
-        const roomsWithPlayerDetails = await Promise.all(roomsResponse.data.map(async (room) => {
-          // 对每个房间的用户 ID 列表并发请求用户信息
-          const playerDetails = await Promise.all(room.roomPlayersList.map(async (userId) => {
-            const userResponse = await api.get(`/users/${userId}`);
-
-            return userResponse.data;  // 返回用户的详细信息
-          }));
-
-          return {
-            ...room,
-            roomPlayersList: playerDetails  // 替换房间中的用户 ID 列表为用户详细信息
-          };
+          return userResponse.data;  // 返回用户的详细信息
         }));
 
-        // 更新房间状态，包含了用户的详细信息
-        setRooms(roomsWithPlayerDetails);
+        return {
+          ...room,
+          roomPlayersList: playerDetails  // 替换房间中的用户 ID 列表为用户详细信息
+        };
+      }));
 
-        console.log("request to:", roomsResponse.request.responseURL);
-        console.log("status code:", roomsResponse.status);
-        console.log("status text:", roomsResponse.statusText);
-        console.log("requested data:", roomsResponse.data);
+      // 更新房间状态，包含了用户的详细信息
+      setRooms(roomsWithPlayerDetails);
 
-        // See here to get more data.
-        console.log(roomsResponse);
+      console.log("request to:", roomsResponse.request.responseURL);
+      console.log("status code:", roomsResponse.status);
+      console.log("status text:", roomsResponse.statusText);
+      console.log("requested data:", roomsResponse.data);
 
-        // Get user ID from sessionStorage
-        const userId = sessionStorage.getItem("id");
-        if (userId) {
-          // Get current user's information
-          const userResponse = await api.get(`/users/${userId}`);
-          setUser(userResponse.data);  // Set user data from API
-          console.log("User data:", userResponse.data);
-        } else {
-          console.log("No user ID found in sessionStorage.");
-        }
-      } catch (error) {
-        console.error(
-          `Something went wrong while fetching the users: \n${handleError(
-            error
-          )}`
-        );
-        console.error("Details:", error);
-        alert(
-          "Something went wrong while fetching the users! See the console for details."
-        );
+      // See here to get more data.
+      console.log(roomsResponse);
+
+      // Get user ID from sessionStorage
+      const userId = sessionStorage.getItem("id");
+      if (userId) {
+        // Get current user's information
+        const userResponse = await api.get(`/users/${userId}`);
+        setUser(userResponse.data);  // Set user data from API
+        console.log("User data:", userResponse.data);
+      } else {
+        console.log("No user ID found in sessionStorage.");
       }
+    } catch (error) {
+      console.error(
+        `Something went wrong while fetching the users: \n${handleError(
+          error
+        )}`
+      );
+      console.error("Details:", error);
+      alert(
+        "Something went wrong while fetching the users! See the console for details."
+      );
     }
+  }
 
+  useEffect(() => {
     fetchData().catch(error => {
       console.error("Unhandled error in fetchData:", error);
     });
@@ -358,7 +357,9 @@ const Lobby = () => {
           .then(() => {
             //alert(currentId);
             if(Room.roomPlayersList.length===Room.maxPlayersNum)
-              alert("Room is Full, please enter another room!")
+              alert("Room is Full, please enter another room!");
+            else if(Room.status==="In Game")
+              alert("Game is already started, please enter another room!");
             else
               navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
           })
@@ -411,6 +412,9 @@ const Lobby = () => {
         <div className="lobby room-list btn-container">
           <Button className="create-room-btn" onClick={toggleRoomCreationPop}>
             New Room
+          </Button>
+          <Button className="reload-room-btn" onClick={fetchData}>
+            Reload Rooms
           </Button>
         </div>
       </div>
