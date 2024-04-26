@@ -46,11 +46,14 @@ const Gameroom = () => {
   console.log(user)
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const gameOverRef = useRef(false);
   const [currentSpeakerID, setCurrentSpeakerID] = useState(null);
   const [validateAnswer, setValidateAnswer] = useState("");
   const [playerLists, setPlayerLists] = useState([]);
   const roundFinished = useRef(false);
   const [endTime, setEndTime] = useState(null);
+  const leaderboardInfoRecieved = useRef(false);
+  const [leaderboardInfo, setLeaderboardInfo] = useState([]);
   const gameTheme = useRef(null);
 
   const [gameInfo, setGameInfo] = useState(null);
@@ -183,6 +186,10 @@ const Gameroom = () => {
           console.log(roundFinished.current);
         }
       }
+      if (gameOverRef.current === true && leaderboardInfoRecieved.current === false){
+        setLeaderboardInfo(payloadData.message);
+        leaderboardInfoRecieved.current = true;
+      }
     };
 
     const onGameInfoReceived = (payload) => {
@@ -198,6 +205,7 @@ const Gameroom = () => {
         setShowReadyPopup(true);
       } else if (payloadData.message.gameStatus === "over") {
         setShowReadyPopup(false);
+        gameOverRef.current = true;
         setGameOver(true);
       } else {
         setShowReadyPopup(false);
@@ -864,41 +872,45 @@ const Gameroom = () => {
   };
 
   const LeaderBoard = ({ playerStatus }) => {
+    console.log("123456")
+    console.log(playerStatus)
     return (
-      <div className="gameroom leaderboarddiv">
-        <div className="gameroom leaderboard">
-          {playerStatus.map((playerInfo, index) => (
-            <div className="gameroom singleScoreContainer" key={index}>
-              <span className={"gameroom ranking-" + index}>{index + 1}</span>
-              <span className="gameroom ldPlayerAvatar">
+      <>
+        {playerStatus !== null && (
+          <div className="gameroom leaderboarddiv">
+            <div className="gameroom leaderboard">
+              {playerStatus.map((playerInfo, index) => (
+                <div className="gameroom singleScoreContainer" key={index}>
+                  <span className={"gameroom ranking-" + index}>{index + 1}</span>
+                  <span className="gameroom ldPlayerAvatar">
                 <i
                   className={"twa twa-" + playerInfo.user.avatar}
                   style={{ fontSize: "2.8rem" }}
                 />
               </span>
-              <span className="gameroom ldPlayerName">
+                  <span className="gameroom ldPlayerName">
                 {playerInfo.user.name}
               </span>
-              <span className="gameroom scorenum" style={{ gridColumn: "3" }}>
+                  <span className="gameroom scorenum" style={{ gridColumn: "3" }}>
                 {playerInfo.score.total}
               </span>
-              <span className="gameroom ldtitle" style={{ gridColumn: "3" }}>
+                  <span className="gameroom ldtitle" style={{ gridColumn: "3" }}>
                 Total
               </span>
-              <span className="gameroom scorenum" style={{ gridColumn: "4" }}>
+                  <span className="gameroom scorenum" style={{ gridColumn: "4" }}>
                 {playerInfo.score.guess}
               </span>
-              <span className="gameroom ldtitle" style={{ gridColumn: "4" }}>
+                  <span className="gameroom ldtitle" style={{ gridColumn: "4" }}>
                 Guess
               </span>
-              <span className="gameroom scorenum" style={{ gridColumn: "5" }}>
+                  <span className="gameroom scorenum" style={{ gridColumn: "5" }}>
                 {playerInfo.score.read}
               </span>
-              <span className="gameroom ldtitle" style={{ gridColumn: "5" }}>
+                  <span className="gameroom ldtitle" style={{ gridColumn: "5" }}>
                 Read
               </span>
-              {playerInfo.score.details.map((detail, detailIndex) => (
-                <React.Fragment key={detailIndex}>
+                  {playerInfo.score.details.map((detail, detailIndex) => (
+                    <React.Fragment key={detailIndex}>
                   <span
                     className="gameroom scorenum"
                     style={{ gridColumn: `${detailIndex + 6}` }}
@@ -906,18 +918,20 @@ const Gameroom = () => {
                     {detail.score}
                   </span>
 
-                  <span
-                    className="gameroom ldtitle"
-                    style={{ gridColumn: `${detailIndex + 6}` }}
-                  >
+                      <span
+                        className="gameroom ldtitle"
+                        style={{ gridColumn: `${detailIndex + 6}` }}
+                      >
                     {detail.word}
                   </span>
-                </React.Fragment>
+                    </React.Fragment>
+                  ))}
+                </div>
               ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        )}
+      </>
     );
   };
 
@@ -1187,7 +1201,7 @@ const Gameroom = () => {
           </div>
         )}
         {gameOver && (
-          <LeaderBoard playerStatus={playerLists}></LeaderBoard>
+          <LeaderBoard playerStatus={leaderboardInfo}></LeaderBoard>
         )}
         {!gameOver && !showReadyPopup && (
           <Roundstatus
