@@ -27,6 +27,7 @@ export const Roundstatus : React.ForwardRefRenderFunction<RoundstatusProps, any>
   const { gameInfo, currentSpeakerAudioURL,endTime,meId,ffmpegObj,globalVolume,handleAudioReversed } = props;
   console.log("gameInfo", gameInfo);
   const _audioRecorderRef = useRef(null);
+  const _wavePlayerRef = useRef(null);
   useImperativeHandle(ref, () => ({
     clearAudio: () => {
       console.log("----clear audio");
@@ -35,6 +36,7 @@ export const Roundstatus : React.ForwardRefRenderFunction<RoundstatusProps, any>
     setVolumeTo: (volume) => {
       console.log("----set volume to", volume);
       _audioRecorderRef.current?.setVolume(volume);
+      _wavePlayerRef.current?.setVolume(volume);
     }
   }), []);
     
@@ -119,9 +121,10 @@ export const Roundstatus : React.ForwardRefRenderFunction<RoundstatusProps, any>
                     </span>
                   </div>
                   <WavePlayer
+                    key="waveplayer"
+                    ref={_wavePlayerRef}
                     className="gameroom waveplayer"
                     audioURL={currentSpeakerAudioURL}
-                    volume={globalVolume}
                   />
                 </div>
               </>
