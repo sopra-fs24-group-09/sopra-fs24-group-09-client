@@ -4,7 +4,7 @@ import propTypes from "prop-types";
 import { Button } from "./Button";
 import "styles/ui/WavePlayer.scss";
 
-const WavePlayer = props => {
+export const WavePlayer = props => {
   const waveformRef = useRef<HTMLDivElement>(null);
   const wavesurfer = useRef<WaveSurfer | null>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
