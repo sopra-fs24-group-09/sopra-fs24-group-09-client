@@ -48,7 +48,7 @@ const Gameroom = () => {
   const [playerLists, setPlayerLists] = useState([]);
   const roundFinished = useRef(false);
   const [endTime, setEndTime] = useState(null);
-  const gameTheme = useRef(null);
+  const gameTheme = useRef("Loading....");
 
   const [gameInfo, setGameInfo] = useState(null);
   const gameInfoRef = useRef(null);
@@ -575,7 +575,7 @@ const Gameroom = () => {
           <div className="gameroom readypopupbg">
             <div className="gameroom readypopupcontainer">
               <span className="gameroom popuptitle"> {"Room#" + currentRoomName}</span>
-              <span className="gameroom popuptheme"> {gameTheme.current}</span>
+              <span className="gameroom popuptheme">{gameTheme.current}</span>
               <span className="gameroom popuptext">
                 {" "}
                 Ready to start the game?
