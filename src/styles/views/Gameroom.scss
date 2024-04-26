@@ -298,10 +298,12 @@
 
   .readybutton {
     background-color: $classicYellow;
+    border:0;
   }
 
   .cancelbutton {
     background-color: rgba(129, 129, 129, 1);
+    border:0;
   }
 
   .readybutton:hover {
@@ -421,7 +423,7 @@
     border-radius: 22px;
     background-color: $whiteYellow;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(4vw, 1fr));
+    grid-template-columns: minmax(5vw, 5vw) minmax(5vw, 5vw) minmax(5vw, 5vw) minmax(5vw, 5vw) repeat(auto-fit, minmax(6vw, 6vw));
     gap: 0.5rem;
   }
   &.ldPlayerAvatar {
@@ -553,6 +555,8 @@
     font-weight: 700;
     font-size: 0.8rem;
     color:lighten($darkBlue,20%);
+    max-width: 100%;
+    word-wrap: break-word;
   }
   &.currentAnswer {
     position: relative;

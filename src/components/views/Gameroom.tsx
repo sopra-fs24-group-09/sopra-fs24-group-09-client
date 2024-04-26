@@ -44,11 +44,14 @@ const Gameroom = () => {
   console.log(user)
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const gameOverRef = useRef(false);
   const [currentSpeakerID, setCurrentSpeakerID] = useState(null);
   const [playerLists, setPlayerLists] = useState([]);
   const roundFinished = useRef(false);
   const [endTime, setEndTime] = useState(null);
-  const gameTheme = useRef(null);
+  const gameTheme = useRef("Loading....");
+  const leaderboardInfoRecieved = useRef(false);
+  const [leaderboardInfo, setLeaderboardInfo] = useState([]);
 
   const [gameInfo, setGameInfo] = useState(null);
   const gameInfoRef = useRef(null);
@@ -73,6 +76,7 @@ const Gameroom = () => {
     currentSpeakerIdRef.current = gameInfo.currentSpeaker.userID;
   }
   const [globalVolume, setGlobalVolume] = useState(0.5);
+  const globalVolumeBeforeMute = useRef(0);
 
   gameInfoRef.current = gameInfo;
 
@@ -93,7 +97,17 @@ const Gameroom = () => {
 
   console.log("GameInfo", gameInfo);
 
+
   useEffect(() => {
+    const isChrome = (window as any).chrome;
+    // console.error("ISCHROME",isChrome);
+    if (!isChrome) {
+      alert("Please use Chrome browser to play the game.");
+      navigate("/lobby");
+      
+      return;
+    }
+    // refuse non-chrome browser
     // define subscription instances
     let playerInfoSuber;
     let gameInfoSuber;
@@ -127,7 +141,8 @@ const Gameroom = () => {
         onShareAudioReceived
       );
       responseSuber = stompClientRef.current.subscribe(
-        `/response/${currentRoomID}`,
+        // `/response/${currentRoomID}`,
+        `/user/${user.id}/response/${currentRoomID}`,
         onResponseReceived
       );
       enterRoom();
@@ -141,6 +156,9 @@ const Gameroom = () => {
     };
 
     const onResponseReceived = (payload) => {
+      const payloadData = JSON.parse(payload.body);
+      alert("Response server side receive!"+payloadData.message)
+      navigate("/lobby");
       // TODO: handle response
       /// 1. filter the response by the receiptId
       /// 2. if the response is success, do nothing
@@ -160,6 +178,10 @@ const Gameroom = () => {
           console.log("roundFinished?")
           console.log(roundFinished.current);
         }
+      }
+      if (gameOverRef.current === true && leaderboardInfoRecieved.current === false){
+        setLeaderboardInfo(payloadData.message);
+        leaderboardInfoRecieved.current = true;
       }
     };
 
@@ -182,6 +204,7 @@ const Gameroom = () => {
         setShowReadyPopup(true);
       } else if (payloadData.message.gameStatus === "over") {
         setShowReadyPopup(false);
+        gameOverRef.current = true;
         setGameOver(true);
       } else {
         setShowReadyPopup(false);
@@ -464,60 +487,67 @@ const Gameroom = () => {
   console.log(playerLists);
 
   const LeaderBoard = ({ playerStatus }) => {
+    // console.log("123456")
+    console.log("[LeaderBoard]",playerStatus)
+    
     return (
-      <div className="gameroom leaderboarddiv">
-        <div className="gameroom leaderboard">
-          {playerStatus.map((playerInfo, index) => (
-            <div className="gameroom singleScoreContainer" key={index}>
-              <span className={"gameroom ranking-" + index}>{index + 1}</span>
-              <span className="gameroom ldPlayerAvatar">
-                <i
-                  className={"twa twa-" + playerInfo.user.avatar}
-                  style={{ fontSize: "2.8rem" }}
-                />
-              </span>
-              <span className="gameroom ldPlayerName">
-                {playerInfo.user.name}
-              </span>
-              <span className="gameroom scorenum" style={{ gridColumn: "3" }}>
-                {playerInfo.score.total}
-              </span>
-              <span className="gameroom ldtitle" style={{ gridColumn: "3" }}>
+      <>
+        {playerStatus !== null && (
+          <div className="gameroom leaderboarddiv">
+            <div className="gameroom leaderboard">
+              {playerStatus.map((playerInfo, index) => (
+                <div className="gameroom singleScoreContainer" key={index}>
+                  <span className={"gameroom ranking-" + index}>{index + 1}</span>
+                  <span className="gameroom ldPlayerAvatar">
+                    <i
+                      className={"twa twa-" + playerInfo.user.avatar}
+                      style={{ fontSize: "2.8rem" }}
+                    />
+                  </span>
+                  <span className="gameroom ldPlayerName">
+                    {playerInfo.user.name}
+                  </span>
+                  <span className="gameroom scorenum" style={{ gridColumn: "3" }}>
+                    {playerInfo.score.total}
+                  </span>
+                  <span className="gameroom ldtitle" style={{ gridColumn: "3" }}>
                 Total
-              </span>
-              <span className="gameroom scorenum" style={{ gridColumn: "4" }}>
-                {playerInfo.score.guess}
-              </span>
-              <span className="gameroom ldtitle" style={{ gridColumn: "4" }}>
+                  </span>
+                  <span className="gameroom scorenum" style={{ gridColumn: "4" }}>
+                    {playerInfo.score.guess}
+                  </span>
+                  <span className="gameroom ldtitle" style={{ gridColumn: "4" }}>
                 Guess
-              </span>
-              <span className="gameroom scorenum" style={{ gridColumn: "5" }}>
-                {playerInfo.score.read}
-              </span>
-              <span className="gameroom ldtitle" style={{ gridColumn: "5" }}>
+                  </span>
+                  <span className="gameroom scorenum" style={{ gridColumn: "5" }}>
+                    {playerInfo.score.read}
+                  </span>
+                  <span className="gameroom ldtitle" style={{ gridColumn: "5" }}>
                 Read
-              </span>
-              {playerInfo.score.details.map((detail, detailIndex) => (
-                <React.Fragment key={detailIndex}>
-                  <span
-                    className="gameroom scorenum"
-                    style={{ gridColumn: `${detailIndex + 6}` }}
-                  >
-                    {detail.score}
                   </span>
+                  {playerInfo.score.details.map((detail, detailIndex) => (
+                    <React.Fragment key={detailIndex}>
+                      <span
+                        className="gameroom scorenum"
+                        style={{ gridColumn: `${detailIndex + 6}` }}
+                      >
+                        {detail.score}
+                      </span>
 
-                  <span
-                    className="gameroom ldtitle"
-                    style={{ gridColumn: `${detailIndex + 6}` }}
-                  >
-                    {detail.word}
-                  </span>
-                </React.Fragment>
+                      <span
+                        className="gameroom ldtitle"
+                        style={{ gridColumn: `${detailIndex + 6}` }}
+                      >
+                        {detail.word}
+                      </span>
+                    </React.Fragment>
+                  ))}
+                </div>
               ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        )}
+      </>
     );
   };
 
@@ -565,17 +595,30 @@ const Gameroom = () => {
         globalVolume={globalVolume}
       />
       <div className="gameroom right-area">
-        <Header onChange={
-          e => {
-            setGlobalVolume(e.target.value);
-            console.log("[volume] set to", e.target.value);
+        <Header 
+          onChange={
+            e => {
+              setGlobalVolume(e.target.value);
+              console.log("[volume] set to", e.target.value);
+            }
           }
-        } />
+          onClickMute={
+            () => {
+              if (globalVolume === 0) {
+                setGlobalVolume(globalVolumeBeforeMute.current);
+              } else {
+                globalVolumeBeforeMute.current = globalVolume;
+                setGlobalVolume(0);
+              }
+            }
+          }
+          volume={globalVolume}
+        />
         {!gameOver && showReadyPopup && (
           <div className="gameroom readypopupbg">
             <div className="gameroom readypopupcontainer">
               <span className="gameroom popuptitle"> {"Room#" + currentRoomName}</span>
-              <span className="gameroom popuptheme"> {gameTheme.current}</span>
+              <span className="gameroom popuptheme">{gameTheme.current}</span>
               <span className="gameroom popuptext">
                 {" "}
                 Ready to start the game?
@@ -621,7 +664,7 @@ const Gameroom = () => {
           </div>
         )}
         {gameOver && (
-          <LeaderBoard playerStatus={playerLists}></LeaderBoard>
+          <LeaderBoard playerStatus={leaderboardInfo}></LeaderBoard>
         )}
         {!gameOver && !showReadyPopup && (
           <Roundstatus

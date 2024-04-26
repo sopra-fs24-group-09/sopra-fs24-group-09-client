@@ -1,10 +1,10 @@
-import React, {useEffect, useState, useRef} from "react";
+import React, {useEffect, useState, useRef, useImperativeHandle } from "react";
 import WaveSurfer from "wavesurfer.js";
 import propTypes from "prop-types";
 import { Button } from "./Button";
 import "styles/ui/WavePlayer.scss";
 
-export const WavePlayer = props => {
+export const WavePlayer = React.forwardRef((props,ref) => {
   const waveformRef = useRef<HTMLDivElement>(null);
   const wavesurfer = useRef<WaveSurfer | null>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
@@ -14,14 +14,6 @@ export const WavePlayer = props => {
   const initializeWaveSurfer = () => {
     if (wavesurfer.current) {
       console.log(`[${props.className}]`,"WaveSurfer already initialized");
-      // console.log(`[${props.className}]`,"WaveSurfer set volume to", props.volume);
-      if (Number.isFinite(props.volume) && props.volume >= 0 && props.volume <= 1)
-      {
-        wavesurfer.current.setVolume(props.volume);
-        console.log(`[${props.className}]`,"WaveSurfer set volume to", props.volume);
-      } else {
-        console.error(`[${props.className}]`,"WaveSurfer failed to set volume to", props.volume);
-      }
       
       return;
     }
@@ -50,15 +42,6 @@ export const WavePlayer = props => {
       // setIsPlaying(prev => !prev);
     }
     );
-
-    if (Number.isFinite(props.volume) && props.volume >= 0 && props.volume <= 1)
-    {
-      wavesurfer.current.setVolume(props.volume);
-      console.log(`[${props.className}]`,"WaveSurfer set volume to", props.volume);
-    } else {
-      console.error(`[${props.className}]`,"WaveSurfer failed to set volume to", props.volume);
-    }
-        
   };
 
   useEffect(() => {
@@ -78,11 +61,18 @@ export const WavePlayer = props => {
   }
   , [props.audioURL]);
 
+  useImperativeHandle(ref, () => ({
+    setVolume: (volume:number) => {
+      wavesurfer.current?.setVolume(volume);
+      console.log(`[${props.className}]`,"WaveSurfer set volume to", volume);
+    }
+  }), []);
+
   return (
     <div className={`wave-player ${props.className}`}>
       <div className="waveform" ref={waveformRef}/>
       <div className="no-audio-placeholder" style={{display: props.audioURL ? "none":"block"}}>
-        ........is recording......
+        ........No Audio Uploaded......
       </div>
       <div className="btn-group"
         style={{display: props.audioURL ? "flex":"none"}}>
@@ -132,12 +122,13 @@ export const WavePlayer = props => {
     </div>
   );
 
-}
+});
+
+WavePlayer.displayName = "WavePlayer";
 
 WavePlayer.propTypes = {
   className: propTypes.string,
   audioURL: propTypes.string,
-  volume: propTypes.number.isRequired,
 }
 
 export default WavePlayer;

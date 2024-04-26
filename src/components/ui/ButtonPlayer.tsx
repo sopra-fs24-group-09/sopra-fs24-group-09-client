@@ -44,7 +44,7 @@ export const ButtonPlayer = (props: ButtonPlayerProps) => {
         setIsPlaying(false);
       });
     };
-  }, []);
+  }, [props.volume]);
 
   return (
     <div className={`btn-player ${props.className}`}>
