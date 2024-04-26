@@ -367,9 +367,15 @@ export const AudioRecorder = React.forwardRef((props,ref) => {
           disabled = {props.disabled || !waveAvailable}
           className="audio-recorder button-container playback-rate-dropdown"
           onChange={(e) => {
-            const rate = parseFloat(e.target.value);
-            setPlaybackRate(rate);
-            wavesurfer.current?.setPlaybackRate(rate, true);
+            try {
+              // console.warn("e", e);
+              const rate = parseFloat(e);
+              setPlaybackRate(rate);
+              wavesurfer.current?.setPlaybackRate(rate, true);
+            }
+            catch (error) {
+              console.error("Failed to set playback rate", error);
+            }
           }}
           defaultValue={playbackRate}
           options={[
