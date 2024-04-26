@@ -202,6 +202,7 @@ const Lobby = () => {
         console.log("User data:", userResponse.data);
       } catch (error) {
         handleError(error);
+        
         return;
       }
     } else {
@@ -253,6 +254,7 @@ const Lobby = () => {
       toggleProfilePop();
     } catch (error) {
       handleError(error);
+      
       return;
     }
   };
@@ -282,6 +284,7 @@ const Lobby = () => {
       //toggleRoomCreationPop();  // 关闭创建房间的弹窗
     } catch (error) {
       handleError(error);
+      
       return;
     }
   };
@@ -314,6 +317,7 @@ const Lobby = () => {
       await api.put(`/games/${roomId}`, requestBody);
     } catch (error) {
       handleError(error);
+      
       return;
     }
   }
@@ -355,6 +359,7 @@ const Lobby = () => {
       updateAvatar(newAvatar);
     } catch (error) {
       handleError(error);
+      
       return;
     }
   }
@@ -400,6 +405,7 @@ const Lobby = () => {
           await fetchData();
         } catch (error) {
           handleError(error);
+          
           return;
         }
         // check if roomId is still in the list
@@ -475,6 +481,7 @@ const Lobby = () => {
           <Button className="reload-room-btn" onClick={
             () => fetchData().catch(error => {
               handleError(error);
+              
               return;
             })
           }>
