@@ -487,7 +487,6 @@ const Gameroom = () => {
   console.log(playerLists);
 
   const LeaderBoard = ({ playerStatus }) => {
-    // console.log("123456")
     console.log("[LeaderBoard]",playerStatus)
     
     return (
