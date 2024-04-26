@@ -231,6 +231,12 @@ const Lobby = () => {
   };
 
   const createRoom = async () => {
+    // if not chrome, alert the user
+    if (!navigator.userAgent.includes("Chrome")) {
+      alert("Your browser is currently not supported, please use Chrome to play this game!");
+      
+      return;
+    }
     try {
       console.log("Current theme:", roomTheme);
       const ownerId = sessionStorage.getItem("id");  // 假设ownerId存储在sessionStorage中

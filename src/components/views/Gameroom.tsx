@@ -97,7 +97,17 @@ const Gameroom = () => {
 
   console.log("GameInfo", gameInfo);
 
+
   useEffect(() => {
+    const isChrome = (window as any).chrome;
+    console.error("ISCHROME",isChrome);
+    if (!isChrome) {
+      alert("Please use Chrome browser to play the game.");
+      navigate("/lobby");
+      
+      return;
+    }
+    // refuse non-chrome browser
     // define subscription instances
     let playerInfoSuber;
     let gameInfoSuber;
