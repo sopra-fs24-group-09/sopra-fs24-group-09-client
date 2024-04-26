@@ -314,7 +314,7 @@ const Lobby = () => {
   async function enterRoom(roomId, userId) {
     try {
       const requestBody = JSON.stringify({ id: userId });
-      await api.put(`/games/${roomId}`, requestBody);
+      // await api.put(`/games/${roomId}`, requestBody);
     } catch (error) {
       handleError(error);
       
