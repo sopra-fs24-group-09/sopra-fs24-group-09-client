@@ -131,7 +131,8 @@ const Gameroom = () => {
         onShareAudioReceived
       );
       responseSuber = stompClientRef.current.subscribe(
-        `/response/${currentRoomID}`,
+        // `/response/${currentRoomID}`,
+        `/user/${user.id}/response/${currentRoomID}`,
         onResponseReceived
       );
       enterRoom();
@@ -145,6 +146,8 @@ const Gameroom = () => {
     };
 
     const onResponseReceived = (payload) => {
+      const payloadData = JSON.parse(payload.body);
+      alert("Response server side receive!"+payloadData.message)
       // TODO: handle response
       /// 1. filter the response by the receiptId
       /// 2. if the response is success, do nothing
