@@ -148,6 +148,7 @@ const Lobby = () => {
       const requestBody = JSON.stringify({ id: id });
       const response = await api.post("/users/logout", requestBody);
       console.log(response);
+      sessionStorage.clear();
     } catch (error) {
       alert(`Something went wrong during the logout: \n${handleError(error)}`);
     }
@@ -195,11 +196,16 @@ const Lobby = () => {
     const userId = sessionStorage.getItem("id");
     if (userId) {
       // Get current user's information
-      const userResponse = await api.get(`/users/${userId}`);
-      setUser(userResponse.data);  // Set user data from API
-      console.log("User data:", userResponse.data);
+      try {
+        const userResponse = await api.get(`/users/${userId}`);
+        setUser(userResponse.data);  // Set user data from API
+        console.log("User data:", userResponse.data);
+      } catch (error) {
+        handleError(error);
+        return;
+      }
     } else {
-      console.log("No user ID found in sessionStorage.");
+      console.error("User ID not found in sessionStorage!");
     }
     // } catch (error) {
     //   console.error(
@@ -216,8 +222,7 @@ const Lobby = () => {
 
   useEffect(() => {
     fetchData().catch(error => {
-      console.error("Unhandled error in fetchData:", error);
-      navigate("/login");
+      handleError(error);
     });
   }, []);
 
@@ -229,8 +234,7 @@ const Lobby = () => {
     const timeoutId = setTimeout(() => {
       console.log("========fetchData========");
       fetchData().catch(error => {
-        console.error("Unhandled error in fetchData:", error);
-        navigate("/login");
+        handleError(error);
       });
     }, 500);
 
@@ -248,12 +252,8 @@ const Lobby = () => {
       updateUsername(username);
       toggleProfilePop();
     } catch (error) {
-      if (error.response && error.response.data) {
-        alert(error.response.data.message);
-      } else {
-        console.error("Error:", error.message);
-        alert("An unexpected error occurred.");
-      }
+      handleError(error);
+      return;
     }
   };
 
@@ -281,8 +281,8 @@ const Lobby = () => {
       navigate(`/rooms/${roomId}/${roomName}`);
       //toggleRoomCreationPop();  // 关闭创建房间的弹窗
     } catch (error) {
-      console.error("Error creating room:", handleError(error));
-      alert(`Error creating room: ${handleError(error)}`);
+      handleError(error);
+      return;
     }
   };
 
@@ -313,7 +313,8 @@ const Lobby = () => {
       const requestBody = JSON.stringify({ id: userId });
       await api.put(`/games/${roomId}`, requestBody);
     } catch (error) {
-      console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+      handleError(error);
+      return;
     }
   }
 
@@ -353,12 +354,8 @@ const Lobby = () => {
       console.log("Avatar changed successfully");
       updateAvatar(newAvatar);
     } catch (error) {
-      if (error.response && error.response.data) {
-        alert(error.response.data.message);
-      } else {
-        console.error("Error:", error.message);
-        alert("An unexpected error occurred.");
-      }
+      handleError(error);
+      return;
     }
   }
 
@@ -376,6 +373,21 @@ const Lobby = () => {
     }));
   };
 
+  ///
+  /// if error is network error, clear the session and navigate to login page
+  ///
+  const handleError = (error) => {
+    if(error.message.match(/Network Error/)) {
+      console.error(`The server cannot be reached.\nDid you start it?\n${error}`);
+      alert(`The server cannot be reached.\nDid you start it?\n${error}`);
+      sessionStorage.clear();
+      navigate("/login");
+    } else {
+      console.error(`Something went wrong: \n${error}`);
+      alert(`Something went wrong: \n${error}`);
+    }
+  }
+
 
   const renderRoomLists = () => {
     return rooms.map((Room) => (
@@ -384,7 +396,12 @@ const Lobby = () => {
 
         /// when user click the room, fetch the data again
         /// and check if the room is still in the list
-        await fetchData();
+        try {
+          await fetchData();
+        } catch (error) {
+          handleError(error);
+          return;
+        }
         // check if roomId is still in the list
         const room = rooms.find(r => r.roomId === Room.roomId);
         if (!room) {
@@ -406,8 +423,8 @@ const Lobby = () => {
               navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
           })
           .catch(error => {
-            console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
-            alert(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+            console.error(`Something went wrong during the enterRoom: \n${error}`);
+            alert(`Something went wrong during the enterRoom: \n${error}`);
           });
 
       }}>
@@ -455,7 +472,12 @@ const Lobby = () => {
           <Button className="create-room-btn" onClick={toggleRoomCreationPop}>
             New Room
           </Button>
-          <Button className="reload-room-btn" onClick={fetchData}>
+          <Button className="reload-room-btn" onClick={
+            () => fetchData().catch(error => {
+              handleError(error);
+              return;
+            })
+          }>
             Reload Rooms
           </Button>
         </div>
