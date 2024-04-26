@@ -1,10 +1,10 @@
-import React, {useEffect, useState, useRef} from "react";
+import React, {useEffect, useState, useRef, useImperativeHandle } from "react";
 import WaveSurfer from "wavesurfer.js";
 import propTypes from "prop-types";
 import { Button } from "./Button";
 import "styles/ui/WavePlayer.scss";
 
-const WavePlayer = props => {
+export const WavePlayer = React.forwardRef((props,ref) => {
   const waveformRef = useRef<HTMLDivElement>(null);
   const wavesurfer = useRef<WaveSurfer | null>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
@@ -42,7 +42,6 @@ const WavePlayer = props => {
       // setIsPlaying(prev => !prev);
     }
     );
-        
   };
 
   useEffect(() => {
@@ -62,14 +61,21 @@ const WavePlayer = props => {
   }
   , [props.audioURL]);
 
+  useImperativeHandle(ref, () => ({
+    setVolume: (volume:number) => {
+      wavesurfer.current?.setVolume(volume);
+      console.log(`[${props.className}]`,"WaveSurfer set volume to", volume);
+    }
+  }), []);
+
   return (
     <div className={`wave-player ${props.className}`}>
       <div className="waveform" ref={waveformRef}/>
-      <div className="no-audio-placeholder" style={{display: props.audioURL ? "none" : "block"}}>
-        ........is recording......
+      <div className="no-audio-placeholder" style={{display: props.audioURL ? "none":"block"}}>
+        ........No Audio Uploaded......
       </div>
       <div className="btn-group"
-        style={{display: props.audioURL ? "flex" : "none"}}>
+        style={{display: props.audioURL ? "flex":"none"}}>
         <Button
           className={"x0.5"}
           onClick={() => {
@@ -116,7 +122,9 @@ const WavePlayer = props => {
     </div>
   );
 
-}
+});
+
+WavePlayer.displayName = "WavePlayer";
 
 WavePlayer.propTypes = {
   className: propTypes.string,

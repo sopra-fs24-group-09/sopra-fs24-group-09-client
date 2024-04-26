@@ -21,13 +21,21 @@
     flex-direction: row;
     justify-content: space-between;
     overflow: auto;
+    .header.container{
+      padding-left: 10%;
+    }
+  }
+  &.left-area{
+    display: flex;
+    height: 100%;
+    flex-direction: column;
   }
   &.right-area{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    margin-top: 5vh;
+    // margin-top: 5vh;
     flex-grow: 1;
     // height: 100%;
     .inputarea {
@@ -79,9 +87,10 @@
   &.playercontainer {
     // position: relative;
     // top:5vh;
-    margin-top: 5vh;
+    // margin-top: 5vh;
     left: 0;
-    width: 28vw;
+    // width: 28vw;
+    width: 100%;
     min-width: min-content;
     // height: 100%;
     background: $classicYellow;
@@ -91,15 +100,17 @@
     align-items: flex-start; /* Align items to the start (left) */
     justify-content: flex-start; /* Align content to the start (left) */
     box-shadow: $dropShadow;
+    flex-grow: 1;
     gap: 1rem;
   }
   &.roominfocontainer {
     z-index:999;
-    position: fixed;
+    // position: fixed;
+    position: sticky;
     left:0;
     top:0;
     height: 5vh;
-    width: 28vw;
+    width: 100%;
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
@@ -116,8 +127,7 @@
     font-family: 'Inter';
     font-style: normal;
     font-weight: bold;
-    font-size: 1.6rem
-    ;
+    font-size: 1.6rem;
     color: $darkBlue;
   }
   &.singlePlayerContainer {
@@ -288,10 +298,12 @@
 
   .readybutton {
     background-color: $classicYellow;
+    border:0;
   }
 
   .cancelbutton {
     background-color: rgba(129, 129, 129, 1);
+    border:0;
   }
 
   .readybutton:hover {
@@ -411,7 +423,7 @@
     border-radius: 22px;
     background-color: $whiteYellow;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(4vw, 1fr));
+    grid-template-columns: minmax(5vw, 5vw) minmax(5vw, 5vw) minmax(5vw, 5vw) minmax(5vw, 5vw) repeat(auto-fit, minmax(6vw, 6vw));
     gap: 0.5rem;
   }
   &.ldPlayerAvatar {
@@ -543,6 +555,8 @@
     font-weight: 700;
     font-size: 0.8rem;
     color:lighten($darkBlue,20%);
+    max-width: 100%;
+    word-wrap: break-word;
   }
   &.currentAnswer {
     position: relative;
@@ -555,7 +569,7 @@
   .validateForm {
     background-color: $whiteYellow;
     border-radius: 5%;
-    width: 200%;
+    width: 80%;
     padding:0 0.6rem;
     padding-right: 2rem;
     border: 1px solid $classicYellow;
@@ -566,7 +580,7 @@
     margin-left: 5%;
     border-radius: 15%;
     border: 0px;
-    width: 40%;
+    width: 20%;
     display: flex;
     align-items: center;
     justify-content: center;

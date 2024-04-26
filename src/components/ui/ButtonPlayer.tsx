@@ -9,6 +9,7 @@ import "../../styles/ui/ButtonPlayer.scss";
 type ButtonPlayerProps = {
   audioURL: string;
   className?: string;
+  volume: number;
 };
 
 export const ButtonPlayer = (props: ButtonPlayerProps) => {
@@ -35,13 +36,15 @@ export const ButtonPlayer = (props: ButtonPlayerProps) => {
     audio.addEventListener("ended", () => {
       setIsPlaying(false);
     });
+    audio.volume = props.volume;
+    console.log(`[ButtonPlayer-${props.className}]`, "audio volume set to", props.volume);
 
     return () => {
       audio.removeEventListener("ended", () => {
         setIsPlaying(false);
       });
     };
-  }, []);
+  }, [props.volume]);
 
   return (
     <div className={`btn-player ${props.className}`}>

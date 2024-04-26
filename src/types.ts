@@ -3,7 +3,7 @@ export type User = {
   username: string;
   avatar: string;
   name: string;
-  id: number;
+  id: string;
   registerDate: Date;
   birthday: Date;
 };
@@ -20,4 +20,5 @@ export type Room = {
   playToOuted: boolean | null;
 };
 
-export type Base64audio = `data:audio/${string};base64,${string}`;
+// export type Base64audio = `data:audio/${string};base64,${string}`;
+export type Base64audio = string;

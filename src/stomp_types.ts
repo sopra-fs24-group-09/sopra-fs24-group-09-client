@@ -8,21 +8,21 @@ export type Timestamped<T> = {
 }
 
 export type PlayerAudio = {
-    userID: number;
+    userID: string;
     audioData: Base64audio;
 }
 
 export type PlayerAndRoomID = {
-    userID: number;
-    roomID: number;
+    userID: string;
+    roomID: string;
 }
 
 export type AnswerGuess = {
-    userID: number;
-    roomID: number;
+    userID: string;
+    roomID: string;
     guess: string;
     roundNum: number;
-    currentSpeakerID: number;
+    currentSpeakerID: string;
 }
 
 export type StompResponse = {

@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { api, handleError } from "helpers/api";
-import { Spinner } from "components/ui/Spinner";
 import { Button } from "components/ui/Button";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 import { User, Room } from "types";
@@ -87,11 +86,11 @@ Player.propTypes = {
 
 const mockRoomPlayers: User[] = [
 
-  { id: 1, username: "Alice", avatar: "grinning-face-with-sweat", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
-  { id: 2, username: "Bob", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
-  { id: 3, username: "Han", avatar: "grinning-face-with-sweat", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
-  { id: 4, username: "Li", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
-  { id: 5, username: "Liuz", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
+  { id: "1", username: "Alice", avatar: "grinning-face-with-sweat", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
+  { id: "2", username: "Bob", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
+  { id: "3", username: "Han", avatar: "grinning-face-with-sweat", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
+  { id: "4", username: "Li", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
+  { id: "5", username: "Liuz", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
 
 ];
 
@@ -131,14 +130,16 @@ const Lobby = () => {
   const profilePopRef = useRef<HTMLDialogElement>(null);
   const changeAvatarPopRef = useRef<HTMLDialogElement>(null);
   const infoPopRef = useRef<HTMLDialogElement>(null);
-  const [rooms, setRooms] = useState<Room[]>(mockRooms);
-  const [user, setUser] = useState<User[]>(mockRoomPlayers[0]);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [user, setUser] = useState<User[]>([]);
   const [username, setUsername] = useState<string | null>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
   const [roomName, setRoomName] = useState("");
-  const [numRounds, setNumRounds] = useState(0);
-  const [roomTheme, setRoomTheme] = useState("food");
-  
+  const [numRounds, setNumRounds] = useState(2);
+  const [roomTheme, setRoomTheme] = useState("");
+  // const needReloadRooms = useRef(false);
+  // const RELOAD_TIME = 3000;
+
   const logout = async () => {
     const id = sessionStorage.getItem("id");
     sessionStorage.removeItem("token");
@@ -147,92 +148,144 @@ const Lobby = () => {
       const requestBody = JSON.stringify({ id: id });
       const response = await api.post("/users/logout", requestBody);
       console.log(response);
+      sessionStorage.clear();
     } catch (error) {
       alert(`Something went wrong during the logout: \n${handleError(error)}`);
     }
     navigate("/login");
   };
+  async function fetchData() {
+    // try {
+    // 获取所有房间信息
+    const roomsResponse = await api.get("/games/lobby");
+    console.log("Rooms data:", roomsResponse.data);
+
+    // 使用 Promise.all 来并发获取每个房间的用户详细信息
+    const roomsWithPlayerDetails = await Promise.all(roomsResponse.data.map(async (room) => {
+      // 对每个房间的用户 ID 列表并发请求用户信息
+      const playerDetails = await Promise.all(room.roomPlayersList.map(async (userId) => {
+        const userResponse = await api.get(`/users/${userId}`);
+
+        return userResponse.data;  // 返回用户的详细信息
+      }));
+    
+      // needReloadRooms.current = false;
+
+      // setTimeout(() => {
+      //   needReloadRooms.current = true;
+      // }, RELOAD_TIME);
+
+      return {
+        ...room,
+        roomPlayersList: playerDetails  // 替换房间中的用户 ID 列表为用户详细信息
+      };
+    }));
+
+    // 更新房间状态，包含了用户的详细信息
+    setRooms(roomsWithPlayerDetails);
+
+    console.log("request to:", roomsResponse.request.responseURL);
+    console.log("status code:", roomsResponse.status);
+    console.log("status text:", roomsResponse.statusText);
+    console.log("requested data:", roomsResponse.data);
+
+    // See here to get more data.
+    console.log(roomsResponse);
+
+    // Get user ID from sessionStorage
+    const userId = sessionStorage.getItem("id");
+    if (userId) {
+      // Get current user's information
+      try {
+        const userResponse = await api.get(`/users/${userId}`);
+        setUser(userResponse.data);  // Set user data from API
+        console.log("User data:", userResponse.data);
+      } catch (error) {
+        handleError(error);
+        
+        return;
+      }
+    } else {
+      console.error("User ID not found in sessionStorage!");
+    }
+    // } catch (error) {
+    //   console.error(
+    //     `Something went wrong while fetching the users: \n${handleError(
+    //       error
+    //     )}`
+    //   );
+    //   console.error("Details:", error);
+    //   alert(
+    //     "Something went wrong while fetching the users! See the console for details."
+    //   );
+    // }
+  }
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        //get all rooms
-        const response = await api.get("/games/lobby");
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setRooms(response.data);
-
-        console.log("request to:", response.request.responseURL);
-        console.log("status code:", response.status);
-        console.log("status text:", response.statusText);
-        console.log("requested data:", response.data);
-
-        // See here to get more data.
-        console.log(response);
-
-        // Get user ID from sessionStorage
-        const userId = sessionStorage.getItem("id");
-        if (userId) {
-          // Get current user's information
-          const userResponse = await api.get(`/users/${userId}`);
-          setUser(userResponse.data);  // Set user data from API
-          console.log("User data:", userResponse.data);
-        } else {
-          console.log("No user ID found in sessionStorage.");
-        }
-      } catch (error) {
-        console.error(
-          `Something went wrong while fetching the users: \n${handleError(
-            error
-          )}`
-        );
-        console.error("Details:", error);
-        alert(
-          "Something went wrong while fetching the users! See the console for details."
-        );
-      }
-    }
-
     fetchData().catch(error => {
-      console.error("Unhandled error in fetchData:", error);
+      handleError(error);
     });
   }, []);
 
+  // when user get navigated back to this page, fetch data again
+  const location = useLocation();
+  // console.warn("Location:", location);
+  useEffect(() => {
+    // wait for 1 second before fetching data
+    const timeoutId = setTimeout(() => {
+      console.log("========fetchData========");
+      fetchData().catch(error => {
+        handleError(error);
+      });
+    }, 500);
+
+    return () => {
+      clearTimeout(timeoutId);
+    }
+  }, [location]);
+
   const doEdit = async () => {
     try {
-      const requestBody = JSON.stringify({ username, avatar: avatar });
+      const requestBody = JSON.stringify({ username: username, avatar: avatar });
       const id = sessionStorage.getItem("id");
       console.log("Request body:", requestBody);
       await api.put(`/users/${id}`, requestBody);
+      updateUsername(username);
       toggleProfilePop();
     } catch (error) {
-      if (error.response && error.response.data) {
-        alert(error.response.data.message);
-      } else {
-        console.error("Error:", error.message);
-        alert("An unexpected error occurred.");
-      }
+      handleError(error);
+      
+      return;
     }
   };
 
   const createRoom = async () => {
-    try {
+    // if not chrome, alert the user
+    if (!navigator.userAgent.includes("Chrome")) {
+      alert("Your browser is currently not supported, please use Chrome to play this game!");
       
+      return;
+    }
+    try {
+      console.log("Current theme:", roomTheme);
       const ownerId = sessionStorage.getItem("id");  // 假设ownerId存储在sessionStorage中
       const requestBody = JSON.stringify({
-        name: roomName,
-        num: numRounds,
+        roomName: roomName,
+        maxPlayersNum: numRounds,
         roomOwnerId: ownerId,
-        theme: "FOOD"
+        theme: roomTheme
       });
       console.log(requestBody)
       const response = await api.post("/games", requestBody);
       console.log("Room created successfully:", response);
-      const roomId = response.roomId;
-      navigate(`/room=${roomId}`);
+      console.log("Room ID:", response.data.roomId);
+      const roomId = response.data.roomId;
+      navigate(`/rooms/${roomId}/${roomName}`);
       //toggleRoomCreationPop();  // 关闭创建房间的弹窗
     } catch (error) {
-      console.error("Error creating room:", handleError(error));
-      alert(`Error creating room: ${handleError(error)}`);
+      handleError(error);
+      
+      return;
     }
   };
 
@@ -260,10 +313,12 @@ const Lobby = () => {
 
   async function enterRoom(roomId, userId) {
     try {
-      const requestBody = JSON.stringify({ userId, roomId });
-      await api.put("/games", requestBody);
+      const requestBody = JSON.stringify({ id: userId });
+      await api.put(`/games/${roomId}`, requestBody);
     } catch (error) {
-      console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+      handleError(error);
+      
+      return;
     }
   }
 
@@ -296,22 +351,16 @@ const Lobby = () => {
       setAvatar(newAvatar);
 
       // 构造请求体，只包含 avatar 更改
-      const requestBody = JSON.stringify({ username, avatar: newAvatar });
+      const requestBody = JSON.stringify({ avatar: newAvatar });
       const id = sessionStorage.getItem("id");
       console.log("Request body:", requestBody);
-      // 执行更新请求
       await api.put(`/users/${id}`, requestBody);
-
-      // 可能需要关闭弹窗或执行其他 UI 反馈
-
       console.log("Avatar changed successfully");
+      updateAvatar(newAvatar);
     } catch (error) {
-      if (error.response && error.response.data) {
-        alert(error.response.data.message);
-      } else {
-        console.error("Error:", error.message);
-        alert("An unexpected error occurred.");
-      }
+      handleError(error);
+      
+      return;
     }
   }
 
@@ -322,25 +371,68 @@ const Lobby = () => {
     }));
   };
 
-  const userinfo = () => {
-    return;
+  const updateUsername = (newUsername) => {
+    setUser(prevUser => ({
+      ...prevUser, // 复制 prevUser 对象的所有现有属性
+      username: newUsername // 更新 avatar 属性
+    }));
   };
+
+  ///
+  /// if error is network error, clear the session and navigate to login page
+  ///
+  const handleError = (error) => {
+    if(error.message.match(/Network Error/)) {
+      console.error(`The server cannot be reached.\nDid you start it?\n${error}`);
+      alert(`The server cannot be reached.\nDid you start it?\n${error}`);
+      sessionStorage.clear();
+      navigate("/login");
+    } else {
+      console.error(`Something went wrong: \n${error}`);
+      alert(`Something went wrong: \n${error}`);
+    }
+  }
 
 
   const renderRoomLists = () => {
     return rooms.map((Room) => (
-      <div className="room-container" key={Room.roomId} onClick={(e) => {
+      <div className="room-container" key={Room.roomId} onClick={async (e) => {
         e.preventDefault();
+
+        /// when user click the room, fetch the data again
+        /// and check if the room is still in the list
+        try {
+          await fetchData();
+        } catch (error) {
+          handleError(error);
+          
+          return;
+        }
+        // check if roomId is still in the list
+        const room = rooms.find(r => r.roomId === Room.roomId);
+        if (!room) {
+          alert("The room's info is outdated, please try again!");
+          
+          return;
+        }
+        
         const currentId = sessionStorage.getItem("id");
-        // const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
+        const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
         enterRoom(Room.roomId, currentId)
           .then(() => {
-            navigate(`/rooms/${Room.roomId}`);
+            //alert(currentId);
+            if(Room.roomPlayersList.length===Room.maxPlayersNum)
+              alert("Room is Full, please enter another room!");
+            else if(Room.status==="In Game")
+              alert("Game is already started, please enter another room!");
+            else
+              navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
           })
           .catch(error => {
-            console.error(`Something went wrong during the enterRoom: \n${handleError(error)}`);
-            alert(`Something went wrong during the enterRoom: \n${handleError(error)}`);
+            console.error(`Something went wrong during the enterRoom: \n${error}`);
+            alert(`Something went wrong during the enterRoom: \n${error}`);
           });
+
       }}>
         <div className="room-players">
           {Room.roomPlayersList?.map((user, index) => (
@@ -351,7 +443,7 @@ const Lobby = () => {
           ))}
         </div>
         <div className="room-header">
-          ROOM #{Room.roomId}
+          <div style={{fontWeight: "bold"}}>{Room.roomName}</div>
           <div>{Room.theme}</div>
           <span
             className={`room-status ${
@@ -381,46 +473,29 @@ const Lobby = () => {
         <div className="lobby room-list">
           <h1>Rooms</h1>
           {renderRoomLists()}
-          <div className="lobby room-list btn-container">
-            <Button className="create-room-btn" onClick={toggleRoomCreationPop}>
-              New Room
-            </Button>
-          </div>
+        </div>
+        <div className="lobby room-list btn-container">
+          <Button className="create-room-btn" onClick={toggleRoomCreationPop}>
+            New Room
+          </Button>
+          <Button className="reload-room-btn" onClick={
+            () => fetchData().catch(error => {
+              handleError(error);
+              
+              return;
+            })
+          }>
+            Reload Rooms
+          </Button>
         </div>
       </div>
-
-      <Popup
-        ref={roomCreationPopRef}
-        toggleDialog={toggleRoomCreationPop}
-        className="room-creation-popup"
-      >
-        <BaseContainer className="room-creation-popup content">
-          <div className="title">Create Room</div>
-          <input type="text" placeholder="Room Name" />
-          <input type="number" placeholder="Round" />
-          <Dropdown
-            className="theme-dropdown"
-            prompt="Select Theme"
-            options={[
-              { value: "Beginner", label: "Beginner"},
-              { value: "Food", label: "Food" },
-            ]}
-          />
-          <div className="room-creation-popup btn-container">
-            <Button className="create-room">Create Room</Button>
-            <Button className="cancel" onClick={toggleRoomCreationPop}>
-              Cancel
-            </Button>
-          </div>
-        </BaseContainer>
-      </Popup>
 
 
       <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className = "profile-popup">
         <BaseContainer className="profile-popup content">
           <div className="avatar-container" onClick={() => {
             toggleAvatarPop();
-            // toggleProfilePop();
+            toggleProfilePop();
           }}>
             <i className={"twa twa-" + user.avatar} style={{fontSize: "10rem", marginTop:"0.8rem", textAlign:"center"}}/>
           </div>
@@ -430,16 +505,16 @@ const Lobby = () => {
             </label>
             <input
               // className="profile-popup input"
-              //value={user.username}
+              style={{height:"40px"}}
+              placeholder={user.username}
               type="text"
-              onChange={e => setUsername(e)}
+              onChange={e => setUsername(e.target.value)}
             />
           </div>
-          <div>Name: {user.name}</div>
+          <div>Id: {user.id}</div>
           <div>Status: {user.status}</div>
 
-          <div>RegisterDate: {user && new Date(user.registerDate).toLocaleDateString()}</div>
-          <div>Birthday: {user && new Date(user.birthday).toLocaleDateString()}</div>
+          {/*<div>RegisterDate: {user && new Date(user.registerDate).toLocaleDateString()}</div>*/}
 
           <div className="profile-popup btn-container">
             <Button className="cancel" onClick={() => {
@@ -464,7 +539,8 @@ const Lobby = () => {
           {avatarList?.map((avatar,index) => (
             <div className="player" key={index} >
               <i className={"twa twa-" + avatar} style={{fontSize: "3.8rem"}} onClick={() => {
-                changeAvatar(avatar).then(r => toggleProfilePop());
+                changeAvatar(avatar).then(r => toggleAvatarPop);
+                toggleAvatarPop();
               }}/>
             </div>
           ))}
@@ -479,28 +555,52 @@ const Lobby = () => {
         <BaseContainer className="room-creation-popup content">
           <div className="title">Create Room</div>
           <input type="text" placeholder="Room Name" value={roomName} onChange={e => setRoomName(e.target.value)} />
-          <input type="number" placeholder="Number of Players" value={numRounds} onChange={e => setNumRounds(parseInt(e.target.value, 10))} />
+          <div>Number of Maximum Players: </div>
+          <input
+            type="number"
+            placeholder="2"
+            value={numRounds}
+            onChange={e => {
+              const value = parseInt(e.target.value, 10);
+              setNumRounds(value >= 2 && value <= 10 ? value : "");
+            }}
+            min={2}
+            max={10}
+          />
           <Dropdown
             className="theme-dropdown"
             prompt="Select Theme"
-            value={roomTheme}
+            // defaultValue={roomTheme}
             options={[
-              { value: "Beginner", label: "Beginner"},
-              { value: "Food", label: "Food" }
+              { value: "JOB", label: "JOB"},
+              { value: "FOOD", label: "FOOD" },
+              { value: "SUPERHERO", label: "SUPERHERO" },
+              { value: "SPORTS", label: "SPORTS" },
             ]}
-            onChange={(selectedOption) => setRoomTheme(selectedOption.value)}
+            onChange={(value) => setRoomTheme(value)}
           />
           <div className="room-creation-popup btn-container">
-            <Button className="create-room" onClick={createRoom}>Create Room</Button>
+            <Button disabled={roomName === "" || numRounds < 2 || numRounds > 10 || roomTheme === ""}
+              className="create-room" onClick={createRoom}>Create Room</Button>
             <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </div>
         </BaseContainer>
 
       </Popup>
 
-      <Popup ref={infoPopRef} toggleDialog={toggleInfoPop} className="profile-popup">
-        <div>Here is some Guidelines....</div>
-        <div className="profile-popup btn-container">
+      <Popup ref={infoPopRef} toggleDialog={toggleInfoPop} className="intro-popup">
+        <div className="intro-cnt">
+          <h1>Welcome to KAEPS!</h1>
+          <p>Here are some guides for playing this game:</p>
+          <ul>
+            <li><strong>Speaker:</strong> Receives a word, records it, inverts the audio, and sends it to other players.</li>
+            <li><strong>Challenger:</strong> Listens to the inverted audio and tries to guess the original word.</li>
+            <li><strong>Scoring:</strong> Correctly deciphering the word scores you points.</li>
+            <li><strong>Turns:</strong> Each round has one Speaker and multiple Challengers. Players take turns to be the Speaker.</li>
+          </ul>
+          <p>Join a room or create one to play with friends!</p>
+        </div>
+        <div className="intro-popup btn-container">
           <Button className="cancel" onClick={toggleInfoPop}>
             Close
           </Button>
