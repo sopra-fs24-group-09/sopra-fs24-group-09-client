@@ -76,6 +76,7 @@ const Gameroom = () => {
     currentSpeakerIdRef.current = gameInfo.currentSpeaker.userID;
   }
   const [globalVolume, setGlobalVolume] = useState(0.5);
+  const globalVolumeBeforeMute = useRef(0);
 
   gameInfoRef.current = gameInfo;
 
@@ -580,12 +581,25 @@ const Gameroom = () => {
         globalVolume={globalVolume}
       />
       <div className="gameroom right-area">
-        <Header onChange={
-          e => {
-            setGlobalVolume(e.target.value);
-            console.log("[volume] set to", e.target.value);
+        <Header 
+          onChange={
+            e => {
+              setGlobalVolume(e.target.value);
+              console.log("[volume] set to", e.target.value);
+            }
           }
-        } />
+          onClickMute={
+            () => {
+              if (globalVolume === 0) {
+                setGlobalVolume(globalVolumeBeforeMute.current);
+              } else {
+                globalVolumeBeforeMute.current = globalVolume;
+                setGlobalVolume(0);
+              }
+            }
+          }
+          volume={globalVolume}
+        />
         {!gameOver && showReadyPopup && (
           <div className="gameroom readypopupbg">
             <div className="gameroom readypopupcontainer">
