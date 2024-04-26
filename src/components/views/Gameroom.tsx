@@ -489,6 +489,7 @@ const Gameroom = () => {
   const LeaderBoard = ({ playerStatus }) => {
     console.log("[LeaderBoard]",playerStatus)
     const sortedPlayerStatus = playerStatus.slice().sort((a, b) => b.score.total - a.score.total);
+    
     return (
       <>
         {playerStatus !== null && (
