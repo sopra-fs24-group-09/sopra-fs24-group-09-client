@@ -1,18 +1,16 @@
-import React, { useEffect, useLayoutEffect, useState, useRef, useMemo, useImperativeHandle } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { api, handleError } from "helpers/api";
 import { useNavigate, useParams } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
-import { User } from "types";
 import "styles/views/Gameroom.scss";
 import "styles/views/Header.scss";
 import "styles/twemoji-amazing.css";
 import Header from "./Header";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { AudioRecorder } from "components/ui/AudioRecorder";
-import { CounterDown } from "components/ui/CounterDown";
-import WavePlayer from "components/ui/WavePlayer";
-import { ButtonPlayer } from "components/ui/ButtonPlayer";
+import { Roundstatus, RoundstatusProps} from "components/views/GameroomRoundStatus";
+import { PlayerList } from "components/views/GameroomPlayerList";
+import { ValidateAnswerForm } from "components/views/GameroomAnswerForm";
 // Stomp related imports
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
@@ -28,7 +26,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getDomain } from "helpers/getDomain";
 
 // type AudioBlobDict = { [userId: number]: Base64audio };
-type SharedAudioURL = { [userId: number]: string };
+type SharedAudioURL = { [userId: string]: string };
 
 const Gameroom = () => {
   const navigate = useNavigate();
@@ -47,17 +45,17 @@ const Gameroom = () => {
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [currentSpeakerID, setCurrentSpeakerID] = useState(null);
-  const [validateAnswer, setValidateAnswer] = useState("");
   const [playerLists, setPlayerLists] = useState([]);
   const roundFinished = useRef(false);
   const [endTime, setEndTime] = useState(null);
   const gameTheme = useRef(null);
 
   const [gameInfo, setGameInfo] = useState(null);
-  const [roomInfo, setRoomInfo] = useState({
-    roomID: currentRoomID,
-    theme: "Advanced",
-  });
+  const gameInfoRef = useRef(null);
+  // const [roomInfo, setRoomInfo] = useState({
+  //   roomID: currentRoomID,
+  //   theme: "Advanced",
+  // });
   const prevStatus = useRef("start");
   const [currentStatus, setCurrentStatus] = useState<
     "speak" | "guess" | "reveal"
@@ -68,13 +66,6 @@ const Gameroom = () => {
   >(null);
   const myRecordingReversedRef = useRef<Base64audio | null>(null);
   const roundStatusComponentRef = useRef(null);
-  // const sharedAudioListRef = useRef<AudioBlobDict>({}); // store all shared audio blobs
-  /**
-   * Attention!!: Just for testing purposes
-   * need to pass an audio blob to the WavePlayer like this:
-   */
-  // const [testAudioBlob, setTestAudioBlob] = useState<Blob | null>(null);
-  // const [testAudioURL, setTestAudioURL] = useState<string | null>(null);
 
   // this ref is used to track the current speaker id in callback functions
   const currentSpeakerIdRef = useRef<number>();
@@ -82,6 +73,8 @@ const Gameroom = () => {
     currentSpeakerIdRef.current = gameInfo.currentSpeaker.userID;
   }
   const [globalVolume, setGlobalVolume] = useState(0.5);
+
+  gameInfoRef.current = gameInfo;
 
   // useMemo to initialize and load FFmpeg wasm module
   // load FFmpeg wasm module
@@ -99,21 +92,6 @@ const Gameroom = () => {
   }, []);
 
   console.log("GameInfo", gameInfo);
-
-  // function calculateRemainingTime(roundDue) {
-  //   //console.log("Calculating");
-  //   roundDue = roundDue.split("[")[0];
-  //   const endTime = new Date(roundDue).getTime();
-  //   const currentTime = Date.now();
-  //   const remainingSeconds = Math.max(0, Math.floor((endTime - currentTime) / 1000));
-
-  //   return remainingSeconds;
-  // }
-
-  //const [endTime, setEndTime] = useState("2024-04-30T12:00:00"); // Example initial value
-
-  // Only rerun the effect if endTime actually changes
-
 
   useEffect(() => {
     // define subscription instances
@@ -189,6 +167,12 @@ const Gameroom = () => {
       // const now = new Date().getTime();
       // console.log(`[onGameInfoReceived-${now}] payload: ${payload.body}`);
       const payloadData = JSON.parse(payload.body);
+      // console.error("GameInfo received", JSON.stringify(payloadData.message));
+      if (JSON.stringify(gameInfoRef.current) === JSON.stringify(payloadData.message)) {
+        console.log("Same game info received, ignore");
+        
+        return;
+      }
       if (gameTheme.current !== payloadData.message.theme){
         gameTheme.current = payloadData.message.theme
       }
@@ -327,7 +311,7 @@ const Gameroom = () => {
       timestamp: new Date().getTime(),
       message: {
         userID: user.id,
-        roomID: roomInfo.roomID,
+        roomID: currentRoomID,
       },
     };
     const receiptId = uuidv4();
@@ -346,7 +330,7 @@ const Gameroom = () => {
       timestamp: new Date().getTime(),
       message: {
         userID: user.id,
-        roomID: roomInfo.roomID,
+        roomID: currentRoomID,
       },
     };
     // get a random receipt uuid
@@ -365,7 +349,7 @@ const Gameroom = () => {
       timestamp: new Date().getTime(),
       message: {
         userID: user.id,
-        roomID: roomInfo.roomID,
+        roomID: currentRoomID,
       },
     };
     const receiptId = uuidv4();
@@ -384,7 +368,7 @@ const Gameroom = () => {
       timestamp: new Date().getTime(),
       message: {
         userID: user.id,
-        roomID: roomInfo.roomID,
+        roomID: currentRoomID,
       },
     };
     const receiptId = uuidv4();
@@ -403,7 +387,7 @@ const Gameroom = () => {
       timestamp: new Date().getTime(),
       message: {
         userID: user.id,
-        roomID: roomInfo.roomID,
+        roomID: currentRoomID,
       },
     };
     const receiptId = uuidv4();
@@ -422,7 +406,7 @@ const Gameroom = () => {
       timestamp: new Date().getTime(),
       message: {
         userID: user.id,
-        roomID: roomInfo.roomID,
+        roomID: currentRoomID,
         guess: answer,
         roundNum: gameInfo.currentRoundNum,
         currentSpeakerID: gameInfo.currentSpeaker.userID,
@@ -466,9 +450,9 @@ const Gameroom = () => {
   };
 
 
-  //#endregion -----------------WebSocket Send Functions-----------------
+  //#dendregion -----------------WebSocket Send Functions-----------------
 
-  const handleAudioReversed = useMemo(() => (audio: Base64audio) => {
+  const handleAudioReversed = useMemo(() => (audio: Blob) => {
     if (audio) {
       myRecordingReversedRef.current = audio;
       console.log("[GameRoom]Get reversed audio from AudioRecorder Success");
@@ -476,392 +460,8 @@ const Gameroom = () => {
     }
   }, []);
 
-  const togglePopup = () => {
-    setShowReadyPopup((prevState) => !prevState);
-  };
-
-  const toggleStatus = () => {
-    setCurrentStatus((prevState) => {
-      switch (prevState) {
-      case "speak":
-        return "guess";
-      case "guess":
-        return "reveal";
-      case "reveal":
-        return "speak";
-      default:
-        return "speak";
-      }
-    });
-  };
-
-  // const userRecordings = [
-  //   { userId: 1, audioURL: null },
-  //   { userId: 3, audioURL: null },
-  // ];
-
-  console.log("the player list is")
+  console.log("[Gameroom]the player list is")
   console.log(playerLists);
-
-  // #region -----------------playerlist mock----------------
-
-  // const playerReadyStatus = [
-  //   {
-  //     user: {
-  //       id: 1,
-  //       name: "Maxwell",
-  //       avatar: "smiling-face-with-smiling-eyes",
-  //     },
-  //     score: {
-  //       total: 70,
-  //       guess: 50,
-  //       read: 20,
-  //       details: [
-  //         { word: "Lemon", role: 1, score: 20 },
-  //         { word: "Apple", role: 0, score: 30 },
-  //         { word: "Orange", role: 0, score: 20 },
-  //       ],
-  //     },
-  //     ready: true,
-  //     ifGuess: true,
-  //     roundFinished: true,
-  //   },
-  //   {
-  //     user: {
-  //       id: 2,
-  //       name: "Hanky",
-  //       avatar: "grinning-face-with-sweat",
-  //     },
-  //     score: {
-  //       total: 30,
-  //       guess: 30,
-  //       read: 0,
-  //       details: [
-  //         { word: "Lemon", role: 0, score: 10 },
-  //         { word: "Apple", role: 1, score: 0 },
-  //         { word: "Orange", role: 0, score: 20 },
-  //       ],
-  //     },
-  //     ready: true,
-  //     ifGuess: false,
-  //     roundFinished: true,
-  //   },
-  //   {
-  //     user: {
-  //       id: 3,
-  //       name: "Yang",
-  //       avatar: "face-with-monocle",
-  //     },
-  //     score: {
-  //       total: 50,
-  //       guess: 30,
-  //       read: 20,
-  //       details: [
-  //         { word: "Lemon", role: 0, score: 30 },
-  //         { word: "Apple", role: 0, score: 0 },
-  //         { word: "Orange", role: 1, score: 20 },
-  //       ],
-  //     },
-  //     ready: false,
-  //     ifGuess: true,
-  //     roundFinished: false,
-  //   },
-  //   {
-  //     user: {
-  //       id: 4,
-  //       name: "Sophia",
-  //       avatar: "grinning-squinting-face",
-  //     },
-  //     score: {
-  //       total: 60,
-  //       guess: 0,
-  //       read: 60,
-  //       details: [
-  //         { word: "Lemon", role: 0, score: 30 },
-  //         { word: "Apple", role: 0, score: 10 },
-  //         { word: "Orange", role: 0, score: 20 },
-  //       ],
-  //     },
-  //     ready: true,
-  //     ifGuess: true,
-  //     roundFinished: false,
-  //   },
-  // ];
-
-  // #endregion -----------------playerlist mock----------------
-
-  // let mePlayer = {
-  //   id: 3,
-  //   name: "Hanky",
-  //   avatar: "grinning-face-with-sweat",
-  // };
-
-  // let mockgameInfo = {
-  //   roomID: 5,
-  //   currentSpeaker: {
-  //     id: 2,
-  //     name: "Hanky",
-  //     avatar: "grinning-face-with-sweat",
-  //   },
-  //   currentAnswer: "Success",
-  //   roundStatus: "speak",
-  //   currentRoundNum: 2,
-  // };
-
-  const changeSpeaker = () => {
-    setShowReadyPopup((prevState) => !prevState);
-  };
-
-  // type CounterProps = {
-  //   endTimeString: String;
-  // };
-
-  // const Counter: React.FC<CounterProps> = ({ endTimeString }) => {
-  //   const [remainingTime, setRemainingTime] = useState(null);
-
-  //   useLayoutEffect(() => {
-  //     if (endTime !== null && endTime !== "None") {
-  //       const interval = setInterval(() => {
-  //         setRemainingTime(calculateRemainingTime(endTime));
-  //         //console.log("Interval triggered");
-  //       }, 1000);
-
-  //       return () => {
-  //         //console.log("Clearing interval");
-  //         clearInterval(interval);
-  //       };
-  //     }
-  //   }, [endTime]);
-
-  //   return (
-  //     <>
-  //       <div className="gameroom counterdiv">
-  //         <i className={"twa twa-stopwatch"} style={{ fontSize: "2.6rem" }} />
-  //         <span className="gameroom counternum">{remainingTime}</span>
-  //       </div>
-  //     </>
-  //   );
-  // };
-
-
-  const Roundstatus = React.forwardRef((props,ref) => {
-    const { gameInfo, currentSpeakerAudioURL } = props;
-    console.log("gameInfo", gameInfo);
-    const _audioRecorderRef = useRef(null);
-    useImperativeHandle(ref, () => ({
-      clearAudio: () => {
-        console.log("----clear audio");
-        _audioRecorderRef.current?.clearAudio();
-      },
-      setVolumeTo: (volume) => {
-        console.log("----set volume to", volume);
-        _audioRecorderRef.current?.setVolume(volume);
-      }
-    }), []);
-    
-    if (!gameInfo) {
-      return <div>loading...</div>;
-    }
-    
-    return (
-      <>
-        <div className="gameroom roundstatus">
-          <CounterDown endTimeString={endTime}/>
-          <div className="gameroom statusdiv">
-            <div className="gameroom speakPlayerContainer">
-              {/*<img src={playerInfo.user.avatar} alt={playerInfo.user.name} />*/}
-              <span className="gameroom playerAvatar">
-                <i
-                  className={"twa twa-" + gameInfo.currentSpeaker.avatar}
-                  style={{ fontSize: "3.8rem" }}
-                />
-                <i
-                  className={"twa twa-studio-microphone"}
-                  style={{ fontSize: "2.2rem" }}
-                />
-              </span>
-              {currentSpeakerID === user.id &&
-                currentStatus === "speak" && (
-                <>
-                  <div className={"gameroom secondcolumn"}>
-                    <div
-                      className="gameroom speakerName"
-                      style={{ flexDirection: "row" }}
-                    >
-                      <span className="gameroom playerName">
-                        {"Round " + gameInfo.currentRoundNum + " "}
-                      </span>
-                      <span className="gameroom playerName">
-                        {gameInfo.currentSpeaker.username + ", please"}
-                      </span>
-                      <span className="gameroom playerName">
-                        {" record:"}
-                      </span>
-                    </div>
-                    <span className="gameroom currentAnswer">
-                      {gameInfo.currentAnswer}
-                    </span>
-                  </div>
-                </>
-              )}
-              {currentSpeakerID !== user.id &&
-                currentStatus === "speak" && (
-                <>
-                  <div className={"gameroom secondcolumn"}>
-                    <div
-                      className="gameroom speakerName"
-                      style={{ flexDirection: "row" }}
-                    >
-                      <span className="gameroom playerName">
-                        {"Round " + gameInfo.currentRoundNum + " "}
-                      </span>
-                      <span className="gameroom playerName">
-                        {gameInfo.currentSpeaker.username + "'s'"}
-                      </span>
-                      <span className="gameroom playerName">
-                        {"turn to record"}
-                      </span>
-                    </div>
-                    {/*<span className="gameroom currentAnswer">{gameInfo.currentAnswer}</span>*/}
-                  </div>
-                </>
-              )}
-              {currentSpeakerID !== user.id &&
-                currentStatus === "guess" && (
-                <>
-                  <div className={"gameroom secondcolumn"}>
-                    <div
-                      className="gameroom speakerName"
-                      style={{ flexDirection: "row" }}
-                    >
-                      <span className="gameroom playerName">
-                        {gameInfo.currentSpeaker.username + "'s revesed audio:"}
-                      </span>
-                    </div>
-                    <WavePlayer
-                      className="gameroom waveplayer"
-                      audioURL={currentSpeakerAudioURL}
-                      volume={globalVolume}
-                    />
-                  </div>
-                </>
-              )}
-              {currentSpeakerID === user.id &&
-                currentStatus === "guess" && (
-                <>
-                  <div className={"gameroom secondcolumn"}>
-                    <div
-                      className="gameroom speakerName"
-                      style={{ flexDirection: "row" }}
-                    >
-                      <span className="gameroom playerName">
-                        {"Your revesed audio:"}
-                      </span>
-                    </div>
-                    <WavePlayer
-                      className="gameroom waveplayer"
-                      audioURL={currentSpeakerAudioURL}
-                      volume={globalVolume}
-                    />
-                  </div>
-                </>
-              )}
-              {currentStatus === "reveal" && (
-                <>
-                  <div className={"gameroom secondcolumn"}>
-                    <div
-                      className="gameroom speakerName"
-                      style={{ flexDirection: "row" }}
-                    >
-                      <span className="gameroom playerName">
-                        {"The word " +
-                          gameInfo.currentSpeaker.username +
-                          " recorded is "}
-                      </span>
-                      <span className="gameroom revealAnswer">
-                        {" "}
-                        {gameInfo.currentAnswer}
-                      </span>
-                    </div>
-                    {/*<WavePlayer*/}
-                    {/*  className="gameroom waveplayer"*/}
-                    {/*  audioURL={currentSpeakerAudioURL}*/}
-                    {/*  volume={globalVolume}*/}
-                    {/*/>*/}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-          <div className="gameroom remindermssg">
-            {gameInfo.currentSpeaker.userID === user.id &&
-              currentStatus === "speak" && (
-              <span className="gameroom remindertext">
-                {"Try to read and record the word steadily and loudly!"}
-              </span>
-            )}
-            {gameInfo.currentSpeaker.userID !== user.id &&
-              currentStatus === "speak" && (
-              <span className="gameroom remindertext">
-                {
-                  "Please wait until the speak player finishes recording and uploading!"
-                }
-              </span>
-            )}
-            {gameInfo.currentSpeaker.userID !== user.id &&
-              currentStatus === "guess" && (
-              <span className="gameroom remindertext">
-                {
-                  "Try to simulate the reversed audio and reverse again to figure out the word!"
-                }
-              </span>
-            )}
-            {gameInfo.currentSpeaker.userID === user.id &&
-              currentStatus === "guess" && (
-              <span className="gameroom remindertext">
-                {
-                  "You can try to simulate the reversed audio or listen to others' audio!"
-                }
-              </span>
-            )}
-            {currentStatus === "reveal" && (
-              <span className="gameroom remindertext">
-                {"Time is up and now reveals the answer!"}
-              </span>
-            )}
-            <AudioRecorder
-              ref={_audioRecorderRef}
-              className="gameroom audiorecorder"
-              ffmpeg={ffmpegObj}
-              audioName={"my_recording"}
-              // handleReversedAudioChange={handleAudioReversed}
-              handleReversedAudioChange={handleAudioReversed}
-              disabled={
-                (currentSpeakerID !== user.id && currentStatus === "speak") ||
-                currentStatus === "reveal"
-              }
-            />
-          </div>
-        </div>
-      </>
-    );
-  });
-  Roundstatus.displayName = "Roundstatus";
-
-  Roundstatus.propTypes = {
-    gameInfo: PropTypes.shape({
-      roomID: PropTypes.number.isRequired,
-      currentSpeaker: PropTypes.shape({
-        userID: PropTypes.number.isRequired,
-        username: PropTypes.string.isRequired,
-        avatar: PropTypes.string.isRequired,
-      }).isRequired,
-      currentAnswer: PropTypes.string.isRequired,
-      roundStatus: PropTypes.string.isRequired,
-      currentRoundNum: PropTypes.number.isRequired,
-    }).isRequired,
-    currentSpeakerAudioURL: PropTypes.string,
-  };
 
   const LeaderBoard = ({ playerStatus }) => {
     return (
@@ -921,115 +521,6 @@ const Gameroom = () => {
     );
   };
 
-  const PlayerList = ({ playerStatus, sharedAudioList }) => {
-    return (
-      <div className="gameroom left-area">
-        <div className="gameroom roominfocontainer">
-          <div className="gameroom roominfotitle">ROOM</div>
-          <div className="gameroom roominfo">
-            {"#" + currentRoomName + "-" + gameTheme.current}
-          </div>
-        </div>
-        <div className="gameroom playercontainer">
-          {/*map begin*/}
-          {playerStatus.map((playerInfo, index) => {
-            // const hasRecording = sharedAudioList.some(
-            //   (recording) => recording.userId === playerInfo.user.id
-            // );
-            const hasRecording = playerInfo.user.id in sharedAudioList;
-            let _audioURL = null;
-            if (hasRecording) {
-              _audioURL = sharedAudioList[playerInfo.user.id];
-            }
-
-            return (
-              <div className="gameroom singlePlayerContainer" key={index}>
-                <span className="gameroom playerAvatar">
-                  <i
-                    className={"twa twa-" + playerInfo.user.avatar}
-                    style={{ fontSize: "3.8rem" }}
-                  />
-                </span>
-                {!showReadyPopup && !gameOver && (
-                  <>
-                    <div className="gameroom secondcolumn">
-                      <span className="gameroom playerName">
-                        {playerInfo.user.name}
-                      </span>
-                      <span className="gameroom secondRow">
-                        <span className="gameroom scoreTitle">Score:</span>
-                        <span className="gameroom playerScore">
-                          {playerInfo.score.total}
-                        </span>
-                        {playerInfo.ifGuess ? (
-                          <i className="twa twa-speaking-head" />
-                        ) : (
-                          <i className="twa twa-studio-microphone" />
-                        )}
-                      </span>
-                    </div>
-                    <div className="gameroom playerStatus">
-                      {playerInfo.roundFinished ? (
-                        <i
-                          className="twa twa-check-mark-button"
-                          style={{ fontSize: "1.5rem" }}
-                        />
-                      ) : (
-                        <i
-                          className="twa twa-one-thirty"
-                          style={{ fontSize: "1.5rem" }}
-                        />
-                      )}
-                      {hasRecording && <ButtonPlayer audioURL={_audioURL} volume={globalVolume}/>}
-                    </div>
-                  </>
-                )}
-                {gameOver && (
-                  <>
-                    <div className="gameroom secondcolumn">
-                      <span className="gameroom playerName">
-                        {playerInfo.user.name}
-                      </span>
-                      <span className="gameroom secondRow">
-                        <span className="gameroom scoreTitle">Score:</span>
-                        <span className="gameroom playerScore">
-                          {playerInfo.score.total}
-                        </span>
-                      </span>
-                    </div>
-                  </>
-                )}
-                {showReadyPopup && (
-                  <>
-                    <div className="gameroom secondcolumn">
-                      <span className="gameroom playerName">
-                        {playerInfo.user.name}
-                      </span>
-                      <span className="gameroom secondRow"></span>
-                    </div>
-                    <div className="gameroom playerStatus">
-                      {playerInfo.ready ? (
-                        <i
-                          className="twa twa-check-mark-button"
-                          style={{ fontSize: "1.5rem" }}
-                        />
-                      ) : (
-                        <i
-                          className="twa twa-one-thirty"
-                          style={{ fontSize: "1.5rem" }}
-                        />
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
   LeaderBoard.propTypes = {
     playerStatus: PropTypes.arrayOf(
       PropTypes.shape({
@@ -1056,68 +547,6 @@ const Gameroom = () => {
     ).isRequired,
   };
 
-  const ValidateAnswerForm = ({ submitAnswer }) => {
-    const [validateAnswer, setValidateAnswer] = useState("");
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setValidateAnswer(e.target.value);
-    };
-
-    return (
-      <div style={{display:"flex",flexDirection:"row"}}>
-        <input
-          value={validateAnswer}
-          onChange={handleInputChange}
-          className="gameroom validateForm"
-          type="text"
-          placeholder="Validate your answer..."
-        />
-        <button
-          className="gameroom validateUpload"
-          disabled={!validateAnswer || roundFinished.current}
-          onClick={() => validateAnswer && submitAnswer(validateAnswer)}
-        >
-          Submit
-        </button>
-      </div>
-    );
-  };
-
-  ValidateAnswerForm.propTypes = {
-    submitAnswer: PropTypes.func.isRequired,
-  };
-
-  PlayerList.propTypes = {
-    playerStatus: PropTypes.arrayOf(
-      PropTypes.shape({
-        user: PropTypes.shape({
-          id: PropTypes.number.isRequired,
-          name: PropTypes.string.isRequired,
-          avatar: PropTypes.string.isRequired,
-        }).isRequired,
-        score: PropTypes.shape({
-          total: PropTypes.number.isRequired,
-          guess: PropTypes.number.isRequired,
-          read: PropTypes.number.isRequired,
-          details: PropTypes.arrayOf(
-            PropTypes.shape({
-              word: PropTypes.string.isRequired,
-              role: PropTypes.number.isRequired,
-              score: PropTypes.number.isRequired,
-            })
-          ).isRequired,
-        }).isRequired,
-        ready: PropTypes.bool.isRequired,
-        ifGuess: PropTypes.bool.isRequired,
-      })
-    ).isRequired,
-    sharedAudioList: PropTypes.arrayOf(
-      PropTypes.shape({
-        userId: PropTypes.number.isRequired,
-        audioURL: PropTypes.string,
-      })
-    ).isRequired,
-  };
 
   if (playerLists === null) {
     return <div>Loading...</div>;
@@ -1129,6 +558,11 @@ const Gameroom = () => {
       <PlayerList
         playerStatus={playerLists}
         sharedAudioList={sharedAudioList}
+        gameTheme={gameTheme.current}
+        currentRoomName={currentRoomName}
+        showReadyPopup={showReadyPopup}
+        gameOver={gameOver}
+        globalVolume={globalVolume}
       />
       <div className="gameroom right-area">
         <Header onChange={
@@ -1191,8 +625,13 @@ const Gameroom = () => {
         )}
         {!gameOver && !showReadyPopup && (
           <Roundstatus
-            gameInfo={gameInfo}
+            gameInfo = {gameInfo}
             currentSpeakerAudioURL={currentSpeakerAudioURL}
+            endTime = {endTime}
+            ffmpegObj = {ffmpegObj}
+            meId = {user.id}
+            globalVolume = {globalVolume}
+            handleAudioReversed = {handleAudioReversed}
             ref={roundStatusComponentRef}
           />
         )}
@@ -1203,23 +642,13 @@ const Gameroom = () => {
             gameInfo.currentSpeaker.userID !== user.id &&
             currentStatus === "guess" && (
             <div style={{ display: "flex", flexDirection: "row" }}>
-              <ValidateAnswerForm submitAnswer={submitAnswer}/>
+              <ValidateAnswerForm 
+                submitAnswer={submitAnswer}
+                roundFinished={roundFinished.current}  
+              />
             </div>
           )}
           <div style={{display:"flex",flexDirection:"row"}}>
-            {/*<button onClick={togglePopup}> show</button>*/}
-            {/*<button onClick={toggleStatus}> status</button>*/}
-            {/*<button onClick={() => setGameOver((prevState) => !prevState)}>*/}
-            {/*  Over*/}
-            {/*</button>*/}
-            {/*<button onClick={*/}
-            {/*  () => {*/}
-            {/*    console.log("clear audio");*/}
-            {/*    console.log(roundStatusComponentRef.current);*/}
-            {/*    roundStatusComponentRef.current?.clearAudio();*/}
-            {/*    myRecordingReversedRef.current = null;*/}
-            {/*  }*/}
-            {/*}>clear</button>*/}
             {showReadyPopup === true &&(
               // {showReadyPopup === true && user.id !== gameInfo.roomOwner.id &&(
               <div className="gameroom cancelbutton" onClick={
