@@ -561,11 +561,11 @@ const Lobby = () => {
             placeholder="2"
             value={numRounds}
             onChange={e => {
-              const value = parseInt(e.target.value, 3);
-              setNumRounds(value >= 2 && value <= 3 ? value : "");
+              const value = parseInt(e.target.value, 2);
+              setNumRounds(value >= 2 && value <= 5 ? value : "");
             }}
             min={2}
-            max={3}
+            max={5}
           />
           <Dropdown
             className="theme-dropdown"
@@ -580,7 +580,7 @@ const Lobby = () => {
             onChange={(value) => setRoomTheme(value)}
           />
           <div className="room-creation-popup btn-container">
-            <Button disabled={roomName === "" || numRounds < 2 || numRounds > 3 || roomTheme === ""}
+            <Button disabled={roomName === "" || numRounds < 2 || numRounds > 5 || roomTheme === ""}
               className="create-room" onClick={createRoom}>Create Room</Button>
             <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </div>
