@@ -489,13 +489,13 @@ const Gameroom = () => {
   const LeaderBoard = ({ playerStatus }) => {
     // console.log("123456")
     console.log("[LeaderBoard]",playerStatus)
-    
+    const sortedPlayerStatus = playerStatus.slice().sort((a, b) => b.score.total - a.score.total);
     return (
       <>
         {playerStatus !== null && (
           <div className="gameroom leaderboarddiv">
             <div className="gameroom leaderboard">
-              {playerStatus.map((playerInfo, index) => (
+              {sortedPlayerStatus.map((playerInfo, index) => (
                 <div className="gameroom singleScoreContainer" key={index}>
                   <span className={"gameroom ranking-" + index}>{index + 1}</span>
                   <span className="gameroom ldPlayerAvatar">
