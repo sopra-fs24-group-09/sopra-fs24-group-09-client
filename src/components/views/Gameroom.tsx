@@ -472,8 +472,9 @@ const Gameroom = () => {
   console.log(playerLists);
 
   const LeaderBoard = ({ playerStatus }) => {
-    console.log("123456")
-    console.log(playerStatus)
+    // console.log("123456")
+    console.log("[LeaderBoard]",playerStatus)
+    
     return (
       <>
         {playerStatus !== null && (
@@ -483,47 +484,47 @@ const Gameroom = () => {
                 <div className="gameroom singleScoreContainer" key={index}>
                   <span className={"gameroom ranking-" + index}>{index + 1}</span>
                   <span className="gameroom ldPlayerAvatar">
-                <i
-                  className={"twa twa-" + playerInfo.user.avatar}
-                  style={{ fontSize: "2.8rem" }}
-                />
-              </span>
+                    <i
+                      className={"twa twa-" + playerInfo.user.avatar}
+                      style={{ fontSize: "2.8rem" }}
+                    />
+                  </span>
                   <span className="gameroom ldPlayerName">
-                {playerInfo.user.name}
-              </span>
+                    {playerInfo.user.name}
+                  </span>
                   <span className="gameroom scorenum" style={{ gridColumn: "3" }}>
-                {playerInfo.score.total}
-              </span>
+                    {playerInfo.score.total}
+                  </span>
                   <span className="gameroom ldtitle" style={{ gridColumn: "3" }}>
                 Total
-              </span>
+                  </span>
                   <span className="gameroom scorenum" style={{ gridColumn: "4" }}>
-                {playerInfo.score.guess}
-              </span>
+                    {playerInfo.score.guess}
+                  </span>
                   <span className="gameroom ldtitle" style={{ gridColumn: "4" }}>
                 Guess
-              </span>
+                  </span>
                   <span className="gameroom scorenum" style={{ gridColumn: "5" }}>
-                {playerInfo.score.read}
-              </span>
+                    {playerInfo.score.read}
+                  </span>
                   <span className="gameroom ldtitle" style={{ gridColumn: "5" }}>
                 Read
-              </span>
+                  </span>
                   {playerInfo.score.details.map((detail, detailIndex) => (
                     <React.Fragment key={detailIndex}>
-                  <span
-                    className="gameroom scorenum"
-                    style={{ gridColumn: `${detailIndex + 6}` }}
-                  >
-                    {detail.score}
-                  </span>
+                      <span
+                        className="gameroom scorenum"
+                        style={{ gridColumn: `${detailIndex + 6}` }}
+                      >
+                        {detail.score}
+                      </span>
 
                       <span
                         className="gameroom ldtitle"
                         style={{ gridColumn: `${detailIndex + 6}` }}
                       >
-                    {detail.word}
-                  </span>
+                        {detail.word}
+                      </span>
                     </React.Fragment>
                   ))}
                 </div>
