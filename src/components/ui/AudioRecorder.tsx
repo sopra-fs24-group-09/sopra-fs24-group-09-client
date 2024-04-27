@@ -1,6 +1,6 @@
 import WaveSurfer from "wavesurfer.js";
 import RecordPlugin from "wavesurfer.js/dist/plugins/record.esm.js";
-import React, { useLayoutEffect , useRef, useState , useEffect, useImperativeHandle } from "react";
+import React, { useLayoutEffect , useRef, useState , useImperativeHandle } from "react";
 import { Button } from "./Button";
 import { Dropdown } from "./Dropdown";
 import { FaPause, FaPlay } from "react-icons/fa";
@@ -239,7 +239,8 @@ export const AudioRecorder = React.forwardRef((props,ref) => {
       const duration = wavesurfer.current?.getDuration();
       // console.log(`[${props.audioName}]`,"click", duration);
       // Since wavesurfer.empty() will cause duration to be 0.001, we need to check if duration is smaller than 0.0011
-      if (duration < 0.0011) {
+      const MIN_DURATION = 0.0011;
+      if (duration < MIN_DURATION) {
         return;
       }
       wavesurfer.current?.playPause();
