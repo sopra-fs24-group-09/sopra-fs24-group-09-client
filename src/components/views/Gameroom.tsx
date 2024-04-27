@@ -24,6 +24,7 @@ import type {
 } from "stomp_types";
 import { v4 as uuidv4 } from "uuid";
 import { getDomain } from "helpers/getDomain";
+const DEFAULT_VOLUME = 0.5;
 
 // type AudioBlobDict = { [userId: number]: Base64audio };
 type SharedAudioURL = { [userId: string]: string };
@@ -75,7 +76,7 @@ const Gameroom = () => {
   if (gameInfo && gameInfo.currentSpeaker) {
     currentSpeakerIdRef.current = gameInfo.currentSpeaker.userID;
   }
-  const [globalVolume, setGlobalVolume] = useState(0.5);
+  const [globalVolume, setGlobalVolume] = useState(DEFAULT_VOLUME);
   const globalVolumeBeforeMute = useRef(0);
 
   gameInfoRef.current = gameInfo;
@@ -491,6 +492,7 @@ const Gameroom = () => {
   const LeaderBoard = ({ playerStatus }) => {
     console.log("[LeaderBoard]",playerStatus)
     const sortedPlayerStatus = playerStatus.slice().sort((a, b) => b.score.total - a.score.total);
+    const LEADER_BOARD_GAP = 6;
     
     return (
       <>
@@ -531,14 +533,14 @@ const Gameroom = () => {
                     <React.Fragment key={detailIndex}>
                       <span
                         className="gameroom scorenum"
-                        style={{ gridColumn: `${detailIndex + 6}` }}
+                        style={{ gridColumn: `${detailIndex + LEADER_BOARD_GAP}` }}
                       >
                         {detail.score}
                       </span>
 
                       <span
                         className="gameroom ldtitle"
-                        style={{ gridColumn: `${detailIndex + 6}` }}
+                        style={{ gridColumn: `${detailIndex + LEADER_BOARD_GAP}` }}
                       >
                         {detail.word}
                       </span>

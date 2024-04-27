@@ -3,6 +3,9 @@ import WaveSurfer from "wavesurfer.js";
 import propTypes from "prop-types";
 import { Button } from "./Button";
 import "styles/ui/WavePlayer.scss";
+const BACKRATE_0_5 = 0.5;
+const BACKRATE_0_75 = 0.75;
+const BACKRATE_1 = 1;
 
 export const WavePlayer = React.forwardRef((props,ref) => {
   const waveformRef = useRef<HTMLDivElement>(null);
@@ -79,12 +82,12 @@ export const WavePlayer = React.forwardRef((props,ref) => {
         <Button
           className={"x0.5"}
           onClick={() => {
-            setPlaybackRate(0.5);
-            wavesurfer.current?.setPlaybackRate(0.5);
+            setPlaybackRate(BACKRATE_0_5);
+            wavesurfer.current?.setPlaybackRate(BACKRATE_0_5);
           }}
           style={
             {
-              color: (playbackRate===0.5)? playbackRateActiveColor : playbackRateInactiveColor
+              color: (playbackRate===BACKRATE_0_5)? playbackRateActiveColor : playbackRateInactiveColor
             }
           }
         >
@@ -93,12 +96,12 @@ export const WavePlayer = React.forwardRef((props,ref) => {
         <Button
           className={"x0.75"}
           onClick={() => {
-            setPlaybackRate(0.75);
-            wavesurfer.current?.setPlaybackRate(0.75);
+            setPlaybackRate(BACKRATE_0_75);
+            wavesurfer.current?.setPlaybackRate(BACKRATE_0_75);
           }}
           style={
             {
-              color: (playbackRate===0.75)? playbackRateActiveColor : playbackRateInactiveColor
+              color: (playbackRate===BACKRATE_0_75)? playbackRateActiveColor : playbackRateInactiveColor
             }
           }
         >
@@ -107,8 +110,8 @@ export const WavePlayer = React.forwardRef((props,ref) => {
         <Button
           className={"x1"}
           onClick={() => {
-            setPlaybackRate(1);
-            wavesurfer.current?.setPlaybackRate(1);
+            setPlaybackRate(BACKRATE_1);
+            wavesurfer.current?.setPlaybackRate(BACKRATE_1);
           }}
           style={
             {
