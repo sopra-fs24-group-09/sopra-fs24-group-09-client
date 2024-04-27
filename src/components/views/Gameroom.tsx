@@ -117,7 +117,7 @@ const Gameroom = () => {
     //const roomId = 5;
     const connectWebSocket = () => {
       const baseurl = getDomain();
-      let Sock = new SockJS(`${baseurl}/ws/${currentRoomID}`);
+      let Sock = new SockJS(`${baseurl}/ws`);
       //let Sock = new SockJS('https://sopra-fs23-group-01-server.oa.r.appspot.com/ws');
       stompClientRef.current = over(Sock);
       stompClientRef.current.connect({}, onConnected, onError);
@@ -340,7 +340,7 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/users/enterroom",
+      `/app/message/users/enterroom/${currentRoomID}`,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
@@ -360,7 +360,7 @@ const Gameroom = () => {
     // get a random receipt uuid
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/users/ready",
+      `/app/message/users/ready/${currentRoomID}`,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
@@ -378,7 +378,7 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/users/unready",
+      `/app/message/users/unready/${currentRoomID}`,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
@@ -397,7 +397,7 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/games/start",
+      `/app/message/games/start/${currentRoomID}`,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
@@ -416,7 +416,7 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/users/exitroom",
+      `/app/message/users/exitroom/${currentRoomID}`,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
@@ -438,7 +438,7 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/games/validate",
+      `/app/message/games/validate/${currentRoomID}`,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
@@ -460,12 +460,13 @@ const Gameroom = () => {
         timestamp: new Date().getTime(),
         message: {
           userID: user.id,
+          roomID: currentRoomID,
           audioData:base64data,
         },
       };
       const receiptId = uuidv4();
       stompClientRef.current.send(
-        "/app/message/games/audio/upload" /*URL*/,
+        `/app/message/games/audio/upload/${currentRoomID}`,
         { receiptId: receiptId },
         JSON.stringify(payload)
       );
