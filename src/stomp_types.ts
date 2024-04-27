@@ -9,6 +9,7 @@ export type Timestamped<T> = {
 
 export type PlayerAudio = {
     userID: string;
+    roomID: string;
     audioData: Base64audio;
 }
 
