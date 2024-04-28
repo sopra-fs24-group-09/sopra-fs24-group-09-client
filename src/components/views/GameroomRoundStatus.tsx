@@ -160,7 +160,7 @@ export const Roundstatus : React.ForwardRefRenderFunction<RoundstatusProps, any>
           {gameInfo.currentSpeaker.userID === meId &&
               gameInfo.roundStatus === "speak" && (
             <span className="gameroom remindertext">
-              {"Try to read and record the word steadily and loudly!"}
+              {"Try to read and record the word steadily and loudly! (Max: 5s)"}
             </span>
           )}
           {gameInfo.currentSpeaker.userID !== meId &&
@@ -175,7 +175,7 @@ export const Roundstatus : React.ForwardRefRenderFunction<RoundstatusProps, any>
               gameInfo.roundStatus === "guess" && (
             <span className="gameroom remindertext">
               {
-                "Try to simulate the reversed audio and reverse again to figure out the word!"
+                "Try to simulate the reversed audio (Max: 5s) and reverse again to figure out the word!"
               }
             </span>
           )}
@@ -183,7 +183,7 @@ export const Roundstatus : React.ForwardRefRenderFunction<RoundstatusProps, any>
               gameInfo.roundStatus === "guess" && (
             <span className="gameroom remindertext">
               {
-                "You can try to simulate the reversed audio or listen to others' audio!"
+                "You can try to simulate the reversed audio (Max: 5s) or listen to others' audio!"
               }
             </span>
           )}
@@ -200,10 +200,11 @@ export const Roundstatus : React.ForwardRefRenderFunction<RoundstatusProps, any>
             audioName={"my_recording"}
             // handleReversedAudioChange={handleAudioReversed}
             handleReversedAudioChange={handleAudioReversed}
-            disabled={
-              (gameInfo.currentSpeaker.userID !== meId && gameInfo.roundStatus === "speak") ||
-                gameInfo.roundStatus === "reveal"
-            }
+            // disabled={
+            //   (gameInfo.currentSpeaker.userID !== meId && gameInfo.roundStatus === "speak") ||
+            //     gameInfo.roundStatus === "reveal"
+            // }
+            disabled={ gameInfo.currentSpeaker.userID !== meId && gameInfo.roundStatus === "speak"  }
           />
         </div>
       </div>
