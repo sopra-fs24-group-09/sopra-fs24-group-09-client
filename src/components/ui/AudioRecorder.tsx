@@ -10,6 +10,8 @@ import "../../styles/ui/AudioRecorder.scss";
 import PropType from "prop-types";
 import { Base64audio } from "types";
 
+// stop recording after 5 seconds
+const MAX_RECORDING_TIME = 5000;
 
 export const AudioRecorder = React.forwardRef((props, ref) => {
   const waveformRef = useRef<HTMLDivElement>(null);
@@ -274,8 +276,6 @@ export const AudioRecorder = React.forwardRef((props, ref) => {
     // should be placed in onRecordEnd event, but it's not working
     wavesurfer.current?.toggleInteraction(true); // which is closed by cleanAudio
 
-    // stop recording after 5 seconds
-    const MAX_RECORDING_TIME = 5000;
     setTimeout(() => {
       if (recorder.current?.isRecording()) {
         console.log(`[${props.audioName}]`, "stop recording after 5 seconds");
