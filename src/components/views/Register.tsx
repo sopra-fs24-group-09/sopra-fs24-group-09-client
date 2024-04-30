@@ -13,6 +13,7 @@ however be sure not to clutter your files with an endless amount!
 As a rule of thumb, use one file per component and only add small,
 specific components that belong to the main one in the same file.
  */
+const CHAR_NOT_FOUND = -1;
 const FormField = (props) => {
   return (
     <div className="login field">
@@ -76,7 +77,7 @@ const Register = () => {
           />
           <div className="register button-container">
             <Button
-              disabled={!username || !password ||password.indexOf(" ") !== -1|| username.indexOf(" ") !== -1}
+              disabled={!username || !password ||password.indexOf(" ") !== CHAR_NOT_FOUND || username.indexOf(" ") !== CHAR_NOT_FOUND }
               width="75%"
               onClick={() => doRegister()}
               style={{ color: "black"}}

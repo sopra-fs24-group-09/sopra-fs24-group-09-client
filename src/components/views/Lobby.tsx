@@ -9,6 +9,9 @@ import Popup from "components/ui/Popup";
 import { Dropdown } from "components/ui/Dropdown";
 import "styles/views/Lobby.scss";
 import "styles/ui/Popup.scss";
+const DEFAULT_MAX_PLAYERS = 5;
+const DEFAULT_MIN_PLAYERS = 2;
+
 type PlayerProps = {
   user: User;
 };
@@ -135,7 +138,7 @@ const Lobby = () => {
   const [username, setUsername] = useState<string | null>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
   const [roomName, setRoomName] = useState("");
-  const [numRounds, setNumRounds] = useState(2);
+  const [maxRoomPlayers, SetMaxRoomPlayers] = useState(DEFAULT_MIN_PLAYERS);
   const [roomTheme, setRoomTheme] = useState("");
   // const needReloadRooms = useRef(false);
   // const RELOAD_TIME = 3000;
@@ -230,6 +233,7 @@ const Lobby = () => {
   // when user get navigated back to this page, fetch data again
   const location = useLocation();
   // console.warn("Location:", location);
+  const RELOAD_TIME_MS = 500;
   useEffect(() => {
     // wait for 1 second before fetching data
     const timeoutId = setTimeout(() => {
@@ -237,7 +241,7 @@ const Lobby = () => {
       fetchData().catch(error => {
         handleError(error);
       });
-    }, 500);
+    }, RELOAD_TIME_MS);
 
     return () => {
       clearTimeout(timeoutId);
@@ -271,7 +275,7 @@ const Lobby = () => {
       const ownerId = sessionStorage.getItem("id");  // 假设ownerId存储在sessionStorage中
       const requestBody = JSON.stringify({
         roomName: roomName,
-        maxPlayersNum: numRounds,
+        maxPlayersNum: maxRoomPlayers,
         roomOwnerId: ownerId,
         theme: roomTheme
       });
@@ -558,14 +562,15 @@ const Lobby = () => {
           <div>Number of Maximum Players: </div>
           <input
             type="number"
-            placeholder="2"
-            value={numRounds}
+            placeholder="Number of Maximum Players"
+            value={maxRoomPlayers}
             onChange={e => {
-              const value = parseInt(e.target.value, 2);
-              setNumRounds(value >= 2 && value <= 5 ? value : "");
+              const value = parseInt(e.target.value);
+              // console.error("Value:", value);
+              SetMaxRoomPlayers(value >= DEFAULT_MIN_PLAYERS && value <= DEFAULT_MAX_PLAYERS ? value : DEFAULT_MIN_PLAYERS);
             }}
-            min={2}
-            max={5}
+            min={DEFAULT_MIN_PLAYERS}
+            max={DEFAULT_MAX_PLAYERS}
           />
           <Dropdown
             className="theme-dropdown"
@@ -580,7 +585,7 @@ const Lobby = () => {
             onChange={(value) => setRoomTheme(value)}
           />
           <div className="room-creation-popup btn-container">
-            <Button disabled={roomName === "" || numRounds < 2 || numRounds > 5 || roomTheme === ""}
+            <Button disabled={roomName === "" || maxRoomPlayers < DEFAULT_MIN_PLAYERS || maxRoomPlayers > DEFAULT_MAX_PLAYERS || roomTheme === ""}
               className="create-room" onClick={createRoom}>Create Room</Button>
             <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </div>
