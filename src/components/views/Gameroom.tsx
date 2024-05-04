@@ -35,10 +35,6 @@ const Gameroom = () => {
   const navigate = useNavigate();
   const { currentRoomID,currentRoomName } = useParams(); // get the room ID from the URL
   const stompClientRef = useRef(null);
-  /**
-   * Question: why we need this user state here?
-   * if just for saving my id and name, we can make it a const prop
-   */
   const user = {
     token: sessionStorage.getItem("token"),
     id: sessionStorage.getItem("id"),
@@ -89,10 +85,10 @@ const Gameroom = () => {
     const ffmpeg = new FFmpeg();
     try {
       ffmpeg.load();
-      //console.log("FFmpeg module loaded");
+      console.log("FFmpeg module loaded");
     } catch (error) {
       console.error("Failed to load FFmpeg module", error);
-      //alert("Failed to load FFmpeg module");
+      alert("Failed to load FFmpeg module");
     }
 
     return ffmpeg;
@@ -162,8 +158,8 @@ const Gameroom = () => {
     const onResponseReceived = (payload) => {
       const payloadData = JSON.parse(payload.body);
       console.error("Response received", payloadData.message);
-      // alert("Response server side receive!"+payloadData.message)
-      // navigate("/lobby");
+      alert("Response server side receive!"+payloadData.message)
+      navigate("/lobby");
       // TODO: handle response
       /// 1. filter the response by the receiptId
       /// 2. if the response is success, do nothing
@@ -191,20 +187,16 @@ const Gameroom = () => {
     };
 
     const onGameInfoReceived = (payload) => {
-      // const now = new Date().getTime();
-      // console.log(`[onGameInfoReceived-${now}] payload: ${payload.body}`);
       const payloadData = JSON.parse(payload.body);
-      // console.error("GameInfo received", JSON.stringify(payloadData.message));
+      console.error("GameInfo received", JSON.stringify(payloadData.message));
       if (JSON.stringify(gameInfoRef.current) === JSON.stringify(payloadData.message)) {
-        //console.log("Same game info received, ignore");
+        console.log("Same game info received, ignore");
         
         return;
       }
       if (gameTheme.current !== payloadData.message.theme){
         gameTheme.current = payloadData.message.theme
       }
-      // const diff = now - payloadData.timestamp;
-      // console.log(`[onGameInfoReceived-${now}] diff: ${diff}`);
       if (payloadData.message.gameStatus === "ready") {
         setShowReadyPopup(true);
       } else if (payloadData.message.gameStatus === "over") {
@@ -497,16 +489,16 @@ const Gameroom = () => {
 
   //#dendregion -----------------WebSocket Send Functions-----------------
 
-  const handleAudioReversed = useMemo(() => (audio: Blob) => {
+  const handleAudioReversed = useCallback(() => (audio: Blob) => {
     if (audio) {
       myRecordingReversedRef.current = audio;
-      //console.log("[GameRoom]Get reversed audio from AudioRecorder Success");
-      //console.log("Reversed Audio: ", myRecordingReversedRef.current);
+      console.log("[GameRoom]Get reversed audio from AudioRecorder Success");
+      console.log("Reversed Audio: ", myRecordingReversedRef.current);
     }
   }, []);
 
-  //console.log("[Gameroom]the player list is")
-  //console.log(playerLists);
+  console.log("[GameRoom]playerLists",playerLists);
+  console.log(playerLists);
 
   const LeaderBoard = ({ playerStatus }) => {
     console.log("[LeaderBoard]",playerStatus)
