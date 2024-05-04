@@ -513,14 +513,23 @@ const Lobby = () => {
 
   return (
     <BaseContainer>
-      <div className="user-container" onClick={toggleProfilePop}>
-        <i className={"twa twa-" + user.avatar} style={{fontSize: "3.8rem", marginTop:"0.8rem"}}/>
+      <div className="user-container">
+        <i className={"twa twa-" + user.avatar}
+           onClick={toggleProfilePop}
+           style={{fontSize: "3.8rem",
+             marginTop:"0.8rem",
+             cursor: "pointer"
+        }} />
         <div className="name">{user.username}</div>
+        <div className="btn-container">
+          <Button className="logout-btn" onClick={logout}>logout</Button>
+        </div>
       </div>
       <div className="title-container">
         <div className="big-title">Kaeps</div>
         <div className="information" onClick={toggleInfoPop}>i</div>
       </div>
+
       <div className="lobby room-list-wrapper">
         {/* for clip the scrollbar inside the border */}
         <div className="lobby room-list">
