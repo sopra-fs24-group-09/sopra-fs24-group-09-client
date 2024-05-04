@@ -192,7 +192,7 @@ const Lobby = () => {
   const [roomName, setRoomName] = useState("");
   const [maxRoomPlayers, SetMaxRoomPlayers] = useState(DEFAULT_MIN_PLAYERS);
   const [roomTheme, setRoomTheme] = useState("");
-  const stompClient = useRef(null);
+  const stompClientRef = useRef(null);
   // const needReloadRooms = useRef(false);
   // const RELOAD_TIME = 3000;
 
@@ -230,14 +230,31 @@ const Lobby = () => {
   }
 
   useEffect(() => {
-    const baseurl = getDomain();
-    const socket = new SockJS(`${baseurl}/ws`);
-    stompClient.current = over(socket);
 
-    const onMessageReceived = (message) => {
-      const newRooms = JSON.parse(message.body);
-      setRooms(newRooms);
-      console.log("Rooms updated:", newRooms);
+    const connectWebSocket = () => {
+      const baseurl = getDomain();
+      let Sock = new SockJS(`${baseurl}/ws`);
+      stompClientRef.current = over(Sock);
+      stompClientRef.current.connect({}, onConnected, onError);
+    };
+    let lobbyInfoSuber;
+
+    const onConnected = () => {
+      // subscribe to the topic
+      lobbyInfoSuber = stompClientRef.current.subscribe(
+        `/lobby/info`,
+        onLobbyInfoReceived
+      );
+      stompClientRef.current?.send(
+        `/app/message/lobby/info`,{ receiptId: "" }
+      );
+
+
+    };
+
+    const onLobbyInfoReceived = (message) => {
+      const message_lobby = JSON.parse(message.body);
+      console.log("Rooms updated:", message_lobby);
     };
 
     const onError = (error) => {
@@ -245,19 +262,19 @@ const Lobby = () => {
       handleError(error);
     };
 
-    stompClient.current.connect({}, frame => {
-      console.log("Connected:", frame);
-      stompClient.current.subscribe("/lobby/info", onMessageReceived);
-      stompClient.current.send("/app/message/lobby/info", {}, JSON.stringify({}));
-    }, onError);
-
     fetchData().catch(error => {
       handleError(error);
     });
 
+    connectWebSocket();
+
+
     return () => {
-      if (stompClient.current !== null) {
-        stompClient.current.disconnect();
+
+      if (stompClientRef.current) {
+        stompClientRef.current.disconnect(() => {
+          console.log("Disconnected");
+        });
       }
     };
 
