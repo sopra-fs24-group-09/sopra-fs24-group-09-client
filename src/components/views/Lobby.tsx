@@ -8,8 +8,11 @@ import { User, Room } from "types";
 import Popup from "components/ui/Popup";
 import { Dropdown } from "components/ui/Dropdown";
 import "styles/views/Lobby.scss";
+import { getDomain } from "helpers/getDomain";
 import "styles/ui/Popup.scss";
 import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH } from "../../constants/constants";
+import SockJS from "sockjs-client";
+import { over } from "stompjs";
 const DEFAULT_MAX_PLAYERS = 5;
 const DEFAULT_MIN_PLAYERS = 2;
 
@@ -189,6 +192,7 @@ const Lobby = () => {
   const [roomName, setRoomName] = useState("");
   const [maxRoomPlayers, SetMaxRoomPlayers] = useState(DEFAULT_MIN_PLAYERS);
   const [roomTheme, setRoomTheme] = useState("");
+  const stompClient = useRef(null);
   // const needReloadRooms = useRef(false);
   // const RELOAD_TIME = 3000;
 
@@ -207,43 +211,6 @@ const Lobby = () => {
     navigate("/login");
   };
   async function fetchData() {
-    // try {
-    // 获取所有房间信息
-    const roomsResponse = await api.get("/games/lobby");
-    console.log("Rooms data:", roomsResponse.data);
-
-    // 使用 Promise.all 来并发获取每个房间的用户详细信息
-    const roomsWithPlayerDetails = await Promise.all(roomsResponse.data.map(async (room) => {
-      // 对每个房间的用户 ID 列表并发请求用户信息
-      const playerDetails = await Promise.all(room.roomPlayersList.map(async (userId) => {
-        const userResponse = await api.get(`/users/${userId}`);
-
-        return userResponse.data;  // 返回用户的详细信息
-      }));
-    
-      // needReloadRooms.current = false;
-
-      // setTimeout(() => {
-      //   needReloadRooms.current = true;
-      // }, RELOAD_TIME);
-
-      return {
-        ...room,
-        roomPlayersList: playerDetails  // 替换房间中的用户 ID 列表为用户详细信息
-      };
-    }));
-
-    // 更新房间状态，包含了用户的详细信息
-    setRooms(roomsWithPlayerDetails);
-
-    console.log("request to:", roomsResponse.request.responseURL);
-    console.log("status code:", roomsResponse.status);
-    console.log("status text:", roomsResponse.statusText);
-    console.log("requested data:", roomsResponse.data);
-
-    // See here to get more data.
-    console.log(roomsResponse);
-
     // Get user ID from sessionStorage
     const userId = sessionStorage.getItem("id");
     if (userId) {
@@ -260,23 +227,40 @@ const Lobby = () => {
     } else {
       console.error("User ID not found in sessionStorage!");
     }
-    // } catch (error) {
-    //   console.error(
-    //     `Something went wrong while fetching the users: \n${handleError(
-    //       error
-    //     )}`
-    //   );
-    //   console.error("Details:", error);
-    //   alert(
-    //     "Something went wrong while fetching the users! See the console for details."
-    //   );
-    // }
   }
 
   useEffect(() => {
+    const baseurl = getDomain();
+    const socket = new SockJS(`${baseurl}/ws`);
+    stompClient.current = over(socket);
+
+    const onMessageReceived = (message) => {
+      const newRooms = JSON.parse(message.body);
+      setRooms(newRooms);
+      console.log("Rooms updated:", newRooms);
+    };
+
+    const onError = (error) => {
+      console.error("WebSocket Error:", error);
+      handleError(error);
+    };
+
+    stompClient.current.connect({}, frame => {
+      console.log("Connected:", frame);
+      stompClient.current.subscribe("/lobby/info", onMessageReceived);
+      stompClient.current.send("/app/message/lobby/info", {}, JSON.stringify({}));
+    }, onError);
+
     fetchData().catch(error => {
       handleError(error);
     });
+
+    return () => {
+      if (stompClient.current !== null) {
+        stompClient.current.disconnect();
+      }
+    };
+
   }, []);
 
   // when user get navigated back to this page, fetch data again
@@ -451,26 +435,8 @@ const Lobby = () => {
     return rooms.map((Room) => (
       <div className="room-container" key={Room.roomId} onClick={async (e) => {
         e.preventDefault();
-
-        /// when user click the room, fetch the data again
-        /// and check if the room is still in the list
-        try {
-          await fetchData();
-        } catch (error) {
-          handleError(error);
-          
-          return;
-        }
-        // check if roomId is still in the list
-        const room = rooms.find(r => r.roomId === Room.roomId);
-        if (!room) {
-          alert("The room's info is outdated, please try again!");
-          
-          return;
-        }
         
         const currentId = sessionStorage.getItem("id");
-        const isPlayerInRoom = Room.roomPlayersList.join().includes(currentId);
         enterRoom(Room.roomId, currentId)
           .then(() => {
             //alert(currentId);
@@ -515,11 +481,11 @@ const Lobby = () => {
     <BaseContainer>
       <div className="user-container">
         <i className={"twa twa-" + user.avatar}
-           onClick={toggleProfilePop}
-           style={{fontSize: "3.8rem",
-             marginTop:"0.8rem",
-             cursor: "pointer"
-        }} />
+          onClick={toggleProfilePop}
+          style={{fontSize: "3.8rem",
+            marginTop:"0.8rem",
+            cursor: "pointer"
+          }} />
         <div className="name">{user.username}</div>
         <div className="btn-container">
           <Button className="logout-btn" onClick={logout}>logout</Button>
