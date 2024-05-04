@@ -9,6 +9,7 @@ import Popup from "components/ui/Popup";
 import { Dropdown } from "components/ui/Dropdown";
 import "styles/views/Lobby.scss";
 import "styles/ui/Popup.scss";
+import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH } from "../../constants/constants";
 const DEFAULT_MAX_PLAYERS = 5;
 const DEFAULT_MIN_PLAYERS = 2;
 
@@ -98,8 +99,56 @@ const mockRoomPlayers: User[] = [
 ];
 
 const avatarList: string[] = [
-  "grinning-face-with-sweat","horse-face", "hot-face","hushed-face", "kissing-face",
-  "last-quarter-moon-face","loudly-crying-face", "lying-face"
+  "angry-face",
+  "angry-face-with-horns",
+  "anguished-face",
+  "anxious-face-with-sweat",
+  "astonished-face",
+  "beaming-face-with-smiling-eyes",
+  "cat-face",
+  "clown-face",
+  "cold-face",
+  "confounded-face",
+  "confused-face",
+  "cow-face",
+  "cowboy-hat-face",
+  "crying-face",
+  "disappointed-face",
+  "disguised-face",
+  "dog-face",
+  "dotted-line-face",
+  "downcast-face-with-sweat",
+  "dragon-face",
+  "drooling-face",
+  "expressionless-face",
+  "face-blowing-a-kiss",
+  "face-exhaling",
+  "face-holding-back-tears",
+  "face-in-clouds",
+  "face-savoring-food",
+  "face-screaming-in-fear",
+  "face-vomiting",
+  "face-with-crossed-out-eyes",
+  "face-with-diagonal-mouth",
+  "face-with-hand-over-mouth",
+  "face-with-head-bandage",
+  "face-with-medical-mask",
+  "face-with-monocle",
+  "face-with-open-eyes-and-hand-over-mouth",
+  "face-with-open-mouth",
+  "face-with-peeking-eye",
+  "face-with-raised-eyebrow",
+  "face-with-rolling-eyes",
+  "face-with-spiral-eyes",
+  "face-with-steam-from-nose",
+  "face-with-symbols-on-mouth",
+  "face-with-tears-of-joy",
+  "face-with-thermometer",
+  "face-with-tongue",
+  "face-without-mouth",
+  "fearful-face",
+  "first-quarter-moon-face",
+  "flushed-face"
 ]
 
 const mockRooms: Room[] = [
@@ -512,7 +561,12 @@ const Lobby = () => {
               style={{height:"40px"}}
               placeholder={user.username}
               type="text"
-              onChange={e => setUsername(e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value;  // 获取输入值
+                if (inputValue.length <= MAX_USERNAME_LENGTH) {  // 检查输入值的长度
+                  setUsername(inputValue);  // 如果长度小于或等于20，更新状态
+                }
+              }}
             />
           </div>
           <div>Id: {user.id}</div>
@@ -558,7 +612,17 @@ const Lobby = () => {
       >
         <BaseContainer className="room-creation-popup content">
           <div className="title">Create Room</div>
-          <input type="text" placeholder="Room Name" value={roomName} onChange={e => setRoomName(e.target.value)} />
+          <input
+            type="text"
+            placeholder="Room Name"
+            value={roomName}
+            onChange={(e) => {
+              const inputValue = e.target.value;  // 获取输入值
+              if (inputValue.length <= MAX_ROOM_NAME_LENGTH) {  // 检查输入值的长度
+                setRoomName(inputValue);  // 如果长度小于或等于15，更新状态
+              }
+            }}
+          />
           <div>Number of Maximum Players: </div>
           <input
             type="number"
@@ -599,7 +663,9 @@ const Lobby = () => {
           <p>Here are some guides for playing this game:</p>
           <ul>
             <li><strong>Speaker:</strong> Receives a word, records it, inverts the audio, and sends it to other players.</li>
-            <li><strong>Challenger:</strong> Listens to the inverted audio and tries to guess the original word.</li>
+            <li><strong>Challenger:</strong> Receives the reversed audio recording from the speaker.
+              The challenger should then mimic this reversed recording.
+              After recording their own version of the reversed audio, they should play it backwards to guess the original word.</li>
             <li><strong>Scoring:</strong> Correctly deciphering the word scores you points.</li>
             <li><strong>Turns:</strong> Each round has one Speaker and multiple Challengers. Players take turns to be the Speaker.</li>
           </ul>
