@@ -6,7 +6,7 @@ import { Button } from "components/ui/Button";
 import "styles/views/Register.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
-import { MAX_USERNAME_LENGTH } from '../../constants/constants';
+import { MAX_USERNAME_LENGTH } from "../../constants/constants";
 /*
 It is possible to add multiple components inside a single file,
 however be sure not to clutter your files with an endless amount!

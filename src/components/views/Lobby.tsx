@@ -9,7 +9,7 @@ import Popup from "components/ui/Popup";
 import { Dropdown } from "components/ui/Dropdown";
 import "styles/views/Lobby.scss";
 import "styles/ui/Popup.scss";
-import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH } from '../../constants/constants';
+import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH } from "../../constants/constants";
 const DEFAULT_MAX_PLAYERS = 5;
 const DEFAULT_MIN_PLAYERS = 2;
 
