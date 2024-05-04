@@ -561,6 +561,7 @@ const Lobby = () => {
               style={{height:"40px"}}
               placeholder={user.username}
               type="text"
+              value={username}
               onChange={(e) => {
                 const inputValue = e.target.value;  // 获取输入值
                 if (inputValue.length <= MAX_USERNAME_LENGTH) {  // 检查输入值的长度
