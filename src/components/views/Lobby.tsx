@@ -560,7 +560,12 @@ const Lobby = () => {
               style={{height:"40px"}}
               placeholder={user.username}
               type="text"
-              onChange={e => setUsername(e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value;  // 获取输入值
+                if (inputValue.length <= 20) {  // 检查输入值的长度
+                  setUsername(inputValue);  // 如果长度小于或等于20，更新状态
+                }
+              }}
             />
           </div>
           <div>Id: {user.id}</div>
@@ -606,7 +611,17 @@ const Lobby = () => {
       >
         <BaseContainer className="room-creation-popup content">
           <div className="title">Create Room</div>
-          <input type="text" placeholder="Room Name" value={roomName} onChange={e => setRoomName(e.target.value)} />
+          <input
+            type="text"
+            placeholder="Room Name"
+            value={roomName}
+            onChange={(e) => {
+              const inputValue = e.target.value;  // 获取输入值
+              if (inputValue.length <= 15) {  // 检查输入值的长度
+                setRoomName(inputValue);  // 如果长度小于或等于15，更新状态
+              }
+            }}
+          />
           <div>Number of Maximum Players: </div>
           <input
             type="number"
@@ -647,7 +662,9 @@ const Lobby = () => {
           <p>Here are some guides for playing this game:</p>
           <ul>
             <li><strong>Speaker:</strong> Receives a word, records it, inverts the audio, and sends it to other players.</li>
-            <li><strong>Challenger:</strong> Listens to the inverted audio and tries to guess the original word.</li>
+            <li><strong>Challenger:</strong> Receives the reversed audio recording from the speaker.
+              The challenger should then mimic this reversed recording.
+              After recording their own version of the reversed audio, they should play it backwards to guess the original word.</li>
             <li><strong>Scoring:</strong> Correctly deciphering the word scores you points.</li>
             <li><strong>Turns:</strong> Each round has one Speaker and multiple Challengers. Players take turns to be the Speaker.</li>
           </ul>
