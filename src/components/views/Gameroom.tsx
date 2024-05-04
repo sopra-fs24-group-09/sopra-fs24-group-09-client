@@ -489,7 +489,7 @@ const Gameroom = () => {
 
   //#dendregion -----------------WebSocket Send Functions-----------------
 
-  const handleAudioReversed = useCallback(() => (audio: Blob) => {
+  const handleAudioReversed = useCallback((audio: Blob) => {
     if (audio) {
       myRecordingReversedRef.current = audio;
       console.log("[GameRoom]Get reversed audio from AudioRecorder Success");
