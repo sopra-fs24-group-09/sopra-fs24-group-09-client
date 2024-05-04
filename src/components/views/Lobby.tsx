@@ -9,6 +9,7 @@ import Popup from "components/ui/Popup";
 import { Dropdown } from "components/ui/Dropdown";
 import "styles/views/Lobby.scss";
 import "styles/ui/Popup.scss";
+import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH } from '../../constants/constants';
 const DEFAULT_MAX_PLAYERS = 5;
 const DEFAULT_MIN_PLAYERS = 2;
 
@@ -562,7 +563,7 @@ const Lobby = () => {
               type="text"
               onChange={(e) => {
                 const inputValue = e.target.value;  // 获取输入值
-                if (inputValue.length <= 20) {  // 检查输入值的长度
+                if (inputValue.length <= MAX_USERNAME_LENGTH) {  // 检查输入值的长度
                   setUsername(inputValue);  // 如果长度小于或等于20，更新状态
                 }
               }}
@@ -617,7 +618,7 @@ const Lobby = () => {
             value={roomName}
             onChange={(e) => {
               const inputValue = e.target.value;  // 获取输入值
-              if (inputValue.length <= 15) {  // 检查输入值的长度
+              if (inputValue.length <= MAX_ROOM_NAME_LENGTH) {  // 检查输入值的长度
                 setRoomName(inputValue);  // 如果长度小于或等于15，更新状态
               }
             }}

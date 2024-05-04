@@ -6,7 +6,7 @@ import { Button } from "components/ui/Button";
 import "styles/views/Register.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
-
+import { MAX_USERNAME_LENGTH } from '../../constants/constants';
 /*
 It is possible to add multiple components inside a single file,
 however be sure not to clutter your files with an endless amount!
@@ -72,7 +72,7 @@ const Register = () => {
             value={username}
             type="text"
             onChange={(un: string) => {
-              if (un.length <= 20) setUsername(un);
+              if (un.length <= MAX_USERNAME_LENGTH) setUsername(un);
             }}
           />
           <FormField
@@ -80,7 +80,7 @@ const Register = () => {
             value={password}
             type="password"
             onChange={(n: any) => {
-              if (n.length <= 20) setPassword(n)
+              if (n.length <= MAX_USERNAME_LENGTH) setPassword(n)
             }}
           />
           <div className="register button-container">
