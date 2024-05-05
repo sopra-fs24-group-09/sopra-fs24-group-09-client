@@ -2,7 +2,6 @@ import React from "react";
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import {LobbyGuard} from "../routeProtectors/LobbyGuard";
 import LobbyRouter from "./LobbyRouter";
-import Lobby from "../../views/Lobby";
 import {LoginGuard} from "../routeProtectors/LoginGuard";
 import Register from "../../views/Register";
 import Login from "../../views/Login";
