@@ -352,7 +352,7 @@
   width: 450px;
 }
 .profile-popup{
-  height:70%;
+  height:60%;
   &.content{
     display: flex;
     flex-direction: column;
@@ -420,7 +420,7 @@
 
 }
 .room-creation-popup{
-  height: 80%;
+  height: 60%;
   &.content{
     display: flex;
     flex-direction: column;
@@ -482,7 +482,7 @@
     }
   }
 }
-.btn-container {
+.btn-logout-container {
   all: initial;
   position: relative;
   background-color: transparent;

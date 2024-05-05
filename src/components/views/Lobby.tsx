@@ -254,7 +254,12 @@ const Lobby = () => {
 
     const onLobbyInfoReceived = (message) => {
       const message_lobby = JSON.parse(message.body);
-      console.log("Rooms updated:", message_lobby);
+      if (message_lobby && message_lobby.message) {
+        setRooms(message_lobby.message); // 确保这里是数组
+        console.log("Rooms updated:", message_lobby.message);
+      } else {
+        console.error('Received data is not in expected format:', message_lobby);
+      }
     };
 
     const onError = (error) => {
@@ -268,8 +273,10 @@ const Lobby = () => {
 
     connectWebSocket();
 
-
     return () => {
+      if (lobbyInfoSuber) {
+        lobbyInfoSuber.unsubscribe();
+      }
 
       if (stompClientRef.current) {
         stompClientRef.current.disconnect(() => {
@@ -474,7 +481,7 @@ const Lobby = () => {
           {Room.roomPlayersList?.map((user, index) => (
             <div className="player" key={index}>
               <i className={"twa twa-" + user.avatar} style={{fontSize: "3.8rem"}}/>
-              <div className="name">{user.username}</div>
+              <div className="name">{user.userName}</div>
             </div>
           ))}
         </div>
@@ -486,7 +493,7 @@ const Lobby = () => {
               Room.status === "In Game" ? "in-game" : "free"
             }`}
           >
-            {Room.roomProperty}
+            {Room.status}
           </span>
         </div>
       </div>
@@ -504,7 +511,7 @@ const Lobby = () => {
             cursor: "pointer"
           }} />
         <div className="name">{user.username}</div>
-        <div className="btn-container">
+        <div className="btn-logout-container">
           <Button className="logout-btn" onClick={logout}>logout</Button>
         </div>
       </div>
@@ -522,15 +529,6 @@ const Lobby = () => {
         <div className="lobby room-list btn-container">
           <Button className="create-room-btn" onClick={toggleRoomCreationPop}>
             New Room
-          </Button>
-          <Button className="reload-room-btn" onClick={
-            () => fetchData().catch(error => {
-              handleError(error);
-              
-              return;
-            })
-          }>
-            Reload Rooms
           </Button>
         </div>
       </div>
@@ -604,9 +602,10 @@ const Lobby = () => {
       >
         <BaseContainer className="room-creation-popup content">
           <div className="title">Create Room</div>
+          <div>Room Name: </div>
           <input
             type="text"
-            placeholder="Room Name"
+            placeholder="Max. 10"
             value={roomName}
             onChange={(e) => {
               const inputValue = e.target.value;  // 获取输入值
