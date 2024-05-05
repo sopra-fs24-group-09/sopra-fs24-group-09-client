@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useCallback,useEffect, useState, useRef, useMemo } from "react";
 import { api, handleError } from "helpers/api";
 import { useNavigate, useParams } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
@@ -24,7 +24,9 @@ import type {
 } from "stomp_types";
 import { v4 as uuidv4 } from "uuid";
 import { getDomain } from "helpers/getDomain";
+import { throttle } from "lodash";
 const DEFAULT_VOLUME = 0.5;
+const THROTTLE_TIME = 1000;
 
 // type AudioBlobDict = { [userId: number]: Base64audio };
 type SharedAudioURL = { [userId: string]: string };
@@ -33,10 +35,6 @@ const Gameroom = () => {
   const navigate = useNavigate();
   const { currentRoomID,currentRoomName } = useParams(); // get the room ID from the URL
   const stompClientRef = useRef(null);
-  /**
-   * Question: why we need this user state here?
-   * if just for saving my id and name, we can make it a const prop
-   */
   const user = {
     token: sessionStorage.getItem("token"),
     id: sessionStorage.getItem("id"),
@@ -96,7 +94,7 @@ const Gameroom = () => {
     return ffmpeg;
   }, []);
 
-  console.log("GameInfo", gameInfo);
+  //("GameInfo", gameInfo);
 
 
   useEffect(() => {
@@ -123,7 +121,7 @@ const Gameroom = () => {
       stompClientRef.current = over(Sock);
       stompClientRef.current.connect({}, onConnected, onError);
     };
-    console.log(sessionStorage.getItem("id"));
+    //console.log(sessionStorage.getItem("id"));
 
     const timestamp = new Date().getTime(); // Get current timestamp
 
@@ -146,7 +144,8 @@ const Gameroom = () => {
         `/user/${user.id}/response/${currentRoomID}`,
         onResponseReceived
       );
-      enterRoom();
+      // enterRoom();
+      throttledEnterRoom();
       //connect or reconnect
     };
 
@@ -159,8 +158,8 @@ const Gameroom = () => {
     const onResponseReceived = (payload) => {
       const payloadData = JSON.parse(payload.body);
       console.error("Response received", payloadData.message);
-      // alert("Response server side receive!"+payloadData.message)
-      // navigate("/lobby");
+      alert("Response server side receive!"+payloadData.message)
+      navigate("/lobby");
       // TODO: handle response
       /// 1. filter the response by the receiptId
       /// 2. if the response is success, do nothing
@@ -173,12 +172,12 @@ const Gameroom = () => {
       setPlayerLists(payloadData.message);
       if (!showReadyPopup && !gameOver){
         const myInfo = payloadData.message.find(item => item.user.id === user.id);
-        console.log("set info for myself")
-        console.log(myInfo);
+        //console.log("set info for myself")
+        //console.log(myInfo);
         if (myInfo.roundFinished !== null){
           roundFinished.current = myInfo.roundFinished;
-          console.log("roundFinished?")
-          console.log(roundFinished.current);
+          //console.log("roundFinished?")
+          //console.log(roundFinished.current);
         }
       }
       if (gameOverRef.current === true && leaderboardInfoRecieved.current === false){
@@ -188,10 +187,8 @@ const Gameroom = () => {
     };
 
     const onGameInfoReceived = (payload) => {
-      // const now = new Date().getTime();
-      // console.log(`[onGameInfoReceived-${now}] payload: ${payload.body}`);
       const payloadData = JSON.parse(payload.body);
-      // console.error("GameInfo received", JSON.stringify(payloadData.message));
+      console.error("GameInfo received", JSON.stringify(payloadData.message));
       if (JSON.stringify(gameInfoRef.current) === JSON.stringify(payloadData.message)) {
         console.log("Same game info received, ignore");
         
@@ -200,8 +197,6 @@ const Gameroom = () => {
       if (gameTheme.current !== payloadData.message.theme){
         gameTheme.current = payloadData.message.theme
       }
-      // const diff = now - payloadData.timestamp;
-      // console.log(`[onGameInfoReceived-${now}] diff: ${diff}`);
       if (payloadData.message.gameStatus === "ready") {
         setShowReadyPopup(true);
       } else if (payloadData.message.gameStatus === "over") {
@@ -330,8 +325,9 @@ const Gameroom = () => {
     }
   }, [globalVolume]);
 
-  //debounce-throttle
-  const enterRoom = () => {
+  //throttle
+  const enterRoom = useCallback(() => {
+    console.log("entered once - throttle")
     const payload: Timestamped<PlayerAndRoomID> = {
       timestamp: new Date().getTime(),
       message: {
@@ -345,10 +341,12 @@ const Gameroom = () => {
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
-  }
+  },[user.id,currentRoomID]);
+  const throttledEnterRoom = useCallback(throttle(enterRoom, THROTTLE_TIME), [enterRoom, THROTTLE_TIME]);
 
   //ready
-  const getReady = () => {
+  const getReady = useCallback(() => {
+    console.log("ready once - throttle")
     const payload: Timestamped<PlayerAndRoomID> = {
       // TODO: need to make sure the timestamp is UTC format
       // and invariant to the time zone settings
@@ -365,9 +363,12 @@ const Gameroom = () => {
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
-  };
+  },[user.id,currentRoomID]);
+  const throttledGetReady = useCallback(throttle(getReady, THROTTLE_TIME), [getReady, THROTTLE_TIME]);
 
-  const cancelReady = () => {
+  //unready
+  const cancelReady = useCallback(() => {
+    console.log("unready once - throttle")
     const payload: Timestamped<PlayerAndRoomID> = {
       // TODO: need to make sure the timestamp is UTC format
       // and invariant to the time zone settings
@@ -383,10 +384,12 @@ const Gameroom = () => {
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
-  };
+  },[user.id,currentRoomID]);
+  const throttledCancelReady = useCallback(throttle(cancelReady, THROTTLE_TIME),[cancelReady, THROTTLE_TIME]);
 
   //start game
-  const startGame = () => {
+  const startGame = useCallback(() => {
+    console.log("start button used once")
     const payload: Timestamped<PlayerAndRoomID> = {
       // TODO: need to make sure the timestamp is UTC format
       // and invariant to the time zone settings
@@ -402,10 +405,13 @@ const Gameroom = () => {
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
-  };
+  },[user.id,currentRoomID]);
+  const throttledStartGame = useCallback(throttle(startGame, THROTTLE_TIME),[startGame, THROTTLE_TIME]);
+
 
   //exit room
-  const exitRoom = () => {
+  const exitRoom = useCallback(() => {
+    console.log("exit button used once")
     const payload: Timestamped<PlayerAndRoomID> = {
       // TODO: need to make sure the timestamp is UTC format
       // and invariant to the time zone settings
@@ -422,10 +428,12 @@ const Gameroom = () => {
       JSON.stringify(payload)
     );
     navigate("/lobby")
-  };
+  },[user.id,currentRoomID]);
+  const throttledExitRoom = useCallback(throttle(exitRoom, THROTTLE_TIME),[exitRoom, THROTTLE_TIME]);
 
-  //start game
-  const submitAnswer = (validateAnswer: String) => {
+  //validate Answer
+  const submitAnswer = useCallback((validateAnswer: string) => {
+    console.log("submit once - throttle")
     const answer = validateAnswer.toLowerCase().replace(/\s/g, "");
     const payload: Timestamped<AnswerGuess> = {
       timestamp: new Date().getTime(),
@@ -443,10 +451,12 @@ const Gameroom = () => {
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
-  };
+  },[user.id,gameInfo,currentRoomID]);
+  const throttledSubmitAnswer = useCallback(throttle(submitAnswer, THROTTLE_TIME),[submitAnswer, THROTTLE_TIME]);
 
   //upload audio
-  const uploadAudio = () => {
+  const uploadAudio = useCallback(() => {
+    console.log("audio upload once - throttle")
     console.log("[uploadAudio], myRecordingReversedRef.current", myRecordingReversedRef.current);
     if (!myRecordingReversedRef.current) {
       console.error("No audio to upload");
@@ -473,12 +483,13 @@ const Gameroom = () => {
       );
     };
     reader.readAsDataURL(myRecordingReversedRef.current);
-  };
+  },[user.id]);
+  const throttledUploadAudio = useCallback(throttle(uploadAudio, THROTTLE_TIME),[uploadAudio, THROTTLE_TIME]);
 
 
   //#dendregion -----------------WebSocket Send Functions-----------------
 
-  const handleAudioReversed = useMemo(() => (audio: Blob) => {
+  const handleAudioReversed = useCallback((audio: Blob) => {
     if (audio) {
       myRecordingReversedRef.current = audio;
       console.log("[GameRoom]Get reversed audio from AudioRecorder Success");
@@ -486,7 +497,7 @@ const Gameroom = () => {
     }
   }, []);
 
-  console.log("[Gameroom]the player list is")
+  console.log("[GameRoom]playerLists",playerLists);
   console.log(playerLists);
 
   const LeaderBoard = ({ playerStatus }) => {
@@ -632,14 +643,14 @@ const Gameroom = () => {
                   <>
                     <div
                       className="gameroom readybutton"
-                      onClick={() => startGame()}
+                      onClick={() => throttledStartGame()}
                       //onKeyDown={() => getReady()}
                     >
                       Start
                     </div>
                     <div
                       className="gameroom cancelbutton"
-                      onClick={() => exitRoom()}
+                      onClick={() => throttledExitRoom()}
                     >
                       Quit
                     </div>
@@ -649,15 +660,15 @@ const Gameroom = () => {
                   <>
                     <div
                       className="gameroom readybutton"
-                      onClick={() => getReady()}
-                      onKeyDown={() => getReady()}
+                      onClick={() => throttledGetReady()}
+                      onKeyDown={() => throttledGetReady()}
                     >
                       Confirm
                     </div>
                     <div
                       className="gameroom cancelbutton"
-                      onClick={() => cancelReady()}
-                      onKeyDown={() => cancelReady()}
+                      onClick={() => throttledCancelReady()}
+                      onKeyDown={() => throttledCancelReady()}
                     >
                       Cancel
                     </div>
@@ -690,7 +701,7 @@ const Gameroom = () => {
             currentStatus === "guess" && (
             <div style={{ display: "flex", flexDirection: "row" }}>
               <ValidateAnswerForm 
-                submitAnswer={submitAnswer}
+                submitAnswer={throttledSubmitAnswer}
                 roundFinished={roundFinished.current}  
               />
             </div>
@@ -700,7 +711,7 @@ const Gameroom = () => {
               // {showReadyPopup === true && user.id !== gameInfo.roomOwner.id &&(
               <div className="gameroom cancelbutton" onClick={
                 () => {
-                  console.log("leave room");
+                  //console.log("leave room");
                   exitRoom();
                 }
               }>leave</div>
@@ -708,7 +719,7 @@ const Gameroom = () => {
             {gameOver === true &&(
               <div className="gameroom cancelbutton" onClick={
                 () => {
-                  console.log("leave room after over");
+                  //console.log("leave room after over");
                   exitRoom();
                   // navigate("/lobby");
                 }
@@ -720,8 +731,8 @@ const Gameroom = () => {
                 disabled={roundFinished.current}
                 onClick={
                   () => {
-                    console.log("upload audio");
-                    uploadAudio();
+                    //console.log("upload audio");
+                    throttledUploadAudio();
                   }
                 }>upload</button>
             )}
@@ -729,8 +740,8 @@ const Gameroom = () => {
               currentStatus === "guess" && (
               <div style={{marginTop:"1rem"}} className="gameroom readybutton" onClick={
                 () => {
-                  console.log("upload audio");
-                  uploadAudio();
+                  //console.log("upload audio");
+                  throttledUploadAudio();
                 }
               }>share your audio</div>
             )}
