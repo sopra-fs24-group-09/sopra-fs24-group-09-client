@@ -14,6 +14,7 @@ import { ValidateAnswerForm } from "components/views/GameroomAnswerForm";
 // Stomp related imports
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
+import { showToast} from "../../helpers/toastService";
 import type {
   Timestamped,
   PlayerAudio,
@@ -51,7 +52,7 @@ const Gameroom = () => {
   const gameTheme = useRef("Loading....");
   const leaderboardInfoRecieved = useRef(false);
   const [leaderboardInfo, setLeaderboardInfo] = useState([]);
-
+  const requestLists = useRef([]);
   const [gameInfo, setGameInfo] = useState(null);
   const gameInfoRef = useRef(null);
   // const [roomInfo, setRoomInfo] = useState({
@@ -156,10 +157,43 @@ const Gameroom = () => {
     };
 
     const onResponseReceived = (payload) => {
-      const payloadData = JSON.parse(payload.body);
-      console.error("Response received", payloadData.message);
-      alert("Response server side receive!"+payloadData.message)
-      navigate("/lobby");
+      const mssg = JSON.parse(payload.body);
+      console.log("response received")
+      console.log(mssg)
+      console.log(mssg.receiptId)
+      console.log(requestLists.current)
+      const index = requestLists.current.findIndex(item => item.receiptId === mssg.receiptId);
+      if (index !== -1) {
+        const messageType = requestLists.current[index].type;
+        const success = mssg.success;
+        let toastMessage;
+        if (messageType === "ready") {
+          toastMessage = success ? "You are ready for the game now!" : mssg.message;
+        } else if (messageType === "start") {
+          toastMessage = success ? "Game now successfully started!" : mssg.message;
+        } else if (messageType === "unready") {
+          toastMessage = success ? "You canceled ready successfully." : mssg.message;
+        } else if (messageType === "submit") {
+          toastMessage = success ? "You have submitted the correct answer!" : mssg.message;
+        } else if (messageType === "enter") {
+          toastMessage = success ? "You have entered the room successfully!" : mssg.message;
+          if (!success){
+            navigate("/lobby");
+          }
+        } else if (messageType === "upload") {
+          toastMessage = success ? "You have uploaded the audio successfully!" : mssg.message;
+        }
+
+        if (success) {
+          showToast(toastMessage, "success");
+        } else {
+          showToast(toastMessage, "error");
+        }
+      }
+      // const payloadData = JSON.parse(payload.body);
+      // console.error("Response received", payloadData.message);
+      // alert("Response server side receive!"+payloadData.message)
+      // navigate("/lobby");
       // TODO: handle response
       /// 1. filter the response by the receiptId
       /// 2. if the response is success, do nothing
@@ -341,6 +375,17 @@ const Gameroom = () => {
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
+    requestLists.current.push({ type: "enter",receiptId: receiptId });
+    console.log(requestLists.current)
+    const timeoutId = setTimeout(() => {
+      const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+      if (index !== -1) {
+        requestLists.current.splice(index, 1);
+      }
+      console.log(requestLists.current)
+    }, 5000);
+
+    return () => clearTimeout(timeoutId);
   },[user.id,currentRoomID]);
   const throttledEnterRoom = useCallback(throttle(enterRoom, THROTTLE_TIME), [enterRoom, THROTTLE_TIME]);
 
@@ -363,6 +408,17 @@ const Gameroom = () => {
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
+    requestLists.current.push({ type: "ready",receiptId: receiptId });
+    console.log(requestLists.current)
+    const timeoutId = setTimeout(() => {
+      const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+      if (index !== -1) {
+        requestLists.current.splice(index, 1);
+      }
+      console.log(requestLists.current)
+    }, 5000);
+
+    return () => clearTimeout(timeoutId);
   },[user.id,currentRoomID]);
   const throttledGetReady = useCallback(throttle(getReady, THROTTLE_TIME), [getReady, THROTTLE_TIME]);
 
@@ -384,6 +440,17 @@ const Gameroom = () => {
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
+    requestLists.current.push({ type: "unready",receiptId: receiptId });
+    console.log(requestLists.current)
+    const timeoutId = setTimeout(() => {
+      const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+      if (index !== -1) {
+        requestLists.current.splice(index, 1);
+      }
+      console.log(requestLists.current)
+    }, 5000);
+
+    return () => clearTimeout(timeoutId);
   },[user.id,currentRoomID]);
   const throttledCancelReady = useCallback(throttle(cancelReady, THROTTLE_TIME),[cancelReady, THROTTLE_TIME]);
 
@@ -405,6 +472,17 @@ const Gameroom = () => {
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
+    requestLists.current.push({ type: "start",receiptId: receiptId });
+    console.log(requestLists.current)
+    const timeoutId = setTimeout(() => {
+      const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+      if (index !== -1) {
+        requestLists.current.splice(index, 1);
+      }
+      console.log(requestLists.current)
+    }, 5000);
+
+    return () => clearTimeout(timeoutId);
   },[user.id,currentRoomID]);
   const throttledStartGame = useCallback(throttle(startGame, THROTTLE_TIME),[startGame, THROTTLE_TIME]);
 
@@ -427,6 +505,17 @@ const Gameroom = () => {
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
+    // requestLists.current.push({ type: "leave",receiptId: receiptId });
+    // console.log(requestLists.current)
+    // const timeoutId = setTimeout(() => {
+    //   const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+    //   if (index !== -1) {
+    //     requestLists.current.splice(index, 1);
+    //   }
+    //   console.log(requestLists.current)
+    // }, 5000);
+    //
+    // return () => clearTimeout(timeoutId);
     navigate("/lobby")
   },[user.id,currentRoomID]);
   const throttledExitRoom = useCallback(throttle(exitRoom, THROTTLE_TIME),[exitRoom, THROTTLE_TIME]);
@@ -451,6 +540,17 @@ const Gameroom = () => {
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
+    requestLists.current.push({ type: "submit",receiptId: receiptId });
+    console.log(requestLists.current)
+    const timeoutId = setTimeout(() => {
+      const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+      if (index !== -1) {
+        requestLists.current.splice(index, 1);
+      }
+      console.log(requestLists.current)
+    }, 5000);
+
+    return () => clearTimeout(timeoutId);
   },[user.id,gameInfo,currentRoomID]);
   const throttledSubmitAnswer = useCallback(throttle(submitAnswer, THROTTLE_TIME),[submitAnswer, THROTTLE_TIME]);
 
