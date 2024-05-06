@@ -242,11 +242,11 @@ const Lobby = () => {
     const onConnected = () => {
       // subscribe to the topic
       lobbyInfoSuber = stompClientRef.current.subscribe(
-        `/lobby/info`,
+        "/lobby/info",
         onLobbyInfoReceived
       );
       stompClientRef.current?.send(
-        `/app/message/lobby/info`,{ receiptId: "" }
+        "/app/message/lobby/info",{ receiptId: "" }
       );
 
 
@@ -258,7 +258,7 @@ const Lobby = () => {
         setRooms(message_lobby.message); // 确保这里是数组
         console.log("Rooms updated:", message_lobby.message);
       } else {
-        console.error('Received data is not in expected format:', message_lobby);
+        console.error("Received data is not in expected format:", message_lobby);
       }
     };
 
