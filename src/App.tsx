@@ -1,5 +1,7 @@
 import React from "react";
 import AppRouter from "./components/routing/routers/AppRouter";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 /**
  * Happy coding!
@@ -10,6 +12,7 @@ import AppRouter from "./components/routing/routers/AppRouter";
 const App = () => {
   return (
     <div>
+      <ToastContainer />
       <AppRouter />
     </div>
   );

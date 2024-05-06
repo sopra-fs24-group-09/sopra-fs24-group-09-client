@@ -7,6 +7,7 @@ import "styles/views/Register.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 import { MAX_USERNAME_LENGTH } from "../../constants/constants";
+import { showToast} from "../../helpers/toastService";
 /*
 It is possible to add multiple components inside a single file,
 however be sure not to clutter your files with an endless amount!
@@ -53,12 +54,21 @@ const Register = () => {
       sessionStorage.setItem("token", user.token);
       sessionStorage.setItem("id", user.id);
       sessionStorage.setItem("username", user.username);
-      // Login successfully worked --> navigate to the route /game in the LobbyRouter
+      // Register successfully worked --> navigate to the route /game in the LobbyRouter
+      showToast('Register successful!', 'success');
       navigate("/lobby");
     } catch (error) {
-      alert(
-        `Something went wrong during the login: \n${handleError(error)}`
-      );
+      let message = 'An unexpected error occurred during Register.';
+      if (error.response) {
+        switch (error.response.status) {
+          case 409:
+            message = 'Register failed: Username has been taken, please change a username.';
+            break;
+          default:
+            message = `Register failed: ${error.response.data.reason || 'Please try again later.'}`;
+        }
+      }
+      showToast(message, 'error');
     }
   };
 
