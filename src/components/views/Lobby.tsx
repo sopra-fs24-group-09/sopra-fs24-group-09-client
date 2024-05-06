@@ -287,11 +287,13 @@ const Lobby = () => {
       navigate("/login");
     };
 
+    // make sure user was fetched before set timeoutId
     fetchData().catch(error => {
       handleError(error);
     });
 
     connectWebSocket();
+
 
     return () => {
       if (lobbyInfoSuber) {
@@ -316,7 +318,9 @@ const Lobby = () => {
     // wait for 1 second before fetching data
     const timeoutId = setTimeout(() => {
       console.log("========check if already in room========");
+      console.warn("Rooms:", rooms);
       const meInRoom = rooms.some(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")))
+      console.log("Me in room:", meInRoom);
       if (meInRoom) {
         console.log("[DEBUG] Found me in the room, redirecting to the room page" + rooms);
         const Room = rooms.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
@@ -327,8 +331,8 @@ const Lobby = () => {
 
     return () => {
       clearTimeout(timeoutId);
-    }
-  }, []);
+    };
+  }, [rooms]);
 
   const doEdit = async () => {
     try {
