@@ -158,8 +158,8 @@ const Gameroom = () => {
     const onResponseReceived = (payload) => {
       const payloadData = JSON.parse(payload.body);
       console.error("Response received", payloadData.message);
-      alert("Response server side receive!"+payloadData.message)
-      navigate("/lobby");
+      // alert("Response server side receive!"+payloadData.message)
+      // navigate("/lobby");
       // TODO: handle response
       /// 1. filter the response by the receiptId
       /// 2. if the response is success, do nothing
