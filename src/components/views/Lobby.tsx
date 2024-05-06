@@ -257,7 +257,18 @@ const Lobby = () => {
     const onLobbyInfoReceived = (message) => {
       const message_lobby = JSON.parse(message.body);
       if (message_lobby && message_lobby.message) {
-        setRooms(message_lobby.message); // 确保这里是数组
+        // make sure message.message is timestamped<roomInfo[]>
+        const payload: RoomInfo[] = message_lobby.message;
+        // if me is in the room, redirect to the room
+        // const meIngameRoom = payload.some(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")))
+        // if (meIngameRoom) {
+        //   console.log("[DEBUG] Found me in the room, redirecting to the room page" + payload);
+        //   const Room = payload.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
+        //   navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
+        //   showToast("Reconnect to your previous room!", "success");
+        // }
+
+        setRooms(payload); // 确保这里是数组
         console.log("Rooms updated:", message_lobby.message);
       } else {
         console.error("Received data is not in expected format:", message_lobby);
@@ -465,25 +476,24 @@ const Lobby = () => {
 
   const renderRoomLists = () => {
     return rooms.map((Room) => (
-      <div className="room-container" key={Room.roomId} onClick={async (e) => {
+      <div className="room-container" key={Room.roomId} onClick={ (e) => {
         e.preventDefault();
-        
-        const currentId = sessionStorage.getItem("id");
-        enterRoom(Room.roomId, currentId)
-          .then(() => {
-            //alert(currentId);
-            if(Room.roomPlayersList.length===Room.maxPlayersNum)
+        // const currentId = sessionStorage.getItem("id");
+        // console.error("RoomMaxPlayers:", Room.roomMaxNum);
+        // console.error("RoomPlayersList.length:", Room.roomPlayersList.length);
+        try {
+          if (Room.roomPlayersList.length === Room.roomMaxNum)
               showToast("Room is Full, please enter another room!", "error");
-            else if(Room.status==="In Game")
+          else if (Room.status === "In Game")
               showToast("Game is already started, please enter another room!", "error");
             else
               navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
-          })
-          .catch(error => {
+        }
+        catch (error) {
             console.error(`Something went wrong during the enterRoom: \n${error}`);
             // alert(`Something went wrong during the enterRoom: \n${error}`);
             showToast(`Something went wrong during the enterRoom: \n${error}`, "error");
-          });
+        };
 
       }}>
         <div className="room-players">
