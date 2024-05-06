@@ -186,8 +186,8 @@ const Lobby = () => {
   const changeAvatarPopRef = useRef<HTMLDialogElement>(null);
   const infoPopRef = useRef<HTMLDialogElement>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [user, setUser] = useState<User[]>([]);
-  const [username, setUsername] = useState<string | null>(null);
+  const [user, setUser] = useState<User|null>(null);
+  const [username, setUsername] = useState<string>("");
   const [avatar, setAvatar] = useState<string | null>(null);
   const [roomName, setRoomName] = useState("");
   const [maxRoomPlayers, SetMaxRoomPlayers] = useState(DEFAULT_MIN_PLAYERS);
