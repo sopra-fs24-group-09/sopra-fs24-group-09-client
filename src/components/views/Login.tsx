@@ -6,7 +6,7 @@ import { Button } from "components/ui/Button";
 import "styles/views/Login.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
-import { MAX_USERNAME_LENGTH } from "../../constants/constants";
+import { MAX_USERNAME_LENGTH, HTTP_STATUS } from "../../constants/constants";
 import { showToast} from "../../helpers/toastService";
 
 /*
@@ -55,23 +55,23 @@ const Login = () => {
       sessionStorage.setItem("username", user.username);
 
       // Login successfully worked --> navigate to the route /game in the LobbyRouter
-      showToast('Login successful!', 'success');
+      showToast("Login successful!", "success");
       navigate("/lobby");
     } catch (error) {
-      let message = 'An unexpected error occurred during login.';
+      let message = "An unexpected error occurred during login.";
       if (error.response) {
         switch (error.response.status) {
-          case 404:
-            message = 'Login failed: Username was not found.';
-            break;
-          case 403:
-            message = 'Login failed: Incorrect username or password.';
-            break;
-          default:
-            message = `Login failed: ${error.response.data.reason || 'Please try again later.'}`;
+        case HTTP_STATUS.NOT_FOUND:
+          message = "Login failed: Username was not found.";
+          break;
+        case HTTP_STATUS.FORBIDDEN:
+          message = "Login failed: Incorrect username or password.";
+          break;
+        default:
+          message = `Login failed: ${error.response.data.reason || "Please try again later."}`;
         }
       }
-      showToast(message, 'error');
+      showToast(message, "error");
     }
   };
 
