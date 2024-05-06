@@ -6,7 +6,8 @@ import { Button } from "components/ui/Button";
 import "styles/views/Login.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
-import { MAX_USERNAME_LENGTH } from "../../constants/constants";
+import { MAX_USERNAME_LENGTH, HTTP_STATUS } from "../../constants/constants";
+import { showToast} from "../../helpers/toastService";
 
 /*
 It is possible to add multiple components inside a single file,
@@ -54,11 +55,23 @@ const Login = () => {
       sessionStorage.setItem("username", user.username);
 
       // Login successfully worked --> navigate to the route /game in the LobbyRouter
+      showToast("Login successful!", "success");
       navigate("/lobby");
     } catch (error) {
-      alert(
-        `Something went wrong during the login: \n${handleError(error)}`
-      );
+      let message = "An unexpected error occurred during login.";
+      if (error.response) {
+        switch (error.response.status) {
+        case HTTP_STATUS.NOT_FOUND:
+          message = "Login failed: Username was not found.";
+          break;
+        case HTTP_STATUS.FORBIDDEN:
+          message = "Login failed: Incorrect username or password.";
+          break;
+        default:
+          message = `Login failed: ${error.response.data.reason || "Please try again later."}`;
+        }
+      }
+      showToast(message, "error");
     }
   };
 

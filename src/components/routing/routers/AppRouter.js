@@ -19,9 +19,13 @@ const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* global guard for all the routes */}
+        <Route path="/*" element={<LoginGuard />}>
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Route>
 
         <Route path="/lobby/*" element={<LobbyGuard />}>
-          <Route path="/lobby/*" element={<LobbyRouter base="/lobby"/>} />
+          <Route path="*" element={<LobbyRouter base="/lobby"/>} />
         </Route>
 
         <Route path="/login" element={<LoginGuard />}>
@@ -34,7 +38,9 @@ const AppRouter = () => {
 
         {/* no guard for gameroom page now*/}
         {/* the parameter name should match with the useParam in the Gameroom */}
-        <Route path="/rooms/:currentRoomID/:currentRoomName" element={<Gameroom/>} />
+        <Route path="/rooms/:currentRoomID/:currentRoomName" element={<LobbyGuard/>} >
+          <Route path="" element={<Gameroom />} />
+        </Route>
 
         <Route path="/" element={
           <Navigate to="/lobby" replace />
