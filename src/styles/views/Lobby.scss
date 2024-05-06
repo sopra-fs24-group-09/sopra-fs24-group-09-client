@@ -352,7 +352,7 @@
   width: 450px;
 }
 .profile-popup{
-  height:70%;
+  height:60%;
   &.content{
     display: flex;
     flex-direction: column;
@@ -420,7 +420,7 @@
 
 }
 .room-creation-popup{
-  height: 80%;
+  height: 60%;
   &.content{
     display: flex;
     flex-direction: column;
@@ -482,3 +482,35 @@
     }
   }
 }
+.btn-logout-container {
+  all: initial;
+  position: relative;
+  background-color: transparent;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: auto;
+  width: 100%;
+  bottom: 1.5%;
+  left: 0%;
+  margin-top: 10px;
+  flex-grow: 1;
+  .logout-btn {
+    bottom: 1%;
+    min-width: fit-content;
+    width: 20%;
+    min-height: 50px;
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    font-size: 1.3em;
+    background-color: $classicYellow;
+    color: white;
+    text-transform: none;
+    font-weight: bolder;
+
+  }
+}
+
