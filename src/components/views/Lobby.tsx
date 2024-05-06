@@ -1,4 +1,6 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useCallback, useRef, useEffect, useState } from "react";
+import { showToast } from "helpers/toastService";
+import { v4 as uuidv4 } from "uuid";
 import { api, handleError } from "helpers/api";
 import { Button } from "components/ui/Button";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -13,6 +15,7 @@ import "styles/ui/Popup.scss";
 import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH } from "../../constants/constants";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
+import { Timestamped, RoomInfo, RoomPlayer, PlayerAndRoomID } from "stomp_types";
 const DEFAULT_MAX_PLAYERS = 5;
 const DEFAULT_MIN_PLAYERS = 2;
 
@@ -186,7 +189,7 @@ const Lobby = () => {
   const changeAvatarPopRef = useRef<HTMLDialogElement>(null);
   const infoPopRef = useRef<HTMLDialogElement>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [user, setUser] = useState<User|null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string>("");
   const [avatar, setAvatar] = useState<string | null>(null);
   const [roomName, setRoomName] = useState("");
@@ -218,13 +221,13 @@ const Lobby = () => {
       // Get current user's information
       /// handle error outside
       // try {
-        const userResponse = await api.get(`/users/${userId}`);
-        setUser(userResponse.data);  // Set user data from API
-        console.log("User data:", userResponse.data);
+      const userResponse = await api.get(`/users/${userId}`);
+      setUser(userResponse.data);  // Set user data from API
+      console.log("User data:", userResponse.data);
       // } catch (error) {
       // handleError(error);
-        
-        return;
+
+      return;
       // }
     } else {
       console.error("User ID not found in sessionStorage!");
@@ -248,7 +251,7 @@ const Lobby = () => {
         onLobbyInfoReceived
       );
       stompClientRef.current?.send(
-        "/app/message/lobby/info",{ receiptId: "" }
+        "/app/message/lobby/info", { receiptId: "" }
       );
 
 
@@ -277,7 +280,11 @@ const Lobby = () => {
 
     const onError = (error) => {
       console.error("WebSocket Error:", error);
-      handleError(error);
+      // handleError(error);
+      // if error is network error, clear the session and navigate to login page
+      showToast("Whoops! Lost connection to sever!", "error");
+      sessionStorage.clear();
+      navigate("/login");
     };
 
     fetchData().catch(error => {
@@ -301,22 +308,27 @@ const Lobby = () => {
   }, []);
 
   // when user get navigated back to this page, fetch data again
-  const location = useLocation();
+  // const location = useLocation();
   // console.warn("Location:", location);
   const RELOAD_TIME_MS = 500;
+  // when first time loading the page, check if the user is in the room
   useEffect(() => {
     // wait for 1 second before fetching data
     const timeoutId = setTimeout(() => {
-      console.log("========fetchData========");
-      fetchData().catch(error => {
-        handleError(error);
-      });
+      console.log("========check if already in room========");
+      const meInRoom = rooms.some(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")))
+      if (meInRoom) {
+        console.log("[DEBUG] Found me in the room, redirecting to the room page" + rooms);
+        const Room = rooms.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
+        navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
+        showToast("Reconnect to your previous room!", "success");
+      }
     }, RELOAD_TIME_MS);
 
     return () => {
       clearTimeout(timeoutId);
     }
-  }, [location]);
+  }, []);
 
   const doEdit = async () => {
     try {
@@ -328,7 +340,7 @@ const Lobby = () => {
       toggleProfilePop();
     } catch (error) {
       handleError(error);
-      
+
       return;
     }
   };
@@ -338,7 +350,7 @@ const Lobby = () => {
     if (!navigator.userAgent.includes("Chrome")) {
       // alert("Your browser is currently not supported, please use Chrome to play this game!");
       showToast("Your browser is currently not supported, please use Chrome to play this game!", "error");
-      
+
       return;
     }
     try {
@@ -359,7 +371,7 @@ const Lobby = () => {
       //toggleRoomCreationPop();  // 关闭创建房间的弹窗
     } catch (error) {
       handleError(error);
-      
+
       return;
     }
   };
@@ -386,16 +398,16 @@ const Lobby = () => {
       : profilePopRef.current.showModal();
   };
 
-  async function enterRoom(roomId, userId) {
-    try {
-      const requestBody = JSON.stringify({ id: userId });
-      // await api.put(`/games/${roomId}`, requestBody);
-    } catch (error) {
-      handleError(error);
-      
-      return;
-    }
-  }
+  // async function enterRoom(roomId, userId) {
+  //   try {
+  //     const requestBody = JSON.stringify({ id: userId });
+  //     // await api.put(`/games/${roomId}`, requestBody);
+  //   } catch (error) {
+  //     handleError(error);
+
+  //     return;
+  //   }
+  // }
 
   const toggleAvatarPop = () => {
     // if the ref is not set, do nothing
@@ -420,7 +432,7 @@ const Lobby = () => {
       : infoPopRef.current.showModal();
   };
 
-  const changeAvatar = async (newAvatar) =>{
+  const changeAvatar = async (newAvatar) => {
     try {
       // 更新本地状态
       setAvatar(newAvatar);
@@ -434,7 +446,7 @@ const Lobby = () => {
       updateAvatar(newAvatar);
     } catch (error) {
       handleError(error);
-      
+
       return;
     }
   }
@@ -461,7 +473,7 @@ const Lobby = () => {
     //   // if error message is undefined
     //   showToast("Something went wrong, please try again later.", "error");
     // }
-    if(error.message.match(/Network Error/)) {
+    if (error.message.match(/Network Error/)) {
       console.error(`The server cannot be reached.\nDid you start it?\n${error}`);
       showToast(`The server cannot be reached.\nDid you start it?\n${error}`);
       sessionStorage.clear();
@@ -483,33 +495,32 @@ const Lobby = () => {
         // console.error("RoomPlayersList.length:", Room.roomPlayersList.length);
         try {
           if (Room.roomPlayersList.length === Room.roomMaxNum)
-              showToast("Room is Full, please enter another room!", "error");
+            showToast("Room is Full, please enter another room!", "error");
           else if (Room.status === "In Game")
-              showToast("Game is already started, please enter another room!", "error");
-            else
-              navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
+            showToast("Game is already started, please enter another room!", "error");
+          else
+            navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
         }
         catch (error) {
-            console.error(`Something went wrong during the enterRoom: \n${error}`);
-            // alert(`Something went wrong during the enterRoom: \n${error}`);
-            showToast(`Something went wrong during the enterRoom: \n${error}`, "error");
+          console.error(`Something went wrong during the enterRoom: \n${error}`);
+          // alert(`Something went wrong during the enterRoom: \n${error}`);
+          showToast(`Something went wrong during the enterRoom: \n${error}`, "error");
         };
 
       }}>
         <div className="room-players">
           {Room.roomPlayersList?.map((user, index) => (
             <div className="player" key={index}>
-              <i className={"twa twa-" + user.avatar} style={{fontSize: "3.8rem"}}/>
+              <i className={"twa twa-" + user.avatar} style={{ fontSize: "3.8rem" }} />
               <div className="name">{user.userName}</div>
             </div>
           ))}
         </div>
         <div className="room-header">
-          <div style={{fontWeight: "bold"}}>{Room.roomName}</div>
+          <div style={{ fontWeight: "bold" }}>{Room.roomName}</div>
           <div>{Room.theme}</div>
           <span
-            className={`room-status ${
-              Room.status === "In Game" ? "in-game" : "free"
+            className={`room-status ${Room.status === "In Game" ? "in-game" : "free"
             }`}
           >
             {Room.status}
@@ -519,14 +530,18 @@ const Lobby = () => {
     ));
   };
 
+  if (user === null) {
+    return <BaseContainer>Loading...</BaseContainer>;
+  }
 
   return (
     <BaseContainer>
       <div className="user-container">
         <i className={"twa twa-" + user.avatar}
           onClick={toggleProfilePop}
-          style={{fontSize: "3.8rem",
-            marginTop:"0.8rem",
+          style={{
+            fontSize: "3.8rem",
+            marginTop: "0.8rem",
             cursor: "pointer"
           }} />
         <div className="name">{user.username}</div>
@@ -553,13 +568,13 @@ const Lobby = () => {
       </div>
 
 
-      <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className = "profile-popup">
+      <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className="profile-popup">
         <BaseContainer className="profile-popup content">
           <div className="avatar-container" onClick={() => {
             toggleAvatarPop();
             toggleProfilePop();
           }}>
-            <i className={"twa twa-" + user.avatar} style={{fontSize: "10rem", marginTop:"0.8rem", textAlign:"center"}}/>
+            <i className={"twa twa-" + user.avatar} style={{ fontSize: "10rem", marginTop: "0.8rem", textAlign: "center" }} />
           </div>
           <div className="profile-popup field">
             <label className="profile-popup label">
@@ -567,7 +582,7 @@ const Lobby = () => {
             </label>
             <input
               // className="profile-popup input"
-              style={{height:"40px"}}
+              style={{ height: "40px" }}
               placeholder={user.username}
               type="text"
               value={username}
@@ -604,12 +619,12 @@ const Lobby = () => {
         className="room-creation-popup"
       >
         <div className="avatar-list">
-          {avatarList?.map((avatar,index) => (
+          {avatarList?.map((avatar, index) => (
             <div className="player" key={index} >
-              <i className={"twa twa-" + avatar} style={{fontSize: "3.8rem"}} onClick={() => {
+              <i className={"twa twa-" + avatar} style={{ fontSize: "3.8rem" }} onClick={() => {
                 changeAvatar(avatar).then(r => toggleAvatarPop);
                 toggleAvatarPop();
-              }}/>
+              }} />
             </div>
           ))}
         </div>
@@ -652,7 +667,7 @@ const Lobby = () => {
             prompt="Select Theme"
             // defaultValue={roomTheme}
             options={[
-              { value: "JOB", label: "JOB"},
+              { value: "JOB", label: "JOB" },
               { value: "FOOD", label: "FOOD" },
               { value: "SUPERHERO", label: "SUPERHERO" },
               { value: "SPORTS", label: "SPORTS" },
