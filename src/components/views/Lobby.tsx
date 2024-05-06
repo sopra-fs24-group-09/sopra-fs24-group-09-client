@@ -206,7 +206,8 @@ const Lobby = () => {
       console.log(response);
       sessionStorage.clear();
     } catch (error) {
-      alert(`Something went wrong during the logout: \n${handleError(error)}`);
+      // alert(`Something went wrong during the logout: \n${handleError(error)}`);
+      showToast(`Something went wrong during the logout: \n${handleError(error)}`, "error");
     }
     navigate("/login");
   };
@@ -215,15 +216,16 @@ const Lobby = () => {
     const userId = sessionStorage.getItem("id");
     if (userId) {
       // Get current user's information
-      try {
+      /// handle error outside
+      // try {
         const userResponse = await api.get(`/users/${userId}`);
         setUser(userResponse.data);  // Set user data from API
         console.log("User data:", userResponse.data);
-      } catch (error) {
-        handleError(error);
+      // } catch (error) {
+      // handleError(error);
         
         return;
-      }
+      // }
     } else {
       console.error("User ID not found in sessionStorage!");
     }
@@ -323,7 +325,8 @@ const Lobby = () => {
   const createRoom = async () => {
     // if not chrome, alert the user
     if (!navigator.userAgent.includes("Chrome")) {
-      alert("Your browser is currently not supported, please use Chrome to play this game!");
+      // alert("Your browser is currently not supported, please use Chrome to play this game!");
+      showToast("Your browser is currently not supported, please use Chrome to play this game!", "error");
       
       return;
     }
@@ -443,14 +446,19 @@ const Lobby = () => {
   /// if error is network error, clear the session and navigate to login page
   ///
   const handleError = (error) => {
+    // if(!error.message){
+    //   // if error message is undefined
+    //   showToast("Something went wrong, please try again later.", "error");
+    // }
     if(error.message.match(/Network Error/)) {
       console.error(`The server cannot be reached.\nDid you start it?\n${error}`);
-      alert(`The server cannot be reached.\nDid you start it?\n${error}`);
+      showToast(`The server cannot be reached.\nDid you start it?\n${error}`);
       sessionStorage.clear();
       navigate("/login");
+      showToast("The server cannot be reached.\nDid you start it?", "error");
     } else {
       console.error(`Something went wrong: \n${error}`);
-      alert(`Something went wrong: \n${error}`);
+      showToast(`Something went wrong: \n${error}`);
     }
   }
 
@@ -465,15 +473,16 @@ const Lobby = () => {
           .then(() => {
             //alert(currentId);
             if(Room.roomPlayersList.length===Room.maxPlayersNum)
-              alert("Room is Full, please enter another room!");
+              showToast("Room is Full, please enter another room!", "error");
             else if(Room.status==="In Game")
-              alert("Game is already started, please enter another room!");
+              showToast("Game is already started, please enter another room!", "error");
             else
               navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
           })
           .catch(error => {
             console.error(`Something went wrong during the enterRoom: \n${error}`);
-            alert(`Something went wrong during the enterRoom: \n${error}`);
+            // alert(`Something went wrong during the enterRoom: \n${error}`);
+            showToast(`Something went wrong during the enterRoom: \n${error}`, "error");
           });
 
       }}>

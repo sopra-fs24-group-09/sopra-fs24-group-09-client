@@ -70,6 +70,9 @@ const Login = () => {
         default:
           message = `Login failed: ${error.response.data.reason || "Please try again later."}`;
         }
+      } else {
+        // No response from the server
+        message = "The server cannot be reached. Did you start it?";
       }
       showToast(message, "error");
     }
