@@ -28,6 +28,8 @@ import { getDomain } from "helpers/getDomain";
 import { throttle } from "lodash";
 const DEFAULT_VOLUME = 0.5;
 const THROTTLE_TIME = 1000;
+const RESPONSE_TIME = 5000;
+const INDEX_NOT_FOUND = -1;
 
 // type AudioBlobDict = { [userId: number]: Base64audio };
 type SharedAudioURL = { [userId: string]: string };
@@ -164,7 +166,7 @@ const Gameroom = () => {
       console.log(mssg.receiptId)
       console.log(requestLists.current)
       const index = requestLists.current.findIndex(item => item.receiptId === mssg.receiptId);
-      if (index !== -1) {
+      if (index !== INDEX_NOT_FOUND) {
         const messageType = requestLists.current[index].type;
         const success = mssg.success;
         let toastMessage;
@@ -381,11 +383,11 @@ const Gameroom = () => {
     console.log(requestLists.current)
     const timeoutId = setTimeout(() => {
       const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
-      if (index !== -1) {
+      if (index !== INDEX_NOT_FOUND) {
         requestLists.current.splice(index, 1);
       }
       console.log(requestLists.current)
-    }, 5000);
+    }, RESPONSE_TIME);
 
     return () => clearTimeout(timeoutId);
   },[user.id,currentRoomID]);
@@ -414,11 +416,11 @@ const Gameroom = () => {
     console.log(requestLists.current)
     const timeoutId = setTimeout(() => {
       const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
-      if (index !== -1) {
+      if (index !== INDEX_NOT_FOUND) {
         requestLists.current.splice(index, 1);
       }
       console.log(requestLists.current)
-    }, 5000);
+    }, RESPONSE_TIME);
 
     return () => clearTimeout(timeoutId);
   },[user.id,currentRoomID]);
@@ -446,11 +448,11 @@ const Gameroom = () => {
     console.log(requestLists.current)
     const timeoutId = setTimeout(() => {
       const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
-      if (index !== -1) {
+      if (index !== INDEX_NOT_FOUND) {
         requestLists.current.splice(index, 1);
       }
       console.log(requestLists.current)
-    }, 5000);
+    }, RESPONSE_TIME);
 
     return () => clearTimeout(timeoutId);
   },[user.id,currentRoomID]);
@@ -478,11 +480,11 @@ const Gameroom = () => {
     console.log(requestLists.current)
     const timeoutId = setTimeout(() => {
       const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
-      if (index !== -1) {
+      if (index !== INDEX_NOT_FOUND) {
         requestLists.current.splice(index, 1);
       }
       console.log(requestLists.current)
-    }, 5000);
+    }, RESPONSE_TIME);
 
     return () => clearTimeout(timeoutId);
   },[user.id,currentRoomID]);
@@ -511,11 +513,11 @@ const Gameroom = () => {
     // console.log(requestLists.current)
     // const timeoutId = setTimeout(() => {
     //   const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
-    //   if (index !== -1) {
+    //   if (index !== INDEX_NOT_FOUND) {
     //     requestLists.current.splice(index, 1);
     //   }
     //   console.log(requestLists.current)
-    // }, 5000);
+    // }, RESPONSE_TIME);
     //
     // return () => clearTimeout(timeoutId);
     navigate("/lobby")
@@ -546,11 +548,11 @@ const Gameroom = () => {
     console.log(requestLists.current)
     const timeoutId = setTimeout(() => {
       const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
-      if (index !== -1) {
+      if (index !== INDEX_NOT_FOUND) {
         requestLists.current.splice(index, 1);
       }
       console.log(requestLists.current)
-    }, 5000);
+    }, RESPONSE_TIME);
 
     return () => clearTimeout(timeoutId);
   },[user.id,gameInfo,currentRoomID]);
@@ -587,11 +589,11 @@ const Gameroom = () => {
       console.log(requestLists.current)
       const timeoutId = setTimeout(() => {
         const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
-        if (index !== -1) {
+        if (index !== INDEX_NOT_FOUND) {
           requestLists.current.splice(index, 1);
         }
         console.log(requestLists.current)
-      }, 5000);
+      }, RESPONSE_TIME);
 
       return () => clearTimeout(timeoutId);
     };
@@ -762,7 +764,7 @@ const Gameroom = () => {
                       Start
                     </div>
                     <div
-                      className="gameroom cancelbutton"
+                      className="gameroom leavebutton"
                       onClick={() => throttledExitRoom()}
                     >
                       Quit
