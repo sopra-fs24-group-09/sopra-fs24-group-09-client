@@ -43,6 +43,7 @@ const Gameroom = () => {
   };
   console.log(user)
   const [showReadyPopup, setShowReadyPopup] = useState(false);
+  const readyStatus = useRef(false);
   const [gameOver, setGameOver] = useState(false);
   const gameOverRef = useRef(false);
   const [currentSpeakerID, setCurrentSpeakerID] = useState(null);
@@ -204,8 +205,9 @@ const Gameroom = () => {
     const onPlayerInfoReceived = (payload) => {
       const payloadData = JSON.parse(payload.body);
       setPlayerLists(payloadData.message);
+      const myInfo = payloadData.message.find(item => item.user.id === user.id);
+      readyStatus.current = myInfo.ready;
       if (!showReadyPopup && !gameOver){
-        const myInfo = payloadData.message.find(item => item.user.id === user.id);
         //console.log("set info for myself")
         //console.log(myInfo);
         if (myInfo.roundFinished !== null){
@@ -581,6 +583,17 @@ const Gameroom = () => {
         { receiptId: receiptId },
         JSON.stringify(payload)
       );
+      requestLists.current.push({ type: "upload",receiptId: receiptId });
+      console.log(requestLists.current)
+      const timeoutId = setTimeout(() => {
+        const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+        if (index !== -1) {
+          requestLists.current.splice(index, 1);
+        }
+        console.log(requestLists.current)
+      }, 5000);
+
+      return () => clearTimeout(timeoutId);
     };
     reader.readAsDataURL(myRecordingReversedRef.current);
   },[user.id]);
@@ -758,20 +771,30 @@ const Gameroom = () => {
                 )}
                 {gameInfo.roomOwner.id !== user.id &&(
                   <>
-                    <div
-                      className="gameroom readybutton"
-                      onClick={() => throttledGetReady()}
-                      onKeyDown={() => throttledGetReady()}
-                    >
-                      Confirm
-                    </div>
-                    <div
-                      className="gameroom cancelbutton"
-                      onClick={() => throttledCancelReady()}
-                      onKeyDown={() => throttledCancelReady()}
-                    >
-                      Cancel
-                    </div>
+                    {(readyStatus.current === true)&&(
+                      <div
+                        className="gameroom cancelbutton"
+                        onClick={() => throttledCancelReady()}
+                        onKeyDown={() => throttledCancelReady()}
+                      >
+                        Cancel
+                      </div>
+                    )}
+                    {(readyStatus.current === false)&&(
+                      <div
+                        className="gameroom readybutton"
+                        onClick={() => throttledGetReady()}
+                        onKeyDown={() => throttledGetReady()}
+                      >
+                        Confirm
+                      </div>
+                    )}
+                    <div className="gameroom leavebutton" onClick={
+                      () => {
+                        //console.log("leave room");
+                        exitRoom();
+                      }
+                    }>leave</div>
                   </>
                 )}
               </div>
@@ -809,15 +832,10 @@ const Gameroom = () => {
           <div style={{display:"flex",flexDirection:"row"}}>
             {showReadyPopup === true &&(
               // {showReadyPopup === true && user.id !== gameInfo.roomOwner.id &&(
-              <div className="gameroom cancelbutton" onClick={
-                () => {
-                  //console.log("leave room");
-                  exitRoom();
-                }
-              }>leave</div>
+              <></>
             )}
             {gameOver === true &&(
-              <div className="gameroom cancelbutton" onClick={
+              <div className="gameroom leavebutton" onClick={
                 () => {
                   //console.log("leave room after over");
                   exitRoom();

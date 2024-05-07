@@ -281,6 +281,7 @@
     margin-left: 2rem;
   }
   .readybutton,
+  .leavebutton,
   .cancelbutton {
     border-radius: 0.5rem;
     width: 11vw;
@@ -302,6 +303,11 @@
   }
 
   .cancelbutton {
+    background-color: $darkBlue;
+    border:0;
+  }
+
+  .leavebutton {
     background-color: rgba(129, 129, 129, 1);
     border:0;
   }
@@ -310,9 +316,13 @@
     background-color: darken($classicYellow, 10%);
     cursor: pointer;
   }
-  .cancelbutton:hover {
+  .leavebutton:hover {
     background-color: darken(rgba(129, 129, 129, 1), 10%);
     cursor: pointer;
+  }
+  .cancelbutton:hover {
+    background-color: darken($darkBlue, 10%);
+    border:0;
   }
   &.counterdiv {
     margin-top:1.5vh;
