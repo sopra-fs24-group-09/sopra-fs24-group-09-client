@@ -40,8 +40,8 @@ FormField.propTypes = {
 const Register = () => {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState<string>(null);
-  const [password, setPassword] = useState<string>(null);
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const doRegister = async () => {
     try {
@@ -67,6 +67,9 @@ const Register = () => {
         default:
           message = `Register failed: ${error.response.data.reason || "Please try again later."}`;
         }
+      } else {
+        // if no response from the server
+        message = "The server cannot be reached. Please try again later."
       }
       showToast(message, "error");
     }

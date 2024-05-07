@@ -26,6 +26,22 @@ export type AnswerGuess = {
     currentSpeakerID: string;
 }
 
+export type RoomInfo = {
+    roomMaxNum: number;
+    roomOwnerId: string;
+    theme: string;
+    roomPlayersList: RoomPlayer[];
+    roomId: string;
+    roomName: string;
+    status: string;
+}
+
+export type RoomPlayer = {
+    avatar: string;
+    userName: string;
+    userId: string;
+}
+
 export type StompResponse = {
     success: boolean;
     message: string; // error message
