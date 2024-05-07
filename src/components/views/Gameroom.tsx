@@ -44,6 +44,7 @@ const Gameroom = () => {
     username: sessionStorage.getItem("username")
   };
   console.log(user)
+  const [isStartedPressed, setIsStartedPressed] = useState(false);
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const readyStatus = useRef(false);
   const [gameOver, setGameOver] = useState(false);
@@ -174,6 +175,9 @@ const Gameroom = () => {
           toastMessage = success ? "You are ready for the game now!" : msg.message;
         } else if (messageType === "start") {
           toastMessage = success ? "Game now successfully started!" : msg.message;
+          if(!success){
+            setIsStartedPressed(false);
+          }
         } else if (messageType === "unready") {
           toastMessage = success ? "You canceled ready successfully." : msg.message;
         } else if (messageType === "submit") {
@@ -186,6 +190,13 @@ const Gameroom = () => {
         } else if (messageType === "upload") {
           toastMessage = success ? "You have uploaded the audio successfully!" : msg.message;
         }
+        // else if (messageType === "leave") {
+        //   toastMessage = success ? "You have left the room successfully!" : msg.message;
+        //   if (success){
+        //     navigate("/lobby");
+        //     return;
+        //   }
+        // }
 
         if (success) {
           showToast(toastMessage, "success");
@@ -208,6 +219,11 @@ const Gameroom = () => {
       const payloadData = JSON.parse(payload.body);
       setPlayerLists(payloadData.message);
       const myInfo = payloadData.message.find(item => item.user.id === user.id);
+      if (!myInfo) {
+        console.error("My info not found in the player list");
+        
+        return;
+      }
       readyStatus.current = myInfo.ready;
       if (!showReadyPopup && !gameOver){
         //console.log("set info for myself")
@@ -493,6 +509,7 @@ const Gameroom = () => {
 
   //exit room
   const exitRoom = useCallback(() => {
+    console.warn("isStartedPressed",isStartedPressed)
     console.log("exit button used once")
     const payload: Timestamped<PlayerAndRoomID> = {
       // TODO: need to make sure the timestamp is UTC format
@@ -518,7 +535,7 @@ const Gameroom = () => {
     //   }
     //   console.log(requestLists.current)
     // }, RESPONSE_TIME);
-    //
+    
     // return () => clearTimeout(timeoutId);
     navigate("/lobby")
   },[user.id,currentRoomID]);
@@ -758,14 +775,22 @@ const Gameroom = () => {
                   <>
                     <div
                       className="gameroom readybutton"
-                      onClick={() => throttledStartGame()}
+                      onClick={() => {
+                        setIsStartedPressed(true);
+                        throttledStartGame();
+                      }}
                       //onKeyDown={() => getReady()}
                     >
                       Start
                     </div>
                     <div
                       className="gameroom leavebutton"
-                      onClick={() => throttledExitRoom()}
+                      onClick={() => {
+                        // disable the quit button if the game is started
+                        if (!isStartedPressed) {
+                          throttledExitRoom();
+                        }
+                      }}
                     >
                       Quit
                     </div>
