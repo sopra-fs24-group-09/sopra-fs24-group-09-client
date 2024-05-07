@@ -522,8 +522,10 @@ const Lobby = () => {
             }}>
               Cancel
             </Button>
-            <Button className="cancel" onClick={() => doEdit()
-            }>
+            <Button className="cancel" 
+              onClick={() => doEdit()}
+              disabled = {username === "" || username === user.username}
+            >
               Edit
             </Button>
           </div>
