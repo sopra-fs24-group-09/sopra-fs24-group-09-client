@@ -160,31 +160,31 @@ const Gameroom = () => {
     };
 
     const onResponseReceived = (payload) => {
-      const mssg = JSON.parse(payload.body);
-      console.log("response received")
-      console.log(mssg)
-      console.log(mssg.receiptId)
-      console.log(requestLists.current)
-      const index = requestLists.current.findIndex(item => item.receiptId === mssg.receiptId);
+      const msg = JSON.parse(payload.body);
+      console.log("=====response received=====")
+      // console.log(mssg)
+      console.log("[onResponseReceived] receiptId",msg.receiptId)
+      console.log("[onResponseReceived] reqList:",requestLists.current)
+      const index = requestLists.current.findIndex(item => item.receiptId === msg.receiptId);
       if (index !== INDEX_NOT_FOUND) {
         const messageType = requestLists.current[index].type;
-        const success = mssg.success;
+        const success = msg.success;
         let toastMessage;
         if (messageType === "ready") {
-          toastMessage = success ? "You are ready for the game now!" : mssg.message;
+          toastMessage = success ? "You are ready for the game now!" : msg.message;
         } else if (messageType === "start") {
-          toastMessage = success ? "Game now successfully started!" : mssg.message;
+          toastMessage = success ? "Game now successfully started!" : msg.message;
         } else if (messageType === "unready") {
-          toastMessage = success ? "You canceled ready successfully." : mssg.message;
+          toastMessage = success ? "You canceled ready successfully." : msg.message;
         } else if (messageType === "submit") {
-          toastMessage = success ? "You have submitted the correct answer!" : mssg.message;
+          toastMessage = success ? "You have submitted the correct answer!" : msg.message;
         } else if (messageType === "enter") {
-          toastMessage = success ? "You have entered the room successfully!" : mssg.message;
+          toastMessage = success ? "You have entered the room successfully!" : msg.message;
           if (!success){
             navigate("/lobby");
           }
         } else if (messageType === "upload") {
-          toastMessage = success ? "You have uploaded the audio successfully!" : mssg.message;
+          toastMessage = success ? "You have uploaded the audio successfully!" : msg.message;
         }
 
         if (success) {
