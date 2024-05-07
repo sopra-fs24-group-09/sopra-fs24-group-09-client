@@ -505,7 +505,7 @@ const Lobby = () => {
               value={username}
               onChange={(e) => {
                 const inputValue = e.target.value;  // 获取输入值
-                if (inputValue.length <= MAX_USERNAME_LENGTH) {  // 检查输入值的长度
+                if (inputValue.length <= MAX_USERNAME_LENGTH && inputValue.length > 0) {  // 检查输入值的长度
                   setUsername(inputValue);  // 如果长度小于或等于20，更新状态
                 }
               }}
