@@ -1,6 +1,4 @@
 import React, { useCallback, useRef, useEffect, useState } from "react";
-import { showToast } from "helpers/toastService";
-import { v4 as uuidv4 } from "uuid";
 import { api, handleError } from "helpers/api";
 import { Button } from "components/ui/Button";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,6 +13,7 @@ import "styles/ui/Popup.scss";
 import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH, HTTP_STATUS } from "../../constants/constants";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
+import { showToast} from "../../helpers/toastService";
 import { Timestamped, RoomInfo, RoomPlayer, PlayerAndRoomID } from "stomp_types";
 const DEFAULT_MAX_PLAYERS = 5;
 const DEFAULT_MIN_PLAYERS = 2;
@@ -22,13 +21,7 @@ const DEFAULT_MIN_PLAYERS = 2;
 type PlayerProps = {
   user: User;
 };
-type RoomComponentProps = {
-  room: Room;
-};
 
-type RoomListProps = {
-  rooms: Room[];
-};
 const Player: React.FC<PlayerProps> = ({ user }) => (
   <div className="player">
     <img
@@ -39,31 +32,7 @@ const Player: React.FC<PlayerProps> = ({ user }) => (
     <div className="player-username">{user.username}</div>
   </div>
 );
-const RoomComponent: React.FC<RoomComponentProps> = ({ room }) => (
-  <div className="room">
-    <div className="room-header">
-      {room.roomPlayersList.map((user) => (
-        <Player key={user.id} user={user} />
-      ))}
-    </div>
-    <div className="room-footer">
-      <div className="room-theme">{room.theme}</div>
-      <div
-        className="room-status"
-        style={{ color: room.status === "In Game" ? "orange" : "green" }}
-      >
-        {room.status}
-      </div>
-    </div>
-  </div>
-);
-const RoomList: React.FC<RoomListProps> = ({ rooms }) => (
-  <div className="room-list">
-    {rooms.map((room) => (
-      <RoomComponent key={room.id} room={room} />
-    ))}
-  </div>
-);
+
 interface FormFieldProps {
   label: string;
   placeholder?: string;
@@ -73,36 +42,9 @@ interface FormFieldProps {
   disabled?: boolean;
 }
 
-const FormField: React.FC<FormFieldProps> = (props) => {
-  return (
-    <div className="profile-popup field">
-      <label className="profile-popup label">
-        {props.label}
-      </label>
-      <input
-        className="profile-popup input"
-        placeholder={props.placeholder}
-        value={props.value}
-        type={props.type}
-        onChange={e => props.onChange(e.target.value)}
-        disabled={props.disabled}
-      />
-    </div>
-  );
-};
 Player.propTypes = {
   user: PropTypes.object,
 };
-
-const mockRoomPlayers: User[] = [
-
-  { id: "1", username: "Alice", avatar: "grinning-face-with-sweat", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
-  { id: "2", username: "Bob", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
-  { id: "3", username: "Han", avatar: "grinning-face-with-sweat", name: "Alice Wonderland", status: "ONLINE", registerDate: new Date("2021-08-01"), birthday: new Date("1990-01-01") },
-  { id: "4", username: "Li", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
-  { id: "5", username: "Liuz", avatar: "grinning-face-with-sweat", name: "Bob Builder", status: "OFFLINE", registerDate: new Date("2021-09-01"), birthday: new Date("1985-02-02") },
-
-];
 
 const avatarList: string[] = [
   "angry-face",
@@ -157,31 +99,6 @@ const avatarList: string[] = [
   "flushed-face"
 ]
 
-const mockRooms: Room[] = [
-  {
-    id: "1",
-    roomOwnerId: "1",
-    roomPlayersList: mockRoomPlayers,
-    theme: "Advanced",
-    status: "In Game",
-    maxPlayersNum: 4,
-    alivePlayersList: mockRoomPlayers,
-    currentPlayerIndex: 0,
-    playToOuted: false,
-  },
-  {
-    id: "2",
-    roomOwnerId: "2",
-    roomPlayersList: mockRoomPlayers,
-    theme: "Food",
-    status: "Free",
-    maxPlayersNum: 4,
-    alivePlayersList: mockRoomPlayers,
-    currentPlayerIndex: 1,
-    playToOuted: false,
-  },
-];
-
 const Lobby = () => {
   const navigate = useNavigate();
   const roomCreationPopRef = useRef<HTMLDialogElement>(null);
@@ -196,8 +113,6 @@ const Lobby = () => {
   const [maxRoomPlayers, SetMaxRoomPlayers] = useState(DEFAULT_MIN_PLAYERS);
   const [roomTheme, setRoomTheme] = useState("");
   const stompClientRef = useRef(null);
-  // const needReloadRooms = useRef(false);
-  // const RELOAD_TIME = 3000;
 
   const logout = async () => {
     const id = sessionStorage.getItem("id");
@@ -208,7 +123,7 @@ const Lobby = () => {
       console.log(response);
       sessionStorage.clear();
     } catch (error) {
-      handleError(error);
+      showToast("Something went wrong during the logout: \n${handleError(error)}",  "error");
     }
     navigate("/login");
   };
@@ -233,7 +148,6 @@ const Lobby = () => {
   }
 
   useEffect(() => {
-
     const connectWebSocket = () => {
       const baseurl = getDomain();
       let Sock = new SockJS(`${baseurl}/ws`);
@@ -350,9 +264,8 @@ const Lobby = () => {
   const createRoom = async () => {
     // if not chrome, alert the user
     if (!navigator.userAgent.includes("Chrome")) {
-      // alert("Your browser is currently not supported, please use Chrome to play this game!");
-      showToast("Your browser is currently not supported, please use Chrome to play this game!", "error");
-
+      showToast("Your browser is currently not supported, please use Chrome to play this game!","error");
+      
       return;
     }
     try {
@@ -607,7 +520,7 @@ const Lobby = () => {
               value={username}
               onChange={(e) => {
                 const inputValue = e.target.value;  // 获取输入值
-                if (inputValue.length <= MAX_USERNAME_LENGTH) {  // 检查输入值的长度
+                if (inputValue.length <= MAX_USERNAME_LENGTH && inputValue.length > 0) {  // 检查输入值的长度
                   setUsername(inputValue);  // 如果长度小于或等于20，更新状态
                 }
               }}
@@ -624,8 +537,10 @@ const Lobby = () => {
             }}>
               Cancel
             </Button>
-            <Button className="cancel" onClick={() => doEdit()
-            }>
+            <Button className="cancel" 
+              onClick={() => doEdit()}
+              disabled = {username === "" || username === user.username}
+            >
               Edit
             </Button>
           </div>
