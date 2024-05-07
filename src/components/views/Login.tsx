@@ -39,8 +39,8 @@ FormField.propTypes = {
 
 const Login = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState<string>(null);
-  const [password, setPassword] = useState<string>(null);
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const doLogin = async () => {
     try {
@@ -70,6 +70,9 @@ const Login = () => {
         default:
           message = `Login failed: ${error.response.data.reason || "Please try again later."}`;
         }
+      } else {
+        // No response from the server
+        message = "The server cannot be reached. Did you start it?";
       }
       showToast(message, "error");
     }
