@@ -6,9 +6,9 @@ import PropTypes from "prop-types";
 import "styles/views/Gameroom.scss";
 import "styles/views/Header.scss";
 import "styles/twemoji-amazing.css";
-import Header from "./Header";
+import Header from "./Header"
 import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { Roundstatus, RoundstatusProps} from "components/views/GameroomRoundStatus";
+import { Roundstatus, RoundstatusProps } from "components/views/GameroomRoundStatus";
 import { PlayerList } from "components/views/GameroomPlayerList";
 import { ValidateAnswerForm } from "components/views/GameroomAnswerForm";
 // Stomp related imports
@@ -212,7 +212,7 @@ const Gameroom = () => {
       if (!showReadyPopup && !gameOver){
         //console.log("set info for myself")
         //console.log(myInfo);
-        if (myInfo.roundFinished !== null){
+        if (myInfo && myInfo.roundFinished !== null){
           roundFinished.current = myInfo.roundFinished;
           //console.log("roundFinished?")
           //console.log(roundFinished.current);
@@ -226,7 +226,7 @@ const Gameroom = () => {
 
     const onGameInfoReceived = (payload) => {
       const payloadData = JSON.parse(payload.body);
-      console.error("GameInfo received", JSON.stringify(payloadData.message));
+      // console.error("GameInfo received", JSON.stringify(payloadData.message));
       if (JSON.stringify(gameInfoRef.current) === JSON.stringify(payloadData.message)) {
         console.log("Same game info received, ignore");
         
@@ -708,7 +708,7 @@ const Gameroom = () => {
   };
 
 
-  if (playerLists === null) {
+  if (playerLists === null || playerLists.length === 0) {
     return <div>Loading...</div>;
   }
 
