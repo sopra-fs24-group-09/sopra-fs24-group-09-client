@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { api, handleError } from "helpers/api";
+import { api } from "helpers/api";
 import { Button } from "components/ui/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
@@ -10,7 +10,7 @@ import { Dropdown } from "components/ui/Dropdown";
 import "styles/views/Lobby.scss";
 import { getDomain } from "helpers/getDomain";
 import "styles/ui/Popup.scss";
-import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH } from "../../constants/constants";
+import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH, HTTP_STATUS } from "../../constants/constants";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 const DEFAULT_MAX_PLAYERS = 5;
@@ -198,7 +198,6 @@ const Lobby = () => {
 
   const logout = async () => {
     const id = sessionStorage.getItem("id");
-    sessionStorage.removeItem("token");
     //apply a post request for user logout
     try {
       const requestBody = JSON.stringify({ id: id });
@@ -206,7 +205,7 @@ const Lobby = () => {
       console.log(response);
       sessionStorage.clear();
     } catch (error) {
-      alert(`Something went wrong during the logout: \n${handleError(error)}`);
+      handleError(error);
     }
     navigate("/login");
   };
@@ -441,16 +440,38 @@ const Lobby = () => {
 
   ///
   /// if error is network error, clear the session and navigate to login page
+  /// if unauthorized, clear the session and navigate to login page
   ///
   const handleError = (error) => {
-    if(error.message.match(/Network Error/)) {
-      console.error(`The server cannot be reached.\nDid you start it?\n${error}`);
-      alert(`The server cannot be reached.\nDid you start it?\n${error}`);
+    // Check if there's a response object in the error
+    if (error.response) {
+      const { status, data } = error.response;
+
+      // Handle 401 Unauthorized errors
+      if (status === HTTP_STATUS.UNAUTHORIZED) {
+        console.error("Unauthorized: " + data.message + "\n" + error);
+        alert("Your session has expired or is invalid. Please log in again.");
+        sessionStorage.clear();
+        navigate("/login");
+      } else if (status === HTTP_STATUS.FORBIDDEN) {
+        // Handle 403 Forbidden errors
+        console.error("Forbidden: Access is denied. " + data.message + "\n" + error);
+        alert("Access is denied. You do not have permission to access this resource.");
+      } else {
+        // Handle other types of errors generically
+        console.error(`Error: ${data.message}\n${error}`);
+        alert(`An error occurred: ${data.message}`);
+      }
+    } else if (error.message && error.message.match(/Network Error/)) {
+      // Handle network errors
+      console.error(`Network Error: The server cannot be reached.\n${error}`);
+      alert("The server cannot be reached. Did you start it?");
       sessionStorage.clear();
       navigate("/login");
     } else {
-      console.error(`Something went wrong: \n${error}`);
-      alert(`Something went wrong: \n${error}`);
+      // Handle other unexpected errors
+      console.error("An unexpected error occurred: \n" + error);
+      alert("An unexpected error occurred. Please try again.");
     }
   }
 
