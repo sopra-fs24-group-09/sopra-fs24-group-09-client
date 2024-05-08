@@ -31,12 +31,12 @@ const THROTTLE_TIME = 1000;
 const RESPONSE_TIME = 5000;
 const INDEX_NOT_FOUND = -1;
 
-// type AudioBlobDict = { [userId: number]: Base64audio };
 type SharedAudioURL = { [userId: string]: string };
 
 const Gameroom = () => {
   const navigate = useNavigate();
-  const { currentRoomID,currentRoomName } = useParams(); // get the room ID from the URL
+  const { currentRoomID,currentRoomName } = useParams();
+  const currentRoomNameValid = useRef(null);
   const stompClientRef = useRef(null);
   const user = {
     token: sessionStorage.getItem("token"),
@@ -103,6 +103,7 @@ const Gameroom = () => {
 
 
   useEffect(() => {
+    currentRoomNameValid.current = currentRoomName;
     const isChrome = (window as any).chrome;
     // console.error("ISCHROME",isChrome);
     if (!isChrome) {
@@ -247,6 +248,9 @@ const Gameroom = () => {
         console.log("Same game info received, ignore");
         
         return;
+      }
+      if (currentRoomNameValid.current !== payloadData.message.roomName){
+        currentRoomNameValid.current = payloadData.message.roomName
       }
       if (gameTheme.current !== payloadData.message.theme){
         gameTheme.current = payloadData.message.theme
@@ -736,7 +740,7 @@ const Gameroom = () => {
         playerStatus={playerLists}
         sharedAudioList={sharedAudioList}
         gameTheme={gameTheme.current}
-        currentRoomName={currentRoomName}
+        currentRoomName={currentRoomNameValid.current}
         showReadyPopup={showReadyPopup}
         gameOver={gameOver}
         globalVolume={globalVolume}
@@ -764,7 +768,7 @@ const Gameroom = () => {
         {!gameOver && showReadyPopup && (
           <div className="gameroom readypopupbg">
             <div className="gameroom readypopupcontainer">
-              <span className="gameroom popuptitle"> {"Room#" + currentRoomName}</span>
+              <span className="gameroom popuptitle"> {"Room#" + currentRoomNameValid.current}</span>
               <span className="gameroom popuptheme">{gameTheme.current}</span>
               <span className="gameroom popuptext">
                 {" "}
