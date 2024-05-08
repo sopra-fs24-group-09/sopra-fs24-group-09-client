@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useCallback,useEffect, useState, useRef, useMemo } from "react";
 import { api, handleError } from "helpers/api";
 import { useNavigate, useParams } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
@@ -6,14 +6,15 @@ import PropTypes from "prop-types";
 import "styles/views/Gameroom.scss";
 import "styles/views/Header.scss";
 import "styles/twemoji-amazing.css";
-import Header from "./Header";
+import Header from "./Header"
 import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { Roundstatus, RoundstatusProps} from "components/views/GameroomRoundStatus";
+import { Roundstatus, RoundstatusProps } from "components/views/GameroomRoundStatus";
 import { PlayerList } from "components/views/GameroomPlayerList";
 import { ValidateAnswerForm } from "components/views/GameroomAnswerForm";
 // Stomp related imports
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
+import { showToast} from "../../helpers/toastService";
 import type {
   Timestamped,
   PlayerAudio,
@@ -24,25 +25,28 @@ import type {
 } from "stomp_types";
 import { v4 as uuidv4 } from "uuid";
 import { getDomain } from "helpers/getDomain";
+import { throttle } from "lodash";
+const DEFAULT_VOLUME = 0.5;
+const THROTTLE_TIME = 1000;
+const RESPONSE_TIME = 5000;
+const INDEX_NOT_FOUND = -1;
 
-// type AudioBlobDict = { [userId: number]: Base64audio };
 type SharedAudioURL = { [userId: string]: string };
 
 const Gameroom = () => {
   const navigate = useNavigate();
-  const { currentRoomID,currentRoomName } = useParams(); // get the room ID from the URL
+  const { currentRoomID,currentRoomName } = useParams();
+  const currentRoomNameValid = useRef(null);
   const stompClientRef = useRef(null);
-  /**
-   * Question: why we need this user state here?
-   * if just for saving my id and name, we can make it a const prop
-   */
   const user = {
     token: sessionStorage.getItem("token"),
     id: sessionStorage.getItem("id"),
     username: sessionStorage.getItem("username")
   };
   console.log(user)
+  const [isStartedPressed, setIsStartedPressed] = useState(false);
   const [showReadyPopup, setShowReadyPopup] = useState(false);
+  const readyStatus = useRef(false);
   const [gameOver, setGameOver] = useState(false);
   const gameOverRef = useRef(false);
   const [currentSpeakerID, setCurrentSpeakerID] = useState(null);
@@ -52,7 +56,7 @@ const Gameroom = () => {
   const gameTheme = useRef("Loading....");
   const leaderboardInfoRecieved = useRef(false);
   const [leaderboardInfo, setLeaderboardInfo] = useState([]);
-
+  const requestLists = useRef([]);
   const [gameInfo, setGameInfo] = useState(null);
   const gameInfoRef = useRef(null);
   // const [roomInfo, setRoomInfo] = useState({
@@ -75,7 +79,7 @@ const Gameroom = () => {
   if (gameInfo && gameInfo.currentSpeaker) {
     currentSpeakerIdRef.current = gameInfo.currentSpeaker.userID;
   }
-  const [globalVolume, setGlobalVolume] = useState(0.5);
+  const [globalVolume, setGlobalVolume] = useState(DEFAULT_VOLUME);
   const globalVolumeBeforeMute = useRef(0);
 
   gameInfoRef.current = gameInfo;
@@ -95,10 +99,11 @@ const Gameroom = () => {
     return ffmpeg;
   }, []);
 
-  console.log("GameInfo", gameInfo);
+  //("GameInfo", gameInfo);
 
 
   useEffect(() => {
+    currentRoomNameValid.current = currentRoomName;
     const isChrome = (window as any).chrome;
     // console.error("ISCHROME",isChrome);
     if (!isChrome) {
@@ -117,12 +122,12 @@ const Gameroom = () => {
     //const roomId = 5;
     const connectWebSocket = () => {
       const baseurl = getDomain();
-      let Sock = new SockJS(`${baseurl}/ws/${currentRoomID}`);
+      let Sock = new SockJS(`${baseurl}/ws`);
       //let Sock = new SockJS('https://sopra-fs23-group-01-server.oa.r.appspot.com/ws');
       stompClientRef.current = over(Sock);
       stompClientRef.current.connect({}, onConnected, onError);
     };
-    console.log(sessionStorage.getItem("id"));
+    //console.log(sessionStorage.getItem("id"));
 
     const timestamp = new Date().getTime(); // Get current timestamp
 
@@ -145,7 +150,8 @@ const Gameroom = () => {
         `/user/${user.id}/response/${currentRoomID}`,
         onResponseReceived
       );
-      enterRoom();
+      // enterRoom();
+      throttledEnterRoom();
       //connect or reconnect
     };
 
@@ -156,8 +162,51 @@ const Gameroom = () => {
     };
 
     const onResponseReceived = (payload) => {
-      const payloadData = JSON.parse(payload.body);
-      console.error("Response received", payloadData.message);
+      const msg = JSON.parse(payload.body);
+      console.log("=====response received=====")
+      // console.log(mssg)
+      console.log("[onResponseReceived] receiptId",msg.receiptId)
+      console.log("[onResponseReceived] reqList:",requestLists.current)
+      const index = requestLists.current.findIndex(item => item.receiptId === msg.receiptId);
+      if (index !== INDEX_NOT_FOUND) {
+        const messageType = requestLists.current[index].type;
+        const success = msg.success;
+        let toastMessage;
+        if (messageType === "ready") {
+          toastMessage = success ? "You are ready for the game now!" : msg.message;
+        } else if (messageType === "start") {
+          toastMessage = success ? "Game now successfully started!" : msg.message;
+          if(!success){
+            setIsStartedPressed(false);
+          }
+        } else if (messageType === "unready") {
+          toastMessage = success ? "You canceled ready successfully." : msg.message;
+        } else if (messageType === "submit") {
+          toastMessage = success ? "You have submitted the correct answer!" : msg.message;
+        } else if (messageType === "enter") {
+          toastMessage = success ? "You have entered the room successfully!" : msg.message;
+          if (!success){
+            navigate("/lobby");
+          }
+        } else if (messageType === "upload") {
+          toastMessage = success ? "You have uploaded the audio successfully!" : msg.message;
+        }
+        // else if (messageType === "leave") {
+        //   toastMessage = success ? "You have left the room successfully!" : msg.message;
+        //   if (success){
+        //     navigate("/lobby");
+        //     return;
+        //   }
+        // }
+
+        if (success) {
+          showToast(toastMessage, "success");
+        } else {
+          showToast(toastMessage, "error");
+        }
+      }
+      // const payloadData = JSON.parse(payload.body);
+      // console.error("Response received", payloadData.message);
       // alert("Response server side receive!"+payloadData.message)
       // navigate("/lobby");
       // TODO: handle response
@@ -170,14 +219,20 @@ const Gameroom = () => {
     const onPlayerInfoReceived = (payload) => {
       const payloadData = JSON.parse(payload.body);
       setPlayerLists(payloadData.message);
+      const myInfo = payloadData.message.find(item => item.user.id === user.id);
+      if (!myInfo) {
+        console.error("My info not found in the player list");
+        
+        return;
+      }
+      readyStatus.current = myInfo.ready;
       if (!showReadyPopup && !gameOver){
-        const myInfo = payloadData.message.find(item => item.user.id === user.id);
-        console.log("set info for myself")
-        console.log(myInfo);
-        if (myInfo.roundFinished !== null){
+        //console.log("set info for myself")
+        //console.log(myInfo);
+        if (myInfo && myInfo.roundFinished !== null){
           roundFinished.current = myInfo.roundFinished;
-          console.log("roundFinished?")
-          console.log(roundFinished.current);
+          //console.log("roundFinished?")
+          //console.log(roundFinished.current);
         }
       }
       if (gameOverRef.current === true && leaderboardInfoRecieved.current === false){
@@ -187,8 +242,6 @@ const Gameroom = () => {
     };
 
     const onGameInfoReceived = (payload) => {
-      // const now = new Date().getTime();
-      // console.log(`[onGameInfoReceived-${now}] payload: ${payload.body}`);
       const payloadData = JSON.parse(payload.body);
       // console.error("GameInfo received", JSON.stringify(payloadData.message));
       if (JSON.stringify(gameInfoRef.current) === JSON.stringify(payloadData.message)) {
@@ -196,11 +249,12 @@ const Gameroom = () => {
         
         return;
       }
+      if (currentRoomNameValid.current !== payloadData.message.roomName){
+        currentRoomNameValid.current = payloadData.message.roomName
+      }
       if (gameTheme.current !== payloadData.message.theme){
         gameTheme.current = payloadData.message.theme
       }
-      // const diff = now - payloadData.timestamp;
-      // console.log(`[onGameInfoReceived-${now}] diff: ${diff}`);
       if (payloadData.message.gameStatus === "ready") {
         setShowReadyPopup(true);
       } else if (payloadData.message.gameStatus === "over") {
@@ -329,8 +383,9 @@ const Gameroom = () => {
     }
   }, [globalVolume]);
 
-  //debounce-throttle
-  const enterRoom = () => {
+  //throttle
+  const enterRoom = useCallback(() => {
+    console.log("entered once - throttle")
     const payload: Timestamped<PlayerAndRoomID> = {
       timestamp: new Date().getTime(),
       message: {
@@ -340,14 +395,27 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/users/enterroom",
+      `/app/message/users/enterroom/${currentRoomID}`,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
-  }
+    requestLists.current.push({ type: "enter",receiptId: receiptId });
+    console.log(requestLists.current)
+    const timeoutId = setTimeout(() => {
+      const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+      if (index !== INDEX_NOT_FOUND) {
+        requestLists.current.splice(index, 1);
+      }
+      console.log(requestLists.current)
+    }, RESPONSE_TIME);
+
+    return () => clearTimeout(timeoutId);
+  },[user.id,currentRoomID]);
+  const throttledEnterRoom = useCallback(throttle(enterRoom, THROTTLE_TIME), [enterRoom, THROTTLE_TIME]);
 
   //ready
-  const getReady = () => {
+  const getReady = useCallback(() => {
+    console.log("ready once - throttle")
     const payload: Timestamped<PlayerAndRoomID> = {
       // TODO: need to make sure the timestamp is UTC format
       // and invariant to the time zone settings
@@ -360,13 +428,27 @@ const Gameroom = () => {
     // get a random receipt uuid
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/users/ready",
+      `/app/message/users/ready/${currentRoomID}`,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
-  };
+    requestLists.current.push({ type: "ready",receiptId: receiptId });
+    console.log(requestLists.current)
+    const timeoutId = setTimeout(() => {
+      const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+      if (index !== INDEX_NOT_FOUND) {
+        requestLists.current.splice(index, 1);
+      }
+      console.log(requestLists.current)
+    }, RESPONSE_TIME);
 
-  const cancelReady = () => {
+    return () => clearTimeout(timeoutId);
+  },[user.id,currentRoomID]);
+  const throttledGetReady = useCallback(throttle(getReady, THROTTLE_TIME), [getReady, THROTTLE_TIME]);
+
+  //unready
+  const cancelReady = useCallback(() => {
+    console.log("unready once - throttle")
     const payload: Timestamped<PlayerAndRoomID> = {
       // TODO: need to make sure the timestamp is UTC format
       // and invariant to the time zone settings
@@ -378,14 +460,27 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/users/unready",
+      `/app/message/users/unready/${currentRoomID}`,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
-  };
+    requestLists.current.push({ type: "unready",receiptId: receiptId });
+    console.log(requestLists.current)
+    const timeoutId = setTimeout(() => {
+      const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+      if (index !== INDEX_NOT_FOUND) {
+        requestLists.current.splice(index, 1);
+      }
+      console.log(requestLists.current)
+    }, RESPONSE_TIME);
+
+    return () => clearTimeout(timeoutId);
+  },[user.id,currentRoomID]);
+  const throttledCancelReady = useCallback(throttle(cancelReady, THROTTLE_TIME),[cancelReady, THROTTLE_TIME]);
 
   //start game
-  const startGame = () => {
+  const startGame = useCallback(() => {
+    console.log("start button used once")
     const payload: Timestamped<PlayerAndRoomID> = {
       // TODO: need to make sure the timestamp is UTC format
       // and invariant to the time zone settings
@@ -397,14 +492,29 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/games/start",
+      `/app/message/games/start/${currentRoomID}`,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
-  };
+    requestLists.current.push({ type: "start",receiptId: receiptId });
+    console.log(requestLists.current)
+    const timeoutId = setTimeout(() => {
+      const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+      if (index !== INDEX_NOT_FOUND) {
+        requestLists.current.splice(index, 1);
+      }
+      console.log(requestLists.current)
+    }, RESPONSE_TIME);
+
+    return () => clearTimeout(timeoutId);
+  },[user.id,currentRoomID]);
+  const throttledStartGame = useCallback(throttle(startGame, THROTTLE_TIME),[startGame, THROTTLE_TIME]);
+
 
   //exit room
-  const exitRoom = () => {
+  const exitRoom = useCallback(() => {
+    console.warn("isStartedPressed",isStartedPressed)
+    console.log("exit button used once")
     const payload: Timestamped<PlayerAndRoomID> = {
       // TODO: need to make sure the timestamp is UTC format
       // and invariant to the time zone settings
@@ -416,15 +526,28 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/users/exitroom",
+      `/app/message/users/exitroom/${currentRoomID}`,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
+    // requestLists.current.push({ type: "leave",receiptId: receiptId });
+    // console.log(requestLists.current)
+    // const timeoutId = setTimeout(() => {
+    //   const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+    //   if (index !== INDEX_NOT_FOUND) {
+    //     requestLists.current.splice(index, 1);
+    //   }
+    //   console.log(requestLists.current)
+    // }, RESPONSE_TIME);
+    
+    // return () => clearTimeout(timeoutId);
     navigate("/lobby")
-  };
+  },[user.id,currentRoomID]);
+  const throttledExitRoom = useCallback(throttle(exitRoom, THROTTLE_TIME),[exitRoom, THROTTLE_TIME]);
 
-  //start game
-  const submitAnswer = (validateAnswer: String) => {
+  //validate Answer
+  const submitAnswer = useCallback((validateAnswer: string) => {
+    console.log("submit once - throttle")
     const answer = validateAnswer.toLowerCase().replace(/\s/g, "");
     const payload: Timestamped<AnswerGuess> = {
       timestamp: new Date().getTime(),
@@ -438,14 +561,27 @@ const Gameroom = () => {
     };
     const receiptId = uuidv4();
     stompClientRef.current?.send(
-      "/app/message/games/validate",
+      `/app/message/games/validate/${currentRoomID}`,
       { receiptId: receiptId },
       JSON.stringify(payload)
     );
-  };
+    requestLists.current.push({ type: "submit",receiptId: receiptId });
+    console.log(requestLists.current)
+    const timeoutId = setTimeout(() => {
+      const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+      if (index !== INDEX_NOT_FOUND) {
+        requestLists.current.splice(index, 1);
+      }
+      console.log(requestLists.current)
+    }, RESPONSE_TIME);
+
+    return () => clearTimeout(timeoutId);
+  },[user.id,gameInfo,currentRoomID]);
+  const throttledSubmitAnswer = useCallback(throttle(submitAnswer, THROTTLE_TIME),[submitAnswer, THROTTLE_TIME]);
 
   //upload audio
-  const uploadAudio = () => {
+  const uploadAudio = useCallback(() => {
+    console.log("audio upload once - throttle")
     console.log("[uploadAudio], myRecordingReversedRef.current", myRecordingReversedRef.current);
     if (!myRecordingReversedRef.current) {
       console.error("No audio to upload");
@@ -460,23 +596,36 @@ const Gameroom = () => {
         timestamp: new Date().getTime(),
         message: {
           userID: user.id,
+          roomID: currentRoomID,
           audioData:base64data,
         },
       };
       const receiptId = uuidv4();
       stompClientRef.current.send(
-        "/app/message/games/audio/upload" /*URL*/,
+        `/app/message/games/audio/upload/${currentRoomID}`,
         { receiptId: receiptId },
         JSON.stringify(payload)
       );
+      requestLists.current.push({ type: "upload",receiptId: receiptId });
+      console.log(requestLists.current)
+      const timeoutId = setTimeout(() => {
+        const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+        if (index !== INDEX_NOT_FOUND) {
+          requestLists.current.splice(index, 1);
+        }
+        console.log(requestLists.current)
+      }, RESPONSE_TIME);
+
+      return () => clearTimeout(timeoutId);
     };
     reader.readAsDataURL(myRecordingReversedRef.current);
-  };
+  },[user.id]);
+  const throttledUploadAudio = useCallback(throttle(uploadAudio, THROTTLE_TIME),[uploadAudio, THROTTLE_TIME]);
 
 
   //#dendregion -----------------WebSocket Send Functions-----------------
 
-  const handleAudioReversed = useMemo(() => (audio: Blob) => {
+  const handleAudioReversed = useCallback((audio: Blob) => {
     if (audio) {
       myRecordingReversedRef.current = audio;
       console.log("[GameRoom]Get reversed audio from AudioRecorder Success");
@@ -484,12 +633,13 @@ const Gameroom = () => {
     }
   }, []);
 
-  console.log("[Gameroom]the player list is")
+  console.log("[GameRoom]playerLists",playerLists);
   console.log(playerLists);
 
   const LeaderBoard = ({ playerStatus }) => {
     console.log("[LeaderBoard]",playerStatus)
     const sortedPlayerStatus = playerStatus.slice().sort((a, b) => b.score.total - a.score.total);
+    const LEADER_BOARD_GAP = 6;
     
     return (
       <>
@@ -530,14 +680,14 @@ const Gameroom = () => {
                     <React.Fragment key={detailIndex}>
                       <span
                         className="gameroom scorenum"
-                        style={{ gridColumn: `${detailIndex + 6}` }}
+                        style={{ gridColumn: `${detailIndex + LEADER_BOARD_GAP}` }}
                       >
                         {detail.score}
                       </span>
 
                       <span
                         className="gameroom ldtitle"
-                        style={{ gridColumn: `${detailIndex + 6}` }}
+                        style={{ gridColumn: `${detailIndex + LEADER_BOARD_GAP}` }}
                       >
                         {detail.word}
                       </span>
@@ -579,7 +729,7 @@ const Gameroom = () => {
   };
 
 
-  if (playerLists === null) {
+  if (playerLists === null || playerLists.length === 0) {
     return <div>Loading...</div>;
   }
 
@@ -590,7 +740,7 @@ const Gameroom = () => {
         playerStatus={playerLists}
         sharedAudioList={sharedAudioList}
         gameTheme={gameTheme.current}
-        currentRoomName={currentRoomName}
+        currentRoomName={currentRoomNameValid.current}
         showReadyPopup={showReadyPopup}
         gameOver={gameOver}
         globalVolume={globalVolume}
@@ -618,7 +768,7 @@ const Gameroom = () => {
         {!gameOver && showReadyPopup && (
           <div className="gameroom readypopupbg">
             <div className="gameroom readypopupcontainer">
-              <span className="gameroom popuptitle"> {"Room#" + currentRoomName}</span>
+              <span className="gameroom popuptitle"> {"Room#" + currentRoomNameValid.current}</span>
               <span className="gameroom popuptheme">{gameTheme.current}</span>
               <span className="gameroom popuptext">
                 {" "}
@@ -629,14 +779,22 @@ const Gameroom = () => {
                   <>
                     <div
                       className="gameroom readybutton"
-                      onClick={() => startGame()}
+                      onClick={() => {
+                        setIsStartedPressed(true);
+                        throttledStartGame();
+                      }}
                       //onKeyDown={() => getReady()}
                     >
                       Start
                     </div>
                     <div
-                      className="gameroom cancelbutton"
-                      onClick={() => exitRoom()}
+                      className="gameroom leavebutton"
+                      onClick={() => {
+                        // disable the quit button if the game is started
+                        if (!isStartedPressed) {
+                          throttledExitRoom();
+                        }
+                      }}
                     >
                       Quit
                     </div>
@@ -644,20 +802,30 @@ const Gameroom = () => {
                 )}
                 {gameInfo.roomOwner.id !== user.id &&(
                   <>
-                    <div
-                      className="gameroom readybutton"
-                      onClick={() => getReady()}
-                      onKeyDown={() => getReady()}
-                    >
-                      Confirm
-                    </div>
-                    <div
-                      className="gameroom cancelbutton"
-                      onClick={() => cancelReady()}
-                      onKeyDown={() => cancelReady()}
-                    >
-                      Cancel
-                    </div>
+                    {(readyStatus.current === true)&&(
+                      <div
+                        className="gameroom cancelbutton"
+                        onClick={() => throttledCancelReady()}
+                        onKeyDown={() => throttledCancelReady()}
+                      >
+                        Cancel
+                      </div>
+                    )}
+                    {(readyStatus.current === false)&&(
+                      <div
+                        className="gameroom readybutton"
+                        onClick={() => throttledGetReady()}
+                        onKeyDown={() => throttledGetReady()}
+                      >
+                        Confirm
+                      </div>
+                    )}
+                    <div className="gameroom leavebutton" onClick={
+                      () => {
+                        //console.log("leave room");
+                        exitRoom();
+                      }
+                    }>leave</div>
                   </>
                 )}
               </div>
@@ -687,7 +855,7 @@ const Gameroom = () => {
             currentStatus === "guess" && (
             <div style={{ display: "flex", flexDirection: "row" }}>
               <ValidateAnswerForm 
-                submitAnswer={submitAnswer}
+                submitAnswer={throttledSubmitAnswer}
                 roundFinished={roundFinished.current}  
               />
             </div>
@@ -695,17 +863,12 @@ const Gameroom = () => {
           <div style={{display:"flex",flexDirection:"row"}}>
             {showReadyPopup === true &&(
               // {showReadyPopup === true && user.id !== gameInfo.roomOwner.id &&(
-              <div className="gameroom cancelbutton" onClick={
-                () => {
-                  console.log("leave room");
-                  exitRoom();
-                }
-              }>leave</div>
+              <></>
             )}
             {gameOver === true &&(
-              <div className="gameroom cancelbutton" onClick={
+              <div className="gameroom leavebutton" onClick={
                 () => {
-                  console.log("leave room after over");
+                  //console.log("leave room after over");
                   exitRoom();
                   // navigate("/lobby");
                 }
@@ -717,8 +880,8 @@ const Gameroom = () => {
                 disabled={roundFinished.current}
                 onClick={
                   () => {
-                    console.log("upload audio");
-                    uploadAudio();
+                    //console.log("upload audio");
+                    throttledUploadAudio();
                   }
                 }>upload</button>
             )}
@@ -726,8 +889,8 @@ const Gameroom = () => {
               currentStatus === "guess" && (
               <div style={{marginTop:"1rem"}} className="gameroom readybutton" onClick={
                 () => {
-                  console.log("upload audio");
-                  uploadAudio();
+                  //console.log("upload audio");
+                  throttledUploadAudio();
                 }
               }>share your audio</div>
             )}

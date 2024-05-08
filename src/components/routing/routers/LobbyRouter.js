@@ -8,14 +8,11 @@ const LobbyRouter = () => {
     <div style={{display: "flex", flexDirection: "column"}}>
       <Routes>
 
-        <Route path="" element={<Lobby />} />
-
-        <Route path="dashboard" element={<Lobby />} />
-
-        <Route path="*" element={<Navigate to="dashboard" replace />} />
+        <Route path="/" element={<Lobby />} />
+        <Route path="*" element={<Navigate to="/" />} />
 
       </Routes>
-   
+  
     </div>
   );
 };

@@ -6,13 +6,15 @@ import { Button } from "components/ui/Button";
 import "styles/views/Register.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
-
+import { MAX_USERNAME_LENGTH, HTTP_STATUS } from "../../constants/constants";
+import { showToast} from "../../helpers/toastService";
 /*
 It is possible to add multiple components inside a single file,
 however be sure not to clutter your files with an endless amount!
 As a rule of thumb, use one file per component and only add small,
 specific components that belong to the main one in the same file.
  */
+const CHAR_NOT_FOUND = -1;
 const FormField = (props) => {
   return (
     <div className="login field">
@@ -21,6 +23,7 @@ const FormField = (props) => {
         className="login input"
         placeholder="enter here.."
         value={props.value}
+        type={props.type}
         onChange={(e) => props.onChange(e.target.value)}
       />
     </div>
@@ -31,13 +34,14 @@ FormField.propTypes = {
   label: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func,
+  type: PropTypes.string
 };
 
 const Register = () => {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState<string>(null);
-  const [password, setPassword] = useState<string>(null);
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const doRegister = async () => {
     try {
@@ -50,12 +54,24 @@ const Register = () => {
       sessionStorage.setItem("token", user.token);
       sessionStorage.setItem("id", user.id);
       sessionStorage.setItem("username", user.username);
-      // Login successfully worked --> navigate to the route /game in the LobbyRouter
+      // Register successfully worked --> navigate to the route /game in the LobbyRouter
+      showToast("Register successful!", "success");
       navigate("/lobby");
     } catch (error) {
-      alert(
-        `Something went wrong during the login: \n${handleError(error)}`
-      );
+      let message = "An unexpected error occurred during Register.";
+      if (error.response) {
+        switch (error.response.status) {
+        case HTTP_STATUS.CONFLICT:
+          message = "Register failed: Username has been taken, please change a username.";
+          break;
+        default:
+          message = `Register failed: ${error.response.data.reason || "Please try again later."}`;
+        }
+      } else {
+        // if no response from the server
+        message = "The server cannot be reached. Please try again later."
+      }
+      showToast(message, "error");
     }
   };
 
@@ -67,16 +83,22 @@ const Register = () => {
           <FormField
             label="Username"
             value={username}
-            onChange={(un: string) => setUsername(un)}
+            type="text"
+            onChange={(un: string) => {
+              if (un.length <= MAX_USERNAME_LENGTH) setUsername(un);
+            }}
           />
           <FormField
             label="Password"
             value={password}
-            onChange={(n: any) => setPassword(n)}
+            type="password"
+            onChange={(n: any) => {
+              if (n.length <= MAX_USERNAME_LENGTH) setPassword(n)
+            }}
           />
           <div className="register button-container">
             <Button
-              disabled={!username || !password ||password.indexOf(" ") !== -1|| username.indexOf(" ") !== -1}
+              disabled={!username || !password ||password.indexOf(" ") !== CHAR_NOT_FOUND || username.indexOf(" ") !== CHAR_NOT_FOUND }
               width="75%"
               onClick={() => doRegister()}
               style={{ color: "black"}}

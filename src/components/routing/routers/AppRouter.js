@@ -6,8 +6,6 @@ import {LoginGuard} from "../routeProtectors/LoginGuard";
 import Register from "../../views/Register";
 import Login from "../../views/Login";
 import Gameroom from "../../views/Gameroom";
-import Profile from "../../views/Profile";
-import EditProfile from "../../views/Editprofile";
 /**
  * Main router of your application.
  * In the following class, different routes are rendered. In our case, there is a Login Route with matches the path "/login"
@@ -21,9 +19,13 @@ const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* global guard for all the routes */}
+        <Route path="/*" element={<LoginGuard />}>
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Route>
 
         <Route path="/lobby/*" element={<LobbyGuard />}>
-          <Route path="/lobby/*" element={<LobbyRouter base="/lobby"/>} />
+          <Route path="*" element={<LobbyRouter base="/lobby"/>} />
         </Route>
 
         <Route path="/login" element={<LoginGuard />}>
@@ -34,17 +36,10 @@ const AppRouter = () => {
           <Route path="/register" element={<Register/>} />
         </Route>
 
-        {/* guard to user profile page */}
-        <Route path="/user/:id" element={<LobbyGuard />}>
-          <Route index element={<Profile />} />
-        </Route>
-
         {/* no guard for gameroom page now*/}
         {/* the parameter name should match with the useParam in the Gameroom */}
-        <Route path="/rooms/:currentRoomID/:currentRoomName" element={<Gameroom/>} />
-        
-        <Route path="/editprofile" element={<LobbyGuard />}>
-          <Route index element={<EditProfile />} />
+        <Route path="/rooms/:currentRoomID/:currentRoomName" element={<LobbyGuard/>} >
+          <Route path="" element={<Gameroom />} />
         </Route>
 
         <Route path="/" element={

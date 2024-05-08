@@ -31,7 +31,7 @@ export const PlayerList = (props:PlayerListProps) => {
   return (
     <div className="gameroom left-area">
       <div className="gameroom roominfocontainer">
-        <div className="gameroom roominfotitle">ROOM</div>
+        <div className="gameroom roomifotitle">ROOM</div>
         <div className="gameroom roominfo">
           {"#" + currentRoomName + "-" + gameTheme}
         </div>
