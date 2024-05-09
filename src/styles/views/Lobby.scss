@@ -6,7 +6,10 @@
 
   for more information visit https://sass-lang.com/guide
  */
-
+.button:focus, .input:focus, [tabIndex="0"]:focus {
+  outline: 2px solid #66b3ff; /* 蓝色边框 */
+  background-color: #e6f7ff; /* 浅蓝色背景 */
+}
 .lobby {
   &.container {
     background: rgba(255, 255, 255);
@@ -129,6 +132,7 @@
   justify-content: space-between;
   flex-direction: row;
   text-align: center;
+  cursor: pointer;
 }
 .room {
   background-color: #fff;
