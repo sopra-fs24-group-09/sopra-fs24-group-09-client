@@ -431,7 +431,6 @@ const Lobby = () => {
         key={Room.roomId}
         onClick={handleRoomClick(Room)}
         onKeyDown={(e) => { if (e.key === "Enter") handleRoomClick(Room); }}
-        tabIndex="0"
         role="button"
         aria-label="Handle Room Click"
       >
