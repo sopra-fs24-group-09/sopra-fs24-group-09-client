@@ -1,6 +1,7 @@
 import React, { useCallback, useRef, useEffect, useState } from "react";
 import { api, handleError } from "helpers/api";
 import { Button } from "components/ui/Button";
+import { throttle } from "lodash";
 import { useLocation, useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
@@ -17,6 +18,7 @@ import { showToast} from "../../helpers/toastService";
 import { Timestamped, RoomInfo, RoomPlayer, PlayerAndRoomID } from "stomp_types";
 const DEFAULT_MAX_PLAYERS = 5;
 const DEFAULT_MIN_PLAYERS = 2;
+const RESPONSE_TIME = 1000;
 
 type PlayerProps = {
   user: User;
@@ -417,29 +419,29 @@ const Lobby = () => {
     }
   }
 
+  const throttledClickHandler = throttle((Room, navigate, showToast) => {
+    try {
+      if (Room.roomPlayersList.length === Room.roomMaxNum) {
+        showToast("Room is Full, please enter another room!", "error");
+      } else if (Room.status === "In Game") {
+        showToast("Game is already started, please enter another room!", "error");
+      } else {
+        navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
+      }
+    } catch (error) {
+      console.error(`Something went wrong during the enterRoom: \n${error}`);
+      showToast(`Something went wrong during the enterRoom: \n${error}`, "error");
+    }
+  }, RESPONSE_TIME);
+
+  const handleRoomClick = useCallback((Room) => (e) => {
+    e.preventDefault();
+    throttledClickHandler(Room, navigate, showToast);
+  }, [navigate, showToast]);
 
   const renderRoomLists = () => {
     return rooms.map((Room) => (
-      <div className="room-container" key={Room.roomId} onClick={ (e) => {
-        e.preventDefault();
-        // const currentId = sessionStorage.getItem("id");
-        // console.error("RoomMaxPlayers:", Room.roomMaxNum);
-        // console.error("RoomPlayersList.length:", Room.roomPlayersList.length);
-        try {
-          if (Room.roomPlayersList.length === Room.roomMaxNum)
-            showToast("Room is Full, please enter another room!", "error");
-          else if (Room.status === "In Game")
-            showToast("Game is already started, please enter another room!", "error");
-          else
-            navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
-        }
-        catch (error) {
-          console.error(`Something went wrong during the enterRoom: \n${error}`);
-          // alert(`Something went wrong during the enterRoom: \n${error}`);
-          showToast(`Something went wrong during the enterRoom: \n${error}`, "error");
-        };
-
-      }}>
+      <div className="room-container" key={Room.roomId} onClick={handleRoomClick(Room)}>
         <div className="room-players">
           {Room.roomPlayersList?.map((user, index) => (
             <div className="player" key={index}>
