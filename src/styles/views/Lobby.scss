@@ -135,8 +135,6 @@
   margin-bottom: 10px;
   border-radius: 8px;
   text-align: center;
-  //overflow: hidden;
-
   .room-header {
     margin-left: 10px;
     flex-shrink: 0;     // Allow both children to grow and take up equal space
@@ -147,7 +145,6 @@
     padding: 10px;
     text-align: center;
   }
-
   .room-header {
     flex-shrink: 0;
     flex-grow: 0;
@@ -159,7 +156,6 @@
     text-align: center;
     padding: 10px;    // Align room details to the end of the flex container
   }
-
   .room-footer {
     display: flex;
     justify-content: space-between;
@@ -176,12 +172,10 @@
   flex-wrap: wrap; // Allow avatar list to wrap
   justify-content: flex-start; // Align avatars to the left
   margin: 0 -10px; // Offset for each avatar's margin, adjustable as needed
-
   .player {
     width: 20%; // Four avatars per row, each taking 25% of total width
     padding-left: 10%; // Padding around each avatar, adjustable as needed
     box-sizing: border-box; // Include padding in width calculation
-
     i {
       display: block; // Ensure icons are block-level
       font-size: 3.8rem; // Icon size
@@ -194,27 +188,21 @@
   margin-right: 10px;
   margin-left: 10px;
   text-align: center;
-
   .player-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     background-color: #D9D9D9; // Default background color
   }
-
   .player-username {
     font-size: 0.8em;
   }
 }
 .room-players {
-  //width: 70%;
-
   align-items: flex-start;   // Align the players to the start of the flex container
   flex: 1 1 auto;                // Allow both children to grow and take up equal space
   display: flex;
   flex-direction: row;    // Stack children vertically
-  //align-items: center;       // Horizontally center items
-  //justify-content: center;   // Vertically center items
   padding: 10px;
   overflow-x: auto;
   white-space: nowrap;
@@ -302,25 +290,20 @@
   height: 2rem;
   font-size: 1.5rem;
   font-weight: bold;
-  //display: flex;
   text-align: center;
-  //line-height: 2rem;
   color: white;
   background: $classicYellow;
   border-radius: $borderRadius;
-  //padding: 0.25rem;
   cursor: pointer;
 }
 .intro-popup {
   height:60%;
-  //width: 500px;
   &.btn-container {
     width: 200px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: flex-end;
-    //margin-top: 10%;
     Button {
       height: auto;
       font-size: 1em;
@@ -493,6 +476,5 @@
     color: white;
     text-transform: none;
     font-weight: bolder;
-
   }
 }
