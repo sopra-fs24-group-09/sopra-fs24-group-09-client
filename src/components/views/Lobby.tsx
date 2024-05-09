@@ -426,13 +426,7 @@ const Lobby = () => {
 
   const renderRoomLists = () => {
     return rooms.map((Room) => (
-      <div
-        className="room-container"
-        key={Room.roomId}
-        onClick={handleRoomClick(Room)}
-        onKeyDown={(e) => { if (e.key === "Enter") handleRoomClick(Room); }}
-        tabIndex="0"
-      >
+      <div className="room-container" key={Room.roomId} onClick={handleRoomClick(Room)}>
         <div className="room-players">
           {Room.roomPlayersList?.map((user, index) => (
             <div className="player" key={index}>
@@ -468,38 +462,15 @@ const Lobby = () => {
             fontSize: "3.8rem",
             marginTop: "0.8rem",
             cursor: "pointer"
-          }}
-          onKeyDown={(e) => { if (e.key === "Enter") toggleProfilePop(); }}
-          tabIndex="0"
-        />
+          }} />
         <div className="name">{user.username}</div>
         <div className="btn-logout-container">
-          <Button className="logout-btn"
-            onClick={logout}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                logout().catch((error) => console.error("Error logging out:", error));
-              }
-            }}
-            tabIndex="0"
-          >
-            logout
-          </Button>
+          <Button className="logout-btn" onClick={logout}>logout</Button>
         </div>
       </div>
       <div className="title-container">
         <div className="big-title">Kaeps</div>
-        <div className="information"
-          onClick={toggleInfoPop}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              toggleInfoPop();
-            }
-          }}
-          tabIndex="0"
-        >
-          i
-        </div>
+        <div className="information" onClick={toggleInfoPop}>i</div>
       </div>
 
       <div className="lobby room-list-wrapper">
@@ -509,15 +480,7 @@ const Lobby = () => {
           {renderRoomLists()}
         </div>
         <div className="lobby room-list btn-container">
-          <Button className="create-room-btn"
-            onClick={toggleRoomCreationPop}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                toggleRoomCreationPop();
-              }
-            }}
-            tabIndex="0"
-          >
+          <Button className="create-room-btn" onClick={toggleRoomCreationPop}>
             New Room
           </Button>
         </div>
@@ -526,19 +489,10 @@ const Lobby = () => {
 
       <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className="profile-popup">
         <BaseContainer className="profile-popup content">
-          <div className="avatar-container"
-            onClick={() => {
-              toggleAvatarPop();
-              toggleProfilePop();
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                toggleAvatarPop();
-                toggleProfilePop();
-              }
-            }}
-            tabIndex="0"
-          >
+          <div className="avatar-container" onClick={() => {
+            toggleAvatarPop();
+            toggleProfilePop();
+          }}>
             <i className={"twa twa-" + user.avatar} style={{ fontSize: "10rem", marginTop: "0.8rem", textAlign: "center" }} />
           </div>
           <div className="profile-popup field">
@@ -565,27 +519,13 @@ const Lobby = () => {
           {/*<div>RegisterDate: {user && new Date(user.registerDate).toLocaleDateString()}</div>*/}
 
           <div className="profile-popup btn-container">
-            <Button className="cancel"
-              onClick={() => {
-                toggleProfilePop();
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  toggleProfilePop();
-                }
-              }}
-              tabIndex="0"
-            >
+            <Button className="cancel" onClick={() => {
+              toggleProfilePop();
+            }}>
               Cancel
             </Button>
             <Button className="cancel" 
               onClick={() => doEdit()}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  doEdit().catch((error) => console.error("Error editing:", error));
-                }
-              }}
-              tabIndex="0"
               disabled = {username === "" || username === user.username}
             >
               Edit
@@ -602,20 +542,10 @@ const Lobby = () => {
         <div className="avatar-list">
           {avatarList?.map((avatar, index) => (
             <div className="player" key={index} >
-              <i className={"twa twa-" + avatar}
-                style={{ fontSize: "3.8rem" }}
-                onClick={() => {
-                  changeAvatar(avatar).then(r => toggleAvatarPop);
-                  toggleAvatarPop();
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    changeAvatar(avatar).then(r => toggleAvatarPop);
-                    toggleAvatarPop();
-                  }
-                }}
-                tabIndex="0"
-              />
+              <i className={"twa twa-" + avatar} style={{ fontSize: "3.8rem" }} onClick={() => {
+                changeAvatar(avatar).then(r => toggleAvatarPop);
+                toggleAvatarPop();
+              }} />
             </div>
           ))}
         </div>
@@ -667,24 +597,8 @@ const Lobby = () => {
           />
           <div className="room-creation-popup btn-container">
             <Button disabled={roomName === "" || maxRoomPlayers < DEFAULT_MIN_PLAYERS || maxRoomPlayers > DEFAULT_MAX_PLAYERS || roomTheme === ""}
-              className="create-room" onClick={createRoom} onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  createRoom().then(r => console.log("Create Room"));
-                }
-              }}
-              tabIndex="0"
-            >
-              Create Room
-            </Button>
-            <Button className="cancel" onClick={toggleRoomCreationPop} onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                toggleRoomCreationPop();
-              }
-            }}
-            tabIndex="0"
-            >
-              Cancel
-            </Button>
+              className="create-room" onClick={createRoom}>Create Room</Button>
+            <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </div>
         </BaseContainer>
 
@@ -705,13 +619,7 @@ const Lobby = () => {
           <p>Join a room or create one to play with friends!</p>
         </div>
         <div className="intro-popup btn-container">
-          <Button className="cancel" onClick={toggleInfoPop} onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              toggleInfoPop();
-            }
-          }}
-          tabIndex="0"
-          >
+          <Button className="cancel" onClick={toggleInfoPop}>
             Close
           </Button>
         </div>
