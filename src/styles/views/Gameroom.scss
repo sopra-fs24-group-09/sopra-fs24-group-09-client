@@ -59,17 +59,17 @@
       align-items: center;
       background-color: $whiteYellow;
     }
-    .leaderboarddiv {
-      right:0;
-      flex-grow: 1;
-      min-height: fit-content;
-      // height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background-color: $whiteYellow;
-      justify-content: center;
-    }
+    //.leaderboarddiv {
+    //  right:0;
+    //  flex-grow: 1;
+    //  min-height: fit-content;
+    //  // height: 100%;
+    //  display: flex;
+    //  flex-direction: column;
+    //  align-items: center;
+    //  background-color: $whiteYellow;
+    //  justify-content: center;
+    //}
     .readypopupbg {
       // height: 40vh;
       // width: 35vw;
@@ -416,158 +416,374 @@
     font-weight: 500;
     color: $darkBlue;
   }
-  &.leaderboard {
-    //background-color: $whiteYellow;
+  //&.leaderboard {
+  //  //background-color: $whiteYellow;
+  //  background-color: $lightYellow;
+  //  border-style: solid;
+  //  border-width: 1rem;
+  //  border-radius: 2rem;
+  //  border-color: $classicYellow;
+  //  height:50vh;
+  //  width: 60vw;
+  //  overflow: auto;
+  //}
+  //&.singleScoreContainer {
+  //  height:13vh;
+  //  margin: 1.5vh 2vw;
+  //  border-radius: 22px;
+  //  background-color: $whiteYellow;
+  //  display: grid;
+  //  grid-template-columns: minmax(5vw, 5vw) minmax(5vw, 5vw) minmax(5vw, 5vw) minmax(5vw, 5vw) repeat(auto-fit, minmax(6vw, 6vw));
+  //  gap: 0.5rem;
+  //}
+  //&.ldPlayerAvatar {
+  //  grid-column: 2;
+  //  grid-row: 1;
+  //  height: 3.4rem;
+  //  width: 3.4rem;
+  //  position: relative;
+  //  top: 1rem;
+  //  left:1rem;
+  //  background-color: #D9D9D9;
+  //  border-radius: 15px;
+  //  display: flex;
+  //  justify-content: center;
+  //  align-items: center;
+  //}
+  //&.ranking-0 {
+  //  grid-column: 1;
+  //  position: relative;
+  //  top: 3.9vh;
+  //  left: 1vw;
+  //  background-color: lighten($classicYellow,10%);
+  //  height: 2.5rem;
+  //  width: 2.5rem;
+  //  border-radius: 2rem;
+  //  display: flex;
+  //  justify-content: center;
+  //  align-items: center;
+  //  font-weight: 700;
+  //  font-size: 1.5rem;
+  //  color:$darkBlue;
+  //}
+  //&.ranking-1 {
+  //  grid-column: 1;
+  //  position: relative;
+  //  top: 3.9vh;
+  //  left: 1vw;
+  //  background-color: lighten($classicYellow,18%);
+  //  height: 2.5rem;
+  //  width: 2.5rem;
+  //  border-radius: 2rem;
+  //  display: flex;
+  //  justify-content: center;
+  //  align-items: center;
+  //  font-weight: 700;
+  //  font-size: 1.5rem;
+  //  color:$darkBlue;
+  //}
+  //&.ranking-2 {
+  //  grid-column: 1;
+  //  position: relative;
+  //  top: 3.9vh;
+  //  left: 1vw;
+  //  background-color: lighten($classicYellow,26%);
+  //  height: 2.5rem;
+  //  width: 2.5rem;
+  //  border-radius: 2rem;
+  //  display: flex;
+  //  justify-content: center;
+  //  align-items: center;
+  //  font-weight: 700;
+  //  font-size: 1.5rem;
+  //  color:$darkBlue;
+  //}
+  //&.ranking-3 {
+  //  grid-column: 1;
+  //  position: relative;
+  //  top: 3.9vh;
+  //  left: 1vw;
+  //  background-color: lighten($greyBlue,10%);
+  //  height: 2.5rem;
+  //  width: 2.5rem;
+  //  border-radius: 2rem;
+  //  display: flex;
+  //  justify-content: center;
+  //  align-items: center;
+  //  font-weight: 700;
+  //  font-size: 1.5rem;
+  //  color:$darkBlue;
+  //}
+  //&.ranking-4 {
+  //  grid-column: 1;
+  //  position: relative;
+  //  top: 3.9vh;
+  //  left: 1vw;
+  //  background-color: lighten($greyBlue,5%);
+  //  height: 2.5rem;
+  //  width: 2.5rem;
+  //  border-radius: 2rem;
+  //  display: flex;
+  //  justify-content: center;
+  //  align-items: center;
+  //  font-weight: 700;
+  //  font-size: 1.5rem;
+  //  color:$darkBlue;
+  //}
+  //&.ldPlayerName {
+  //  grid-column: 2;
+  //  grid-row: 2;
+  //  position: relative;
+  //  top: 0.2rem;
+  //  left:1.4rem;
+  //  font-weight: 700;
+  //  font-size: 0.8rem;
+  //  color:$darkBlue;
+  //}
+  //&.scorenum {
+  //  margin-left: 2rem;
+  //  position: relative;
+  //  top: 3.9vh;
+  //  left: 1vw;
+  //  background-color: lighten($greyBlue,5%);
+  //  height: 2.5rem;
+  //  width: 2.5rem;
+  //  border-radius: 0.5rem;
+  //  display: flex;
+  //  justify-content: center;
+  //  align-items: center;
+  //  font-weight: 700;
+  //  font-size: 1.5rem;
+  //  color:$darkBlue;
+  //}
+  //&.ldtitle {
+  //  grid-row: 2;
+  //  margin-left: 2rem;
+  //  position: relative;
+  //  top: 0.2rem;
+  //  left:1.0rem;
+  //  font-weight: 700;
+  //  font-size: 0.8rem;
+  //  color:lighten($darkBlue,20%);
+  //  max-width: 100%;
+  //  word-wrap: break-word;
+  //}
+
+  /* General Classes */
+  .score-container {
+    height: 3.4rem;
+    width: 3.4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    //margin-left: 2rem;
+    position: relative;
+    //top: 3.9vh;
+    //left: 1vw;
+    background-color: lighten($greyBlue, 5%);
+    padding: 5%;
+    border-radius: 1rem;
+    background-clip: content-box;
+    // height: 2.5rem;
+    // width: 2.5rem;
+    color: $darkBlue;
+  }
+
+  .title {
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: lighten($darkBlue, 20%);
+    max-width: 100%;
+    word-wrap: break-word;
+    margin-left: 0rem;
+    position: relative;
+    bottom: 0rem;
+    //top: 0.2rem;
+    //left: 1.0rem;
+  }
+
+  .avatar {
+    height: 3.4rem;
+    width: 3.4rem;
+    background-color: #D9D9D9;
+    // border-radius: 15px;
+    border-radius: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    //grid-column: 2;
+  }
+  .ldgrid-item-1 {
+    grid-column: 2;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    // align-self: flex-start;
+    height: 100%;
+    // margin-top: 15%;
+    align-items: center;
+    justify-content: flex-end;
+    .title{
+      flex-grow: 1;
+      align-content: flex-start;
+      max-height: 30%;
+      overflow: auto;
+      text-align: end;
+    }
+  }
+  .ldgrid-item-2 {
+    grid-column: 3;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    // align-self: flex-start;
+    height: 100%;
+    // margin-top: 15%;
+    align-items: center;
+    justify-content: flex-end;
+    .title{
+      flex-grow: 1;
+      align-content: flex-start;
+      max-height: 30%;
+      overflow: auto;
+      text-align: end;
+    }
+  }
+  .ldgrid-item-3 {
+    grid-column: 4;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    // align-self: flex-start;
+    height: 100%;
+    // margin-top: 15%;
+    align-items: center;
+    justify-content: flex-end;
+    .title{
+      flex-grow: 1;
+      align-content: flex-start;
+      max-height: 30%;
+      overflow: auto;
+      text-align: end;
+    }
+  }
+  .ldgrid-item-4 {
+    grid-column: 5;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    // align-self: flex-start;
+    height: 100%;
+    // margin-top: 15%;
+    align-items: center;
+    justify-content: flex-end;
+    .title{
+      flex-grow: 1;
+      align-content: flex-start;
+      max-height: 30%;
+      overflow: auto;
+      text-align: end;
+    }
+  }
+  .ldgrid-item {
+    display: flex;
+    padding: 0.5rem;
+    flex-direction: column;
+    // align-self: flex-start;
+    height: 100%;
+    // margin-top: 15%;
+    align-items: center;
+    justify-content: flex-end;
+    .title{
+      flex-grow: 1;
+      align-content: flex-start;
+      max-height: 30%;
+      overflow: auto;
+      text-align: end;
+    }
+  }
+
+
+  .ranking-badge {
+    grid-column: 1;
+    // position: relative;
+    // top: 3.9vh;
+    // left: 1vw;
+    // margin-left: 0.6rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: $darkBlue;
+  }
+
+  .leaderboarddiv {
+    flex-grow: 1;
+    min-height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: $whiteYellow;
+    justify-content: center;
+  }
+
+  .leaderboard {
     background-color: $lightYellow;
     border-style: solid;
     border-width: 1rem;
     border-radius: 2rem;
     border-color: $classicYellow;
-    height:50vh;
-    width: 60vw;
+    height: 50vh;
+    width: auto;
+    min-width: 50vw;
+    max-width: 70vw;
     overflow: auto;
   }
-  &.singleScoreContainer {
-    height:13vh;
+
+  .single-score-container {
+    // height: 13vh;
     margin: 1.5vh 2vw;
     border-radius: 22px;
     background-color: $whiteYellow;
     display: grid;
-    grid-template-columns: minmax(5vw, 5vw) minmax(5vw, 5vw) minmax(5vw, 5vw) minmax(5vw, 5vw) repeat(auto-fit, minmax(6vw, 6vw));
+    grid-template-columns: minmax(3vw, 3vw) repeat(auto-fit, minmax(6vw, 6vw));
+    width: auto;
+    min-width: 50vw;
+    max-width: 70vw;
+    align-items: center;
+    justify-content: center;
     gap: 0.5rem;
   }
-  &.ldPlayerAvatar {
-    grid-column: 2;
-    grid-row: 1;
-    height: 3.4rem;
-    width: 3.4rem;
-    position: relative;
-    top: 1rem;
-    left:1rem;
-    background-color: #D9D9D9;
-    border-radius: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
+  /* Ranking Styles */
+  .ranking-0 {
+    background-color: lighten($classicYellow, 10%);
   }
-  &.ranking-0 {
-    grid-column: 1;
-    position: relative;
-    top: 3.9vh;
-    left: 1vw;
-    background-color: lighten($classicYellow,10%);
-    height: 2.5rem;
-    width: 2.5rem;
-    border-radius: 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 700;
-    font-size: 1.5rem;
-    color:$darkBlue;
+
+  .ranking-1 {
+    background-color: lighten($classicYellow, 18%);
   }
-  &.ranking-1 {
-    grid-column: 1;
-    position: relative;
-    top: 3.9vh;
-    left: 1vw;
-    background-color: lighten($classicYellow,18%);
-    height: 2.5rem;
-    width: 2.5rem;
-    border-radius: 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 700;
-    font-size: 1.5rem;
-    color:$darkBlue;
+
+  .ranking-2 {
+    background-color: lighten($classicYellow, 26%);
   }
-  &.ranking-2 {
-    grid-column: 1;
-    position: relative;
-    top: 3.9vh;
-    left: 1vw;
-    background-color: lighten($classicYellow,26%);
-    height: 2.5rem;
-    width: 2.5rem;
-    border-radius: 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 700;
-    font-size: 1.5rem;
-    color:$darkBlue;
+
+  .ranking-3 {
+    background-color: lighten($greyBlue, 10%);
   }
-  &.ranking-3 {
-    grid-column: 1;
-    position: relative;
-    top: 3.9vh;
-    left: 1vw;
-    background-color: lighten($greyBlue,10%);
-    height: 2.5rem;
-    width: 2.5rem;
-    border-radius: 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 700;
-    font-size: 1.5rem;
-    color:$darkBlue;
+
+  .ranking-4 {
+    background-color: lighten($greyBlue, 5%);
   }
-  &.ranking-4 {
-    grid-column: 1;
-    position: relative;
-    top: 3.9vh;
-    left: 1vw;
-    background-color: lighten($greyBlue,5%);
-    height: 2.5rem;
-    width: 2.5rem;
-    border-radius: 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 700;
-    font-size: 1.5rem;
-    color:$darkBlue;
-  }
-  &.ldPlayerName {
-    grid-column: 2;
-    grid-row: 2;
-    position: relative;
-    top: 0.2rem;
-    left:1.4rem;
-    font-weight: 700;
-    font-size: 0.8rem;
-    color:$darkBlue;
-  }
-  &.scorenum {
-    margin-left: 2rem;
-    position: relative;
-    top: 3.9vh;
-    left: 1vw;
-    background-color: lighten($greyBlue,5%);
-    height: 2.5rem;
-    width: 2.5rem;
-    border-radius: 0.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 700;
-    font-size: 1.5rem;
-    color:$darkBlue;
-  }
-  &.ldtitle {
-    grid-row: 2;
-    margin-left: 2rem;
-    position: relative;
-    top: 0.2rem;
-    left:1.0rem;
-    font-weight: 700;
-    font-size: 0.8rem;
-    color:lighten($darkBlue,20%);
-    max-width: 100%;
-    word-wrap: break-word;
-  }
+
+
+
   &.currentAnswer {
     position: relative;
     top: 0%;
