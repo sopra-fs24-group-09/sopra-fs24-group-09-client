@@ -65,6 +65,7 @@
       left: 0%;
       margin-top: 30px;
       flex-grow: 1;
+      font-family: sans-serif;
       .create-room-btn {
         bottom: 0%;
         min-width: fit-content;
@@ -135,6 +136,7 @@
   margin-bottom: 10px;
   border-radius: 8px;
   text-align: center;
+  cursor: pointer;
   .room-header {
     margin-left: 10px;
     flex-shrink: 0;     // Allow both children to grow and take up equal space
@@ -461,6 +463,7 @@
   left: 0%;
   margin-top: 10px;
   flex-grow: 1;
+  font-family: sans-serif;
   .logout-btn {
     bottom: 1%;
     min-width: fit-content;
