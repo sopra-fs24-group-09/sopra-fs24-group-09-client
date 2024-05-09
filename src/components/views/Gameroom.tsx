@@ -653,7 +653,7 @@ const Gameroom = () => {
                     <span className="avatar">
                       <i className={`twa twa-${playerInfo.user.avatar}`} style={{ fontSize: "2.8rem" }} />
                     </span>
-                    <span className="title" >{playerInfo.user.name}</span>
+                    <span className="title">{playerInfo.user.name}</span>
                   </span>
                   <span className={"ldgrid-item-2"}>
                     <span className="score-container">{playerInfo.score.total}</span>
@@ -667,18 +667,28 @@ const Gameroom = () => {
                     <span className="score-container">{playerInfo.score.read}</span>
                     <span className="title">Read</span>
                   </span>
-                  {playerInfo.score.details.map((detail, detailIndex) => (
-                    <React.Fragment key={detailIndex}>
-                      <span className={"ldgrid-item"}  style={{ gridColumn: `${detailIndex + LEADER_BOARD_GAP}` }}>
-                        <span className={"score-container"}>
-                          {detail.score}
+                  {playerInfo.score.details.map((detail, detailIndex) => {
+                    const getBackgroundColor = (score) => {
+                      if (score > 0) return "#d4edda";
+                      if (score < 0) return "#f8d7da";
+                      
+                      return "#fff3cd";
+                    };
+
+                    return (
+                      <React.Fragment key={detailIndex}>
+                        <span
+                          className={"ldgrid-item"}
+                          style={{ gridColumn: `${detailIndex + LEADER_BOARD_GAP}`}}
+                        >
+                          <span
+                            style={{backgroundColor: getBackgroundColor(detail.score)}}
+                            className={"score-container"}>{detail.score}</span>
+                          <span className="title">{detail.word}</span>
                         </span>
-                        <span className="title">
-                         {detail.word}
-                        </span>
-                      </span>
-                    </React.Fragment>
-                  ))}
+                      </React.Fragment>
+                    );
+                  })}
                 </div>
               ))}
             </div>
