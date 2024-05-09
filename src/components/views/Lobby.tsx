@@ -431,8 +431,7 @@ const Lobby = () => {
         key={Room.roomId}
         onClick={handleRoomClick(Room)}
         onKeyDown={(e) => { if (e.key === "Enter") handleRoomClick(Room); }}
-        role="button"
-        aria-label="Handle Room Click"
+        tabIndex="0"
       >
         <div className="room-players">
           {Room.roomPlayersList?.map((user, index) => (
