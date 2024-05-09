@@ -571,10 +571,11 @@
 
   /* General Classes */
   .score-container {
+    height: 3.4rem;
+    width: 3.4rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 0.5rem;
     font-weight: 700;
     font-size: 1.5rem;
     //margin-left: 2rem;
@@ -582,8 +583,11 @@
     //top: 3.9vh;
     //left: 1vw;
     background-color: lighten($greyBlue, 5%);
-    height: 2.5rem;
-    width: 2.5rem;
+    padding: 5%;
+    border-radius: 1rem;
+    background-clip: content-box;
+    // height: 2.5rem;
+    // width: 2.5rem;
     color: $darkBlue;
   }
 
@@ -604,7 +608,8 @@
     height: 3.4rem;
     width: 3.4rem;
     background-color: #D9D9D9;
-    border-radius: 15px;
+    // border-radius: 15px;
+    border-radius: 0.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -612,46 +617,101 @@
   }
   .ldgrid-item-1 {
     grid-column: 2;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    // align-self: flex-start;
+    height: 100%;
+    // margin-top: 15%;
     align-items: center;
+    justify-content: flex-end;
+    .title{
+      flex-grow: 1;
+      align-content: flex-start;
+      max-height: 30%;
+      overflow: auto;
+      text-align: end;
+    }
   }
   .ldgrid-item-2 {
     grid-column: 3;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    // align-self: flex-start;
+    height: 100%;
+    // margin-top: 15%;
     align-items: center;
+    justify-content: flex-end;
+    .title{
+      flex-grow: 1;
+      align-content: flex-start;
+      max-height: 30%;
+      overflow: auto;
+      text-align: end;
+    }
   }
   .ldgrid-item-3 {
     grid-column: 4;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    // align-self: flex-start;
+    height: 100%;
+    // margin-top: 15%;
     align-items: center;
+    justify-content: flex-end;
+    .title{
+      flex-grow: 1;
+      align-content: flex-start;
+      max-height: 30%;
+      overflow: auto;
+      text-align: end;
+    }
   }
   .ldgrid-item-4 {
     grid-column: 5;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    // align-self: flex-start;
+    height: 100%;
+    // margin-top: 15%;
     align-items: center;
+    justify-content: flex-end;
+    .title{
+      flex-grow: 1;
+      align-content: flex-start;
+      max-height: 30%;
+      overflow: auto;
+      text-align: end;
+    }
   }
   .ldgrid-item {
     display: flex;
+    padding: 0.5rem;
     flex-direction: column;
-    justify-content: center;
+    // align-self: flex-start;
+    height: 100%;
+    // margin-top: 15%;
     align-items: center;
+    justify-content: flex-end;
+    .title{
+      flex-grow: 1;
+      align-content: flex-start;
+      max-height: 30%;
+      overflow: auto;
+      text-align: end;
+    }
   }
 
 
   .ranking-badge {
     grid-column: 1;
-    position: relative;
-    //top: 3.9vh;
-    //left: 1vw;
-    margin-left: 0.6rem;
+    // position: relative;
+    // top: 3.9vh;
+    // left: 1vw;
+    // margin-left: 0.6rem;
     height: 2.5rem;
     width: 2.5rem;
     border-radius: 2rem;
@@ -687,7 +747,7 @@
   }
 
   .single-score-container {
-    height: 13vh;
+    // height: 13vh;
     margin: 1.5vh 2vw;
     border-radius: 22px;
     background-color: $whiteYellow;
