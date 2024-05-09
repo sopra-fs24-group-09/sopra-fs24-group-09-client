@@ -644,52 +644,38 @@ const Gameroom = () => {
     return (
       <>
         {playerStatus !== null && (
-          <div className="gameroom leaderboarddiv">
-            <div className="gameroom leaderboard">
+          <div className="leaderboarddiv">
+            <div className="leaderboard">
               {sortedPlayerStatus.map((playerInfo, index) => (
-                <div className="gameroom singleScoreContainer" key={index}>
-                  <span className={"gameroom ranking-" + index}>{index + 1}</span>
-                  <span className="gameroom ldPlayerAvatar">
-                    <i
-                      className={"twa twa-" + playerInfo.user.avatar}
-                      style={{ fontSize: "2.8rem" }}
-                    />
+                <div className="single-score-container" key={index}>
+                  <span className={`ranking-badge ranking-${index}`}>{index + 1}</span>
+                  <span className={"ldgrid-item-1"}>
+                    <span className="avatar">
+                      <i className={`twa twa-${playerInfo.user.avatar}`} style={{ fontSize: "2.8rem" }} />
+                    </span>
+                    <span className="title" >{playerInfo.user.name}</span>
                   </span>
-                  <span className="gameroom ldPlayerName">
-                    {playerInfo.user.name}
+                  <span className={"ldgrid-item-2"}>
+                    <span className="score-container">{playerInfo.score.total}</span>
+                    <span className="title">Total</span>
                   </span>
-                  <span className="gameroom scorenum" style={{ gridColumn: "3" }}>
-                    {playerInfo.score.total}
+                  <span className={"ldgrid-item-3"}>
+                    <span className="score-container">{playerInfo.score.guess}</span>
+                    <span className="title">Guess</span>
                   </span>
-                  <span className="gameroom ldtitle" style={{ gridColumn: "3" }}>
-                Total
-                  </span>
-                  <span className="gameroom scorenum" style={{ gridColumn: "4" }}>
-                    {playerInfo.score.guess}
-                  </span>
-                  <span className="gameroom ldtitle" style={{ gridColumn: "4" }}>
-                Guess
-                  </span>
-                  <span className="gameroom scorenum" style={{ gridColumn: "5" }}>
-                    {playerInfo.score.read}
-                  </span>
-                  <span className="gameroom ldtitle" style={{ gridColumn: "5" }}>
-                Read
+                  <span className={"ldgrid-item-4"}>
+                    <span className="score-container">{playerInfo.score.read}</span>
+                    <span className="title">Read</span>
                   </span>
                   {playerInfo.score.details.map((detail, detailIndex) => (
                     <React.Fragment key={detailIndex}>
-                      <span
-                        className="gameroom scorenum"
-                        style={{ gridColumn: `${detailIndex + LEADER_BOARD_GAP}` }}
-                      >
-                        {detail.score}
-                      </span>
-
-                      <span
-                        className="gameroom ldtitle"
-                        style={{ gridColumn: `${detailIndex + LEADER_BOARD_GAP}` }}
-                      >
-                        {detail.word}
+                      <span className={"ldgrid-item"}  style={{ gridColumn: `${detailIndex + LEADER_BOARD_GAP}` }}>
+                        <span className={"score-container"}>
+                          {detail.score}
+                        </span>
+                        <span className="title">
+                         {detail.word}
+                        </span>
                       </span>
                     </React.Fragment>
                   ))}
