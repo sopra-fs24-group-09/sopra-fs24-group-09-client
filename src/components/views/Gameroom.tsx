@@ -167,6 +167,16 @@ const Gameroom = () => {
       // console.log(mssg)
       console.log("[onResponseReceived] receiptId",msg.receiptId)
       console.log("[onResponseReceived] reqList:",requestLists.current)
+
+      // Check if the message indicates an invalid or expired token
+      if (msg.message && msg.message.includes("Invalid or expired token")) {
+        showToast("Invalid or expired token, please login again!", "error");
+        sessionStorage.clear(); // Clear session storage
+        navigate("/login"); // Navigate to the login page
+
+        return; // Exit the function to avoid further processing
+      }
+
       const index = requestLists.current.findIndex(item => item.receiptId === msg.receiptId);
       if (index !== INDEX_NOT_FOUND) {
         const messageType = requestLists.current[index].type;
@@ -214,6 +224,7 @@ const Gameroom = () => {
       /// 2. if the response is success, do nothing
       /// 3. if the response is failure, show the error message
       /// 4. if the response is not received, do something to handle the timeout
+      /// 5. if the response is unauthorized, navigate to login page and clear session
     };
 
     const onPlayerInfoReceived = (payload) => {
