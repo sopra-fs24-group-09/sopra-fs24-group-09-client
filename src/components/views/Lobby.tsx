@@ -421,6 +421,16 @@ const Lobby = () => {
 
   const throttledClickHandler = throttle((Room, navigate, showToast) => {
     try {
+      // Check if the session token is empty
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        showToast("Session expired or invalid, please log in again.", "error");
+        sessionStorage.clear(); // Clear session storage
+        navigate("/login");
+        
+        return; // Exit the function to avoid further processing
+      }
+
       if (Room.roomPlayersList.length === Room.roomMaxNum) {
         showToast("Room is Full, please enter another room!", "error");
       } else if (Room.status === "In Game") {
