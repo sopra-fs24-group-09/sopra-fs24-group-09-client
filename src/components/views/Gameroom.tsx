@@ -169,7 +169,7 @@ const Gameroom = () => {
       console.log("[onResponseReceived] reqList:",requestLists.current)
 
       // Check if the message indicates an invalid or expired token
-      if (msg.message && msg.message.includes("Invalid or expired token")) {
+      if (msg.auth === false) {
         showToast("Invalid or expired token, please login again!", "error");
         sessionStorage.clear(); // Clear session storage
         navigate("/login"); // Navigate to the login page
