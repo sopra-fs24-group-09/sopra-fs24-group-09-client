@@ -165,7 +165,11 @@ const Lobby = () => {
         onLobbyInfoReceived
       );
       stompClientRef.current?.send(
-        "/app/message/lobby/info", { receiptId: "" }
+        "/app/message/lobby/info", 
+        { 
+          receiptId: "",
+          token: sessionStorage.getItem("token")
+        }
       );
 
 
@@ -201,12 +205,16 @@ const Lobby = () => {
       navigate("/login");
     };
 
-    // make sure user was fetched before set timeoutId
-    fetchData().catch(error => {
-      handleError(error);
-    });
-
-    connectWebSocket();
+    // make sure the ws connection was opened after fetching data
+    fetchData()
+      .then(
+        () => {
+          connectWebSocket();
+        }
+      )
+      .catch(error => {
+        handleError(error);
+      });
 
 
     return () => {
