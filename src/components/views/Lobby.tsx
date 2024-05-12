@@ -1,5 +1,4 @@
 import React, { useCallback, useRef, useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { api, handleError } from "helpers/api";
 import { Button } from "components/ui/Button";
 import { throttle } from "lodash";
@@ -12,7 +11,7 @@ import { Dropdown } from "components/ui/Dropdown";
 import "styles/views/Lobby.scss";
 import { getDomain } from "helpers/getDomain";
 import "styles/ui/Popup.scss";
-import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH } from "../../constants/constants";
+import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH, HTTP_STATUS } from "../../constants/constants";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import { showToast} from "../../helpers/toastService";
@@ -119,7 +118,6 @@ const Lobby = () => {
 
   const logout = async () => {
     const id = sessionStorage.getItem("id");
-    sessionStorage.removeItem("token");
     //apply a post request for user logout
     try {
       const requestBody = JSON.stringify({ id: id });
@@ -187,7 +185,7 @@ const Lobby = () => {
         //   showToast("Reconnect to your previous room!", "success");
         // }
 
-        setRooms(payload); // 确保这里是数组
+        setRooms(payload); 
         console.log("Rooms updated:", message_lobby.message);
       } else {
         console.error("Received data is not in expected format:", message_lobby);
@@ -287,7 +285,7 @@ const Lobby = () => {
       console.log("Room ID:", response.data.roomId);
       const roomId = response.data.roomId;
       navigate(`/rooms/${roomId}/${roomName}`);
-      //toggleRoomCreationPop();  // 关闭创建房间的弹窗
+      //toggleRoomCreationPop();  
     } catch (error) {
       handleError(error);
 
@@ -386,13 +384,30 @@ const Lobby = () => {
 
   ///
   /// if error is network error, clear the session and navigate to login page
+  /// if unauthorized, clear the session and navigate to login page
   ///
   const handleError = (error) => {
-    // if(!error.message){
-    //   // if error message is undefined
-    //   showToast("Something went wrong, please try again later.", "error");
-    // }
-    if (error.message.match(/Network Error/)) {
+    // Check if there's a response object in the error
+    if (error.response) {
+      const { status, data } = error.response;
+
+      // Handle 401 Unauthorized errors
+      if (status === HTTP_STATUS.UNAUTHORIZED) {
+        console.error("Unauthorized: " + data.message + "\n" + error);
+        showToast("Your session has expired or is invalid. Please log in again.", "error");
+        sessionStorage.clear();
+        navigate("/login");
+      } else if (status === HTTP_STATUS.FORBIDDEN) {
+        // Handle 403 Forbidden errors
+        console.error("Forbidden: Access is denied. " + data.message + "\n" + error);
+        showToast("Access is denied. You do not have permission to access this resource.", "error");
+      } else {
+        // Handle other types of errors generically
+        console.error(`Error: ${data.message}\n${error}`);
+        showToast("An error occurred: ${data.message}", "error");
+      }
+    } else if (error.message && error.message.match(/Network Error/)) {
+      // Handle network errors
       console.error(`The server cannot be reached.\nDid you start it?\n${error}`);
       showToast(`The server cannot be reached.\nDid you start it?\n${error}`);
       sessionStorage.clear();
@@ -400,12 +415,22 @@ const Lobby = () => {
       showToast("The server cannot be reached.\nDid you start it?", "error");
     } else {
       console.error(`Something went wrong: \n${error}`);
-      showToast(`Something went wrong: \n${error}`);
+      showToast("Something went wrong: \n${error}", "error");
     }
   }
 
   const throttledClickHandler = throttle((Room, navigate, showToast) => {
     try {
+      // Check if the session token is empty
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        showToast("Session expired or invalid, please log in again.", "error");
+        sessionStorage.clear(); // Clear session storage
+        navigate("/login");
+        
+        return; // Exit the function to avoid further processing
+      }
+
       if (Room.roomPlayersList.length === Room.roomMaxNum) {
         showToast("Room is Full, please enter another room!", "error");
       } else if (Room.status === "In Game") {

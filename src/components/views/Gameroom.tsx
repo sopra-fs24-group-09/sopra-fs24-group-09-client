@@ -167,6 +167,16 @@ const Gameroom = () => {
       // console.log(mssg)
       console.log("[onResponseReceived] receiptId",msg.receiptId)
       console.log("[onResponseReceived] reqList:",requestLists.current)
+
+      // Check if the message indicates an invalid or expired token
+      if (msg.auth === false) {
+        showToast("Invalid or expired token, please login again!", "error");
+        sessionStorage.clear(); // Clear session storage
+        navigate("/login"); // Navigate to the login page
+
+        return; // Exit the function to avoid further processing
+      }
+
       const index = requestLists.current.findIndex(item => item.receiptId === msg.receiptId);
       if (index !== INDEX_NOT_FOUND) {
         const messageType = requestLists.current[index].type;
@@ -214,6 +224,7 @@ const Gameroom = () => {
       /// 2. if the response is success, do nothing
       /// 3. if the response is failure, show the error message
       /// 4. if the response is not received, do something to handle the timeout
+      /// 5. if the response is unauthorized, navigate to login page and clear session
     };
 
     const onPlayerInfoReceived = (payload) => {
@@ -396,7 +407,8 @@ const Gameroom = () => {
     const receiptId = uuidv4();
     stompClientRef.current?.send(
       `/app/message/users/enterroom/${currentRoomID}`,
-      { receiptId: receiptId },
+      { receiptId: receiptId,
+        token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
     requestLists.current.push({ type: "enter",receiptId: receiptId });
@@ -429,7 +441,8 @@ const Gameroom = () => {
     const receiptId = uuidv4();
     stompClientRef.current?.send(
       `/app/message/users/ready/${currentRoomID}`,
-      { receiptId: receiptId },
+      { receiptId: receiptId,
+        token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
     requestLists.current.push({ type: "ready",receiptId: receiptId });
@@ -461,7 +474,8 @@ const Gameroom = () => {
     const receiptId = uuidv4();
     stompClientRef.current?.send(
       `/app/message/users/unready/${currentRoomID}`,
-      { receiptId: receiptId },
+      { receiptId: receiptId,
+        token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
     requestLists.current.push({ type: "unready",receiptId: receiptId });
@@ -493,7 +507,8 @@ const Gameroom = () => {
     const receiptId = uuidv4();
     stompClientRef.current?.send(
       `/app/message/games/start/${currentRoomID}`,
-      { receiptId: receiptId },
+      { receiptId: receiptId,
+        token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
     requestLists.current.push({ type: "start",receiptId: receiptId });
@@ -527,7 +542,8 @@ const Gameroom = () => {
     const receiptId = uuidv4();
     stompClientRef.current?.send(
       `/app/message/users/exitroom/${currentRoomID}`,
-      { receiptId: receiptId },
+      { receiptId: receiptId,
+        token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
     // requestLists.current.push({ type: "leave",receiptId: receiptId });
@@ -562,7 +578,8 @@ const Gameroom = () => {
     const receiptId = uuidv4();
     stompClientRef.current?.send(
       `/app/message/games/validate/${currentRoomID}`,
-      { receiptId: receiptId },
+      { receiptId: receiptId,
+        token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
     requestLists.current.push({ type: "submit",receiptId: receiptId });
@@ -603,7 +620,8 @@ const Gameroom = () => {
       const receiptId = uuidv4();
       stompClientRef.current.send(
         `/app/message/games/audio/upload/${currentRoomID}`,
-        { receiptId: receiptId },
+        { receiptId: receiptId,
+          token: sessionStorage.getItem("token") },
         JSON.stringify(payload)
       );
       requestLists.current.push({ type: "upload",receiptId: receiptId });
@@ -644,55 +662,51 @@ const Gameroom = () => {
     return (
       <>
         {playerStatus !== null && (
-          <div className="gameroom leaderboarddiv">
-            <div className="gameroom leaderboard">
+          <div className="leaderboarddiv">
+            <div className="leaderboard">
               {sortedPlayerStatus.map((playerInfo, index) => (
-                <div className="gameroom singleScoreContainer" key={index}>
-                  <span className={"gameroom ranking-" + index}>{index + 1}</span>
-                  <span className="gameroom ldPlayerAvatar">
-                    <i
-                      className={"twa twa-" + playerInfo.user.avatar}
-                      style={{ fontSize: "2.8rem" }}
-                    />
+                <div className="single-score-container" key={index}>
+                  <span className={`ranking-badge ranking-${index}`}>{index + 1}</span>
+                  <span className={"ldgrid-item-1"}>
+                    <span className="avatar">
+                      <i className={`twa twa-${playerInfo.user.avatar}`} style={{ fontSize: "2.8rem" }} />
+                    </span>
+                    <span className="title">{playerInfo.user.name}</span>
                   </span>
-                  <span className="gameroom ldPlayerName">
-                    {playerInfo.user.name}
+                  <span className={"ldgrid-item-2"}>
+                    <span className="score-container">{playerInfo.score.total}</span>
+                    <span className="title">Total</span>
                   </span>
-                  <span className="gameroom scorenum" style={{ gridColumn: "3" }}>
-                    {playerInfo.score.total}
+                  <span className={"ldgrid-item-3"}>
+                    <span className="score-container">{playerInfo.score.guess}</span>
+                    <span className="title">Guess</span>
                   </span>
-                  <span className="gameroom ldtitle" style={{ gridColumn: "3" }}>
-                Total
+                  <span className={"ldgrid-item-4"}>
+                    <span className="score-container">{playerInfo.score.read}</span>
+                    <span className="title">Read</span>
                   </span>
-                  <span className="gameroom scorenum" style={{ gridColumn: "4" }}>
-                    {playerInfo.score.guess}
-                  </span>
-                  <span className="gameroom ldtitle" style={{ gridColumn: "4" }}>
-                Guess
-                  </span>
-                  <span className="gameroom scorenum" style={{ gridColumn: "5" }}>
-                    {playerInfo.score.read}
-                  </span>
-                  <span className="gameroom ldtitle" style={{ gridColumn: "5" }}>
-                Read
-                  </span>
-                  {playerInfo.score.details.map((detail, detailIndex) => (
-                    <React.Fragment key={detailIndex}>
-                      <span
-                        className="gameroom scorenum"
-                        style={{ gridColumn: `${detailIndex + LEADER_BOARD_GAP}` }}
-                      >
-                        {detail.score}
-                      </span>
+                  {playerInfo.score.details.map((detail, detailIndex) => {
+                    const getBackgroundColor = (score) => {
+                      if (score > 0) return "#d4edda";
+                      if (score < 0) return "#f8d7da";
+                      
+                      return "#fff3cd";
+                    };
 
-                      <span
-                        className="gameroom ldtitle"
-                        style={{ gridColumn: `${detailIndex + LEADER_BOARD_GAP}` }}
-                      >
-                        {detail.word}
-                      </span>
-                    </React.Fragment>
-                  ))}
+                    return (
+                      <React.Fragment key={detailIndex}>
+                        <span
+                          className={"ldgrid-item"}
+                          style={{ gridColumn: `${detailIndex + LEADER_BOARD_GAP}`}}
+                        >
+                          <span
+                            style={{backgroundColor: getBackgroundColor(detail.score)}}
+                            className={"score-container"}>{detail.score}</span>
+                          <span className="title">{detail.word}</span>
+                        </span>
+                      </React.Fragment>
+                    );
+                  })}
                 </div>
               ))}
             </div>
