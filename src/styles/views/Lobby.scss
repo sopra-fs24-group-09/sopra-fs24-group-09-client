@@ -193,8 +193,8 @@
   margin-left: 10px;
   text-align: center;
   .player-avatar {
-    width: 40px;
-    height: 40px;
+    width: 60.8px;
+    height: 60.8px;
     border-radius: 50%;
     background-color: #D9D9D9; // Default background color
   }
@@ -233,6 +233,10 @@
   }
 }
 .player {
+  background: rgba(217, 217, 217, 1);
+  border-radius: 20px;
+  width: 85px;
+  height: 85px;
   &.container {
     margin: 0.5em 0;
     width: 20em;
@@ -240,7 +244,7 @@
     border-radius: $borderRadius;
     display: flex;
     align-items: center;
-    background: lighten($background, 5);
+    background: gray;
   }
   &.status {
     font-weight: 600;

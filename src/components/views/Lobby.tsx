@@ -450,25 +450,45 @@ const Lobby = () => {
   }, [navigate, showToast]);
 
   const renderRoomLists = () => {
-    return rooms.map((Room) => (
-      <div className="room-container" key={Room.roomId} onClick={handleRoomClick(Room)}>
-        <div className="room-players">
-          {Room.roomPlayersList?.map((user, index) => (
-            <div className="player" key={index}>
-              <i className={"twa twa-" + user.avatar} style={{ fontSize: "3.8rem" }} />
+    return rooms.map((Room) => {
+      const playerSlots = [];
+
+      // 生成玩家头像或空白框，总数等于房间最大玩家数
+      for (let i = 0; i < Room.roomMaxNum; i++) {
+        if (i < Room.roomPlayersList.length) {
+          const user = Room.roomPlayersList[i];
+          playerSlots.push(
+            <div className="player" key={i}>
+              <i className={`twa twa-${user.avatar}`} style={{ fontSize: "3.8rem" }} />
               <div className="name">{user.userName}</div>
             </div>
-          ))}
-        </div>
-        <div className="room-header">
-          <div style={{ fontWeight: "bold" }}>{Room.roomName}</div>
-          <div>{Room.theme}</div>
-          <span className={`room-status ${Room.status === "INGAME" ? "in-game" : Room.status === "WAITING" ? "waiting" : "game-over"}`}>
+          );
+        } else {
+          // 空白框
+          playerSlots.push(
+            <div className="player" key={i}>
+
+            </div>
+          );
+        }
+      }
+
+      return (
+        <div className="room-container" key={Room.roomId} onClick={handleRoomClick(Room)}>
+          <div className="room-players">
+            {playerSlots}
+          </div>
+          <div className="room-header">
+            <div style={{ fontWeight: "bold" }}>{Room.roomName}</div>
+            <div>{Room.theme}</div>
+            <span
+              className={`room-status ${Room.status === "INGAME" ? "in-game" : Room.status === "WAITING" ? "waiting" : "game-over"}`}>
             {Room.status}
           </span>
+          </div>
         </div>
-      </div>
-    ));
+      )
+    });
   };
 
   if (user === null) {
