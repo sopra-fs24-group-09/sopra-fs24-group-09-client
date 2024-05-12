@@ -14,7 +14,7 @@ import "styles/ui/Popup.scss";
 import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH, HTTP_STATUS } from "../../constants/constants";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
-import { showToast} from "../../helpers/toastService";
+import { showToast } from "../../helpers/toastService";
 import { Timestamped, RoomInfo, RoomPlayer, PlayerAndRoomID } from "stomp_types";
 const DEFAULT_MAX_PLAYERS = 5;
 const DEFAULT_MIN_PLAYERS = 2;
@@ -125,7 +125,7 @@ const Lobby = () => {
       console.log(response);
       sessionStorage.clear();
     } catch (error) {
-      showToast("Something went wrong during the logout: \n${handleError(error)}",  "error");
+      showToast("Something went wrong during the logout: \n${handleError(error)}", "error");
     }
     navigate("/login");
   };
@@ -189,7 +189,7 @@ const Lobby = () => {
         //   showToast("Reconnect to your previous room!", "success");
         // }
 
-        setRooms(payload); 
+        setRooms(payload);
         console.log("Rooms updated:", message_lobby.message);
       } else {
         console.error("Received data is not in expected format:", message_lobby);
@@ -274,8 +274,8 @@ const Lobby = () => {
   const createRoom = async () => {
     // if not chrome, alert the user
     if (!navigator.userAgent.includes("Chrome")) {
-      showToast("Your browser is currently not supported, please use Chrome to play this game!","error");
-      
+      showToast("Your browser is currently not supported, please use Chrome to play this game!", "error");
+
       return;
     }
     try {
@@ -435,7 +435,7 @@ const Lobby = () => {
         showToast("Session expired or invalid, please log in again.", "error");
         sessionStorage.clear(); // Clear session storage
         navigate("/login");
-        
+
         return; // Exit the function to avoid further processing
       }
 
@@ -491,8 +491,8 @@ const Lobby = () => {
             <div>{Room.theme}</div>
             <span
               className={`room-status ${Room.status === "INGAME" ? "in-game" : Room.status === "WAITING" ? "waiting" : "game-over"}`}>
-            {Room.status}
-          </span>
+              {Room.status}
+            </span>
           </div>
         </div>
       )
@@ -515,7 +515,7 @@ const Lobby = () => {
           }} />
         <div className="name">{user.username}</div>
         <div className="btn-logout-container">
-          <Button className="logout-btn" onClick={logout}>logout</Button>
+          <Button className="logout-btn" onClick={logout}>Logout</Button>
         </div>
       </div>
       <div className="title-container">
@@ -537,12 +537,29 @@ const Lobby = () => {
       </div>
 
 
-      <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className="profile-popup">
+      <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className="profile-popup"
+        buttonJSX={
+          (<>    
+            <Button className="cancel" onClick={() => {
+              toggleProfilePop();
+            }}>
+              Cancel
+            </Button>
+            <Button className="cancel"
+              onClick={() => doEdit()}
+              disabled={username === "" || username === user.username}
+            >
+                Edit
+            </Button>
+          </>)
+        }
+      >
         <BaseContainer className="profile-popup content">
-          <div className="avatar-container" onClick={() => {
-            toggleAvatarPop();
-            toggleProfilePop();
-          }}>
+          <div className="avatar-container"
+            onClick={() => {
+              toggleAvatarPop();
+              toggleProfilePop();
+            }}>
             <i className={"twa twa-" + user.avatar} style={{ fontSize: "10rem", marginTop: "0.8rem", textAlign: "center" }} />
           </div>
           <div className="profile-popup field">
@@ -568,24 +585,10 @@ const Lobby = () => {
 
           {/*<div>RegisterDate: {user && new Date(user.registerDate).toLocaleDateString()}</div>*/}
 
-          <div className="profile-popup btn-container">
-            <Button className="cancel" onClick={() => {
-              toggleProfilePop();
-            }}>
-              Cancel
-            </Button>
-            <Button className="cancel" 
-              onClick={() => doEdit()}
-              disabled = {username === "" || username === user.username}
-            >
-              Edit
-            </Button>
-          </div>
         </BaseContainer>
       </Popup>
 
-      <Popup
-        ref={changeAvatarPopRef}
+      <Popup ref={changeAvatarPopRef}
         toggleDialog={toggleAvatarPop}
         className="room-creation-popup"
       >
@@ -601,10 +604,16 @@ const Lobby = () => {
         </div>
       </Popup>
 
-      <Popup
-        ref={roomCreationPopRef}
+      <Popup ref={roomCreationPopRef}
         toggleDialog={toggleRoomCreationPop}
         className="room-creation-popup"
+        buttonJSX={
+          <>
+            <Button disabled={roomName === "" || maxRoomPlayers < DEFAULT_MIN_PLAYERS || maxRoomPlayers > DEFAULT_MAX_PLAYERS || roomTheme === ""}
+              className="create-room" onClick={createRoom}>Create Room</Button>
+            <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
+          </>
+        }
       >
         <BaseContainer className="room-creation-popup content">
           <div className="title">Create Room</div>
@@ -645,16 +654,26 @@ const Lobby = () => {
             ]}
             onChange={(value) => setRoomTheme(value)}
           />
-          <div className="room-creation-popup btn-container">
-            <Button disabled={roomName === "" || maxRoomPlayers < DEFAULT_MIN_PLAYERS || maxRoomPlayers > DEFAULT_MAX_PLAYERS || roomTheme === ""}
-              className="create-room" onClick={createRoom}>Create Room</Button>
-            <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
-          </div>
         </BaseContainer>
 
       </Popup>
 
-      <Popup ref={infoPopRef} toggleDialog={toggleInfoPop} className="intro-popup">
+      <Popup ref={infoPopRef}
+        toggleDialog={toggleInfoPop}
+        className="intro-popup"
+        buttonJSX={
+          <>
+            <Button className="game-guide" onClick={() => {
+              navigate("/guide");
+              toggleInfoPop();
+            }}>
+            Guide
+            </Button>
+            <Button className="cancel" onClick={toggleInfoPop}>
+            Close
+            </Button>
+          </>
+        }>
         <div className="intro-cnt">
           <h1>Welcome to KAEPS!</h1>
           <p>Here are some guides to help you get started with the game:</p>
@@ -670,18 +689,6 @@ const Lobby = () => {
           <p>Click <b>GUIDE</b> for more detailed instructions.</p>
           <p>Join a room or create one to play with friends!</p>
 
-        </div>
-        <div className="intro-popup btn-container">
-          <Button className="cancel" onClick={toggleInfoPop}>
-            Close
-          </Button>
-          <Button onClick={
-            () => {
-              navigate("/guide");
-            }
-          }>
-            Guide
-          </Button>
         </div>
       </Popup>
     </BaseContainer>

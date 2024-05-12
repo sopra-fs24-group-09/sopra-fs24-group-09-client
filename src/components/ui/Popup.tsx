@@ -4,6 +4,7 @@ import "../../styles/ui/Popup.scss";
 type PopupProps = {
     className?: string;
     children: React.ReactNode;
+    buttonJSX?: React.ReactNode;
     toggleDialog: () => void;
 };
 
@@ -27,6 +28,12 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>((props, ref) => {
       <div className={`popup-content ${props.className}`}>
         {props.children}
       </div>
+      {
+        props.buttonJSX
+          && <div className="popup-button-container">
+            {props.buttonJSX}
+          </div>
+      }
     </dialog>
   );
 });

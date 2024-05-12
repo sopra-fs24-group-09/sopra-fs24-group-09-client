@@ -6,18 +6,8 @@
 
   for more information visit https://sass-lang.com/guide
  */
-
-.lobby {
-  &.container {
-    background: rgba(255, 255, 255);
-    padding: 1.5em;
-    border-radius: $borderRadius;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: $dropShadow;
-  }
-  &.room-list::-webkit-scrollbar {
+// scrollbar styling for the whole page
+::-webkit-scrollbar {
     width: 10px;
     height: 10px;
 
@@ -31,6 +21,20 @@
       -webkit-border-radius: 10px;
       border-radius: 10px;
     }
+}
+Button {
+  font-family: sans-serif;
+}
+
+.lobby {
+  &.container {
+    background: rgba(255, 255, 255);
+    padding: 1.5em;
+    border-radius: $borderRadius;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: $dropShadow;
   }
   &.room-list-wrapper {
     position: absolute;  // Using absolute positioning
@@ -51,6 +55,14 @@
     flex-direction: column;
     flex-grow: 1;
     overflow-y: auto;
+    h1 {
+      color: $whiteYellow;
+      text-shadow: none;
+      text-transform: none;
+      margin-inline: 5%;
+      font-weight: 800;
+      font-size: 2em;
+    }
     &.btn-container {
       all: initial; // avoid the inherited styles
       position: relative; // absolute position relative to the parent
@@ -285,50 +297,45 @@
 
 .information {
   position: absolute;
+  display: flex;
   top: 0;
-  right: 0;
-  width: 1.5rem;
-  height: 2rem;
-  font-size: 1.5rem;
+  right: -10%;
+  width: 10%;
+  aspect-ratio: 1;
+  font-size: 0.15em;
   font-weight: bold;
   text-align: center;
+  align-items: center;
+  justify-content: center;
   color: white;
   background: $classicYellow;
-  border-radius: $borderRadius;
+  border-radius: 50%;
   cursor: pointer;
-}
-.intro-popup {
-&.btn-container {
-    width: 200px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-end;
-    Button {
-      height: auto;
-      font-size: 1em;
-      padding: 0.6em;
-      margin: 0 10px;
-      color: white;
-      background-color: $classicYellow;
-    }
-  }
 }
 .intro-cnt {
   width: 450px;
+  max-width: 40vw;
+  ul {
+    padding-left: 1rem;
+  }
 }
 .profile-popup {
-  height:60%;
   &.content {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    font-size: 1.5em;
-    .title {
-      font-size: 1.5em;
+    // font-size: 1.5em;
+    input {
+      height: 20%;
+      width: 300px;
+      max-width: 60vw;
+      padding-left: 1px;
+      margin-left: 4px;
+      border: 1px solid black;
+      border-radius: 0.75em;
       margin-bottom: 20px;
-      display: inline;
-      text-align: center;
+      background: transparentize(white, 0.4);
+      color: $textColor;
     }
     .avatar-container {
       display: flex;
@@ -364,25 +371,25 @@
       background-color: $classicYellow;
     }
   }
-  &.label {
-    display: flex;
-    font-size: 32px;
-  }
-  &.field {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-  }
-  &.input {
-    height: 35px;
-    padding-left: 15px;
-    margin-left: 4px;
-    border: none;
-    border-radius: 0.75em;
-    margin-top: 5px;
-    background: #FFF3CF;
-    color: $textColor;
-  }
+  // &.label {
+  //   display: flex;
+  //   font-size: 32px;
+  // }
+  // &.field {
+  //   display: flex;
+  //   flex-direction: row;
+  //   justify-content: center;
+  // }
+  // &.input {
+  //   height: 35px;
+  //   padding-left: 15px;
+  //   margin-left: 4px;
+  //   border: none;
+  //   border-radius: 0.75em;
+  //   margin-top: 5px;
+  //   background: #FFF3CF;
+  //   color: $textColor;
+  // }
 
 }
 .room-creation-popup {
@@ -401,6 +408,7 @@
     input {
       height: 20%;
       width: 600px;
+      max-width: 60vw;
       padding-left: 1px;
       margin-left: 4px;
       border: 1px solid black;
@@ -416,9 +424,10 @@
     align-items: center;
     justify-items: center;
     width: 600px;
-    height: 100px;
+    max-width: 60vw;
+    height: 60px;
     //margin-top: 20px;
-    margin-bottom: 40px;
+    // margin-bottom: 40px;
     select {
       appearance: none;
       -webkit-appearance: none;
