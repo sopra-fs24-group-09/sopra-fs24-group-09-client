@@ -560,7 +560,7 @@ const Lobby = () => {
               toggleAvatarPop();
               toggleProfilePop();
             }}>
-            <i className={"twa twa-" + user.avatar} style={{ fontSize: "10rem", marginTop: "0.8rem", textAlign: "center" }} />
+            <i className={"twa twa-" + user.avatar} />
           </div>
           <div className="profile-popup field">
             <label className="profile-popup label">
@@ -574,14 +574,14 @@ const Lobby = () => {
               value={username}
               onChange={(e) => {
                 const inputValue = e.target.value;  // 获取输入值
-                if (inputValue.length <= MAX_USERNAME_LENGTH && inputValue.length > 0) {  // 检查输入值的长度
+                if (inputValue.length <= MAX_USERNAME_LENGTH && inputValue.length >= 0) {  // 检查输入值的长度
                   setUsername(inputValue);  // 如果长度小于或等于20，更新状态
                 }
               }}
             />
           </div>
-          <div>Id: {user.id}</div>
-          <div>Status: {user.status}</div>
+          <div>User ID: {user.id}</div>
+          <div>Register Date: {user.registerDate}</div>
 
           {/*<div>RegisterDate: {user && new Date(user.registerDate).toLocaleDateString()}</div>*/}
 
