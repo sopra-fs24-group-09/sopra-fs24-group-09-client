@@ -176,19 +176,10 @@
   flex-wrap: wrap; // Allow avatar list to wrap
   justify-content: flex-start; // Align avatars to the left
   margin: 0 -10px; // Offset for each avatar's margin, adjustable as needed
-  .player {
-    width: 20%; // Four avatars per row, each taking 25% of total width
-    padding-left: 10%; // Padding around each avatar, adjustable as needed
-    box-sizing: border-box; // Include padding in width calculation
-    i {
-      display: block; // Ensure icons are block-level
-      font-size: 3.8rem; // Icon size
-      cursor: pointer; // Show pointer on hover
-      margin: 10px 0; // Vertical spacing, adjustable as needed
-    }
-  }
 }
 .player {
+  height: 100%;
+  aspect-ratio: 1;
   margin-right: 10px;
   margin-left: 10px;
   text-align: center;
