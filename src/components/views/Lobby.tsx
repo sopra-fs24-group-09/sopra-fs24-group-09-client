@@ -632,16 +632,18 @@ const Lobby = () => {
       <Popup ref={infoPopRef} toggleDialog={toggleInfoPop} className="intro-popup">
         <div className="intro-cnt">
           <h1>Welcome to KAEPS!</h1>
-          <p>Here are some guides for playing this game:</p>
+          <p>Here are some guides to help you get started with the game:</p>
           <ul>
-            <li><strong>Speaker:</strong> Receives a word, records it, inverts the audio, and sends it to other players.</li>
-            <li><strong>Challenger:</strong> Receives the reversed audio recording from the speaker.
-              The challenger should then mimic this reversed recording.
-              After recording their own version of the reversed audio, they should play it backwards to guess the original word.</li>
-            <li><strong>Scoring:</strong> Correctly deciphering the word scores you points.</li>
-            <li><strong>Turns:</strong> Each round has one Speaker and multiple Challengers. Players take turns to be the Speaker.</li>
+            <li><strong>Speaker:</strong> The speaker receives a word, records it, inverts the recording, and then sends this inverted audio to other players.</li>
+            <li><strong>Challenger:</strong> Challengers listen to the inverted audio sent by the speaker.
+              You must mimic this recording and then play their recording backwards to guess the original word.
+              You can guess multiple times before time is up.
+            </li>
+            <li><strong>Scoring:</strong> Points are awarded for correctly guessing the word. The faster you guess, the more points you earn.</li>
+            <li><strong>Turns:</strong> The game is played in rounds. Each round has one speaker and several challengers. Players alternate roles as the Speaker to ensure fairness.</li>
           </ul>
           <p>Join a room or create one to play with friends!</p>
+
         </div>
         <div className="intro-popup btn-container">
           <Button className="cancel" onClick={toggleInfoPop}>
