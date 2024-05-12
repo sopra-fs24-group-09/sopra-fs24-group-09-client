@@ -641,11 +641,19 @@ const Lobby = () => {
             <li><strong>Scoring:</strong> Correctly deciphering the word scores you points.</li>
             <li><strong>Turns:</strong> Each round has one Speaker and multiple Challengers. Players take turns to be the Speaker.</li>
           </ul>
+          <p>Click <b>GUIDE</b> for more detailed instructions.</p>
           <p>Join a room or create one to play with friends!</p>
         </div>
         <div className="intro-popup btn-container">
           <Button className="cancel" onClick={toggleInfoPop}>
             Close
+          </Button>
+          <Button onClick={
+            () => {
+              navigate("/guide");
+            }
+          }>
+            Guide
           </Button>
         </div>
       </Popup>
