@@ -312,7 +312,7 @@
   cursor: pointer;
 }
 .intro-popup {
-  height:60%;
+  //height:60%;
   //width: 500px;
   &.btn-container {
     width: 200px;
@@ -403,12 +403,12 @@
 
 }
 .room-creation-popup {
-  height: 60%;
+  //height: 60%;
   &.content {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    font-size: 2em;
+    font-size: 1.5em;
     .title {
       font-size: 1.5em;
       margin-bottom: 20px;
@@ -416,7 +416,7 @@
       text-align: center;
     }
     input {
-      height: 100px;
+      height: 20%;
       width: 600px;
       padding-left: 1px;
       margin-left: 4px;
@@ -434,7 +434,7 @@
     justify-items: center;
     width: 600px;
     height: 100px;
-    margin-top: 20px;
+    //margin-top: 20px;
     margin-bottom: 40px;
     select {
       appearance: none;
