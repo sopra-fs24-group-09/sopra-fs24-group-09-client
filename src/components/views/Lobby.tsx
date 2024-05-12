@@ -609,7 +609,7 @@ const Lobby = () => {
         className="room-creation-popup"
         buttonJSX={
           <>
-            <Button disabled={roomName === "" || maxRoomPlayers < DEFAULT_MIN_PLAYERS || maxRoomPlayers > DEFAULT_MAX_PLAYERS || roomTheme === ""}
+            <Button disabled={roomName === "" || maxRoomPlayers < DEFAULT_MIN_PLAYERS || maxRoomPlayers > DEFAULT_MAX_PLAYERS || roomTheme === "" || isNaN(maxRoomPlayers)}
               className="create-room" onClick={createRoom}>Create Room</Button>
             <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </>
@@ -632,12 +632,12 @@ const Lobby = () => {
           <div>Number of Maximum Players: </div>
           <input
             type="number"
-            placeholder="Number of Maximum Players"
+            placeholder={`Between ${DEFAULT_MIN_PLAYERS} and ${DEFAULT_MAX_PLAYERS}`}
             value={maxRoomPlayers}
             onChange={e => {
               const value = parseInt(e.target.value);
               // console.error("Value:", value);
-              SetMaxRoomPlayers(value >= DEFAULT_MIN_PLAYERS && value <= DEFAULT_MAX_PLAYERS ? value : DEFAULT_MIN_PLAYERS);
+              SetMaxRoomPlayers(value);
             }}
             min={DEFAULT_MIN_PLAYERS}
             max={DEFAULT_MAX_PLAYERS}
