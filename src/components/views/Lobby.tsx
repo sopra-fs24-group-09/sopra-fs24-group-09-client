@@ -463,10 +463,7 @@ const Lobby = () => {
         <div className="room-header">
           <div style={{ fontWeight: "bold" }}>{Room.roomName}</div>
           <div>{Room.theme}</div>
-          <span
-            className={`room-status ${Room.status === "In Game" ? "in-game" : "free"
-            }`}
-          >
+          <span className={`room-status ${Room.status === "INGAME" ? "in-game" : Room.status === "WAITING" ? "waiting" : "game-over"}`}>
             {Room.status}
           </span>
         </div>

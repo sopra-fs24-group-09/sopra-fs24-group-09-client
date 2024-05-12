@@ -129,7 +129,7 @@
   margin-inline: 5%;
   justify-content: space-between;
   flex-direction: row;
-  text-align: center;
+  text-align: end;
 }
 .room {
   background-color: #fff;
@@ -137,15 +137,17 @@
   border-radius: 8px;
   text-align: center;
   cursor: pointer;
+  //text-align: center;
+  //overflow: hidden;
   .room-header {
     margin-left: 10px;
     flex-shrink: 0;     // Allow both children to grow and take up equal space
     display: flex;
     flex-direction: column;    // Stack the children of these containers vertically
     align-items: center;       // Center the items horizontally
-    justify-content: center;   // Center the items vertically
+    justify-content: flex-end;   // Center the items vertically
     padding: 10px;
-    text-align: center;
+    text-align: right;
   }
   .room-header {
     flex-shrink: 0;
@@ -154,8 +156,8 @@
     margin-left: 10px;
     flex-direction: column; /* Stack children vertically */
     align-items: center; /* Horizontally center */
-    justify-content: center; /* Vertically center */
-    text-align: center;
+    justify-content: flex-end; /* Vertically center */
+    text-align: right;
     padding: 10px;    // Align room details to the end of the flex container
   }
   .room-footer {
@@ -215,17 +217,19 @@
 }
 .room-status {
   padding: 4px;
-  width: 70px;
+  //width: 70px;
   display: inline-block;
   text-align: center;
+  border-radius: $borderRadius; // 确保你已定义了 $borderRadius 变量
+
   &.in-game {
-    border-radius: $borderRadius;
     background-color: orange;
   }
-  &.free {
-
-    border-radius: $borderRadius;
-    background-color: lightgreen;
+  &.waiting {
+    background-color: lightgreen; // 等待状态的颜色
+  }
+  &.game-over {
+    background-color: red; // 游戏结束状态的颜色
   }
 }
 .player {
