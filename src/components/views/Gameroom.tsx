@@ -167,6 +167,16 @@ const Gameroom = () => {
       // console.log(mssg)
       console.log("[onResponseReceived] receiptId",msg.receiptId)
       console.log("[onResponseReceived] reqList:",requestLists.current)
+
+      // Check if the message indicates an invalid or expired token
+      if (msg.auth === false) {
+        showToast("Invalid or expired token, please login again!", "error");
+        sessionStorage.clear(); // Clear session storage
+        navigate("/login"); // Navigate to the login page
+
+        return; // Exit the function to avoid further processing
+      }
+
       const index = requestLists.current.findIndex(item => item.receiptId === msg.receiptId);
       if (index !== INDEX_NOT_FOUND) {
         const messageType = requestLists.current[index].type;
@@ -214,6 +224,7 @@ const Gameroom = () => {
       /// 2. if the response is success, do nothing
       /// 3. if the response is failure, show the error message
       /// 4. if the response is not received, do something to handle the timeout
+      /// 5. if the response is unauthorized, navigate to login page and clear session
     };
 
     const onPlayerInfoReceived = (payload) => {
@@ -396,7 +407,8 @@ const Gameroom = () => {
     const receiptId = uuidv4();
     stompClientRef.current?.send(
       `/app/message/users/enterroom/${currentRoomID}`,
-      { receiptId: receiptId },
+      { receiptId: receiptId,
+        token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
     requestLists.current.push({ type: "enter",receiptId: receiptId });
@@ -429,7 +441,8 @@ const Gameroom = () => {
     const receiptId = uuidv4();
     stompClientRef.current?.send(
       `/app/message/users/ready/${currentRoomID}`,
-      { receiptId: receiptId },
+      { receiptId: receiptId,
+        token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
     requestLists.current.push({ type: "ready",receiptId: receiptId });
@@ -461,7 +474,8 @@ const Gameroom = () => {
     const receiptId = uuidv4();
     stompClientRef.current?.send(
       `/app/message/users/unready/${currentRoomID}`,
-      { receiptId: receiptId },
+      { receiptId: receiptId,
+        token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
     requestLists.current.push({ type: "unready",receiptId: receiptId });
@@ -493,7 +507,8 @@ const Gameroom = () => {
     const receiptId = uuidv4();
     stompClientRef.current?.send(
       `/app/message/games/start/${currentRoomID}`,
-      { receiptId: receiptId },
+      { receiptId: receiptId,
+        token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
     requestLists.current.push({ type: "start",receiptId: receiptId });
@@ -527,7 +542,8 @@ const Gameroom = () => {
     const receiptId = uuidv4();
     stompClientRef.current?.send(
       `/app/message/users/exitroom/${currentRoomID}`,
-      { receiptId: receiptId },
+      { receiptId: receiptId,
+        token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
     // requestLists.current.push({ type: "leave",receiptId: receiptId });
@@ -562,7 +578,8 @@ const Gameroom = () => {
     const receiptId = uuidv4();
     stompClientRef.current?.send(
       `/app/message/games/validate/${currentRoomID}`,
-      { receiptId: receiptId },
+      { receiptId: receiptId,
+        token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
     requestLists.current.push({ type: "submit",receiptId: receiptId });
@@ -603,7 +620,8 @@ const Gameroom = () => {
       const receiptId = uuidv4();
       stompClientRef.current.send(
         `/app/message/games/audio/upload/${currentRoomID}`,
-        { receiptId: receiptId },
+        { receiptId: receiptId,
+          token: sessionStorage.getItem("token") },
         JSON.stringify(payload)
       );
       requestLists.current.push({ type: "upload",receiptId: receiptId });

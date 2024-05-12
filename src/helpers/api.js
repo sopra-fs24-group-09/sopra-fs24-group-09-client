@@ -1,9 +1,28 @@
 import axios from "axios";
 import { getDomain } from "./getDomain";
+import {HTTP_STATUS} from "../constants/constants"
 
 export const api = axios.create({
   baseURL: getDomain(),
   headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+});
+
+// Request interceptor
+api.interceptors.request.use(function (config) {
+  const token = sessionStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`; // Append token to headers if it exists
+  }
+  console.log("Sending request to:", config.url);
+  console.log("Request headers:", config.headers);
+  console.log("Request method:", config.method);
+  if (config.data) {
+    console.log("Request data:", config.data);
+  }
+
+  return config;
+}, function (error) {
+  return Promise.reject(error); // Handle request error
 });
 
 export const handleError = error => {
