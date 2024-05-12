@@ -165,7 +165,11 @@ const Lobby = () => {
         onLobbyInfoReceived
       );
       stompClientRef.current?.send(
-        "/app/message/lobby/info", { receiptId: "" }
+        "/app/message/lobby/info", 
+        { 
+          receiptId: "",
+          token: sessionStorage.getItem("token")
+        }
       );
 
 
@@ -201,12 +205,16 @@ const Lobby = () => {
       navigate("/login");
     };
 
-    // make sure user was fetched before set timeoutId
-    fetchData().catch(error => {
-      handleError(error);
-    });
-
-    connectWebSocket();
+    // make sure the ws connection was opened after fetching data
+    fetchData()
+      .then(
+        () => {
+          connectWebSocket();
+        }
+      )
+      .catch(error => {
+        handleError(error);
+      });
 
 
     return () => {
@@ -659,12 +667,20 @@ const Lobby = () => {
             <li><strong>Scoring:</strong> Points are awarded for correctly guessing the word. The faster you guess, the more points you earn.</li>
             <li><strong>Turns:</strong> The game is played in rounds. Each round has one speaker and several challengers. Players alternate roles as the Speaker to ensure fairness.</li>
           </ul>
+          <p>Click <b>GUIDE</b> for more detailed instructions.</p>
           <p>Join a room or create one to play with friends!</p>
 
         </div>
         <div className="intro-popup btn-container">
           <Button className="cancel" onClick={toggleInfoPop}>
             Close
+          </Button>
+          <Button onClick={
+            () => {
+              navigate("/guide");
+            }
+          }>
+            Guide
           </Button>
         </div>
       </Popup>

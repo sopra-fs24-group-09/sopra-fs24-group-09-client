@@ -1,0 +1,22 @@
+@import "../theme";
+$modal-background: $lightYellow;
+
+.guide-modal {
+    background-color: $modal-background;
+    .guide-modal-arrow {
+        background-color: $modal-background;
+    }
+    button{
+        background-color: $darkBlue;
+        color: $whiteYellow;
+        border: 1px solid $darkBlue;
+        &:hover {
+            background-color: $middleBlue;
+            color: $whiteYellow;
+            border: 1px solid $middleBlue;
+        }
+    }
+    .guide-modal-close-icon {
+        display: none;
+    }
+}
