@@ -125,7 +125,7 @@ const Lobby = () => {
       console.log(response);
       sessionStorage.clear();
     } catch (error) {
-      showToast("Something went wrong during the logout: \n${handleError(error)}", "error");
+      handleError(error);
     }
     navigate("/login");
   };
@@ -412,7 +412,7 @@ const Lobby = () => {
       } else {
         // Handle other types of errors generically
         console.error(`Error: ${data.message}\n${error}`);
-        showToast("An error occurred: ${data.message}", "error");
+        showToast(`An error occurred: ${data.message}`, "error");
       }
     } else if (error.message && error.message.match(/Network Error/)) {
       // Handle network errors
@@ -423,7 +423,7 @@ const Lobby = () => {
       showToast("The server cannot be reached.\nDid you start it?", "error");
     } else {
       console.error(`Something went wrong: \n${error}`);
-      showToast("Something went wrong: \n${error}", "error");
+      showToast(`Something went wrong: \n${error}`, "error");
     }
   }
 
