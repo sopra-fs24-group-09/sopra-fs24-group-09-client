@@ -19,6 +19,7 @@
     "serve": "^14.2.1",
     "sockjs-client": "^1.6.1",
     "stompjs": "^2.3.3",
+    "toastify": "^2.0.1",
     "uuid": "^9.0.1",
     "wavesurfer.js": "^7.7.5"
   },
