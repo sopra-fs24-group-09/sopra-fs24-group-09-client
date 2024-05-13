@@ -18,13 +18,17 @@ export const ButtonPlayer = (props: ButtonPlayerProps) => {
 
   const playAudio = () => {
     if (isPlaying) {
-      audioRef.current.pause();
+      audioRef.current.pause().catch((e) => console.error(e));
       setIsPlaying((prev) => !prev);
     } else {
       // play form start
       audioRef.current.currentTime = 0;
-      audioRef.current.play();
-      setIsPlaying((prev) => !prev);
+      audioRef.current.play()
+        .then(()  => {
+          setIsPlaying((prev) => !prev);
+        }
+        )
+        .catch((e) => console.error(e));
     }
   };
 
@@ -48,7 +52,8 @@ export const ButtonPlayer = (props: ButtonPlayerProps) => {
 
   return (
     <div className={`btn-player ${props.className}`}>
-      <Button onClick={playAudio}>
+      <Button onClick={playAudio}
+        className="play-btn">
         <audio ref={audioRef} src={props.audioURL} />
         {!isPlaying ? <FaPlay /> : <FaPause />}
       </Button>

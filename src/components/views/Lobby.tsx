@@ -1,8 +1,8 @@
 import React, { useCallback, useRef, useEffect, useState } from "react";
-import { api, handleError } from "helpers/api";
+import { api } from "helpers/api";
 import { Button } from "components/ui/Button";
 import { throttle } from "lodash";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 import { User, Room } from "types";
@@ -11,10 +11,10 @@ import { Dropdown } from "components/ui/Dropdown";
 import "styles/views/Lobby.scss";
 import { getDomain } from "helpers/getDomain";
 import "styles/ui/Popup.scss";
-import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH, HTTP_STATUS } from "../../constants/constants";
+import { MAX_USERNAME_LENGTH, MAX_ROOM_NAME_LENGTH, HTTP_STATUS,AVATAR_LIST } from "../../constants/constants";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
-import { showToast} from "../../helpers/toastService";
+import { showToast } from "../../helpers/toastService";
 import { Timestamped, RoomInfo, RoomPlayer, PlayerAndRoomID } from "stomp_types";
 const DEFAULT_MAX_PLAYERS = 5;
 const DEFAULT_MIN_PLAYERS = 2;
@@ -35,71 +35,9 @@ const Player: React.FC<PlayerProps> = ({ user }) => (
   </div>
 );
 
-interface FormFieldProps {
-  label: string;
-  placeholder?: string;
-  value: string;
-  type?: string;
-  onChange: (value: string) => void;
-  disabled?: boolean;
-}
-
 Player.propTypes = {
   user: PropTypes.object,
 };
-
-const avatarList: string[] = [
-  "angry-face",
-  "angry-face-with-horns",
-  "anguished-face",
-  "anxious-face-with-sweat",
-  "astonished-face",
-  "beaming-face-with-smiling-eyes",
-  "cat-face",
-  "clown-face",
-  "cold-face",
-  "confounded-face",
-  "confused-face",
-  "cow-face",
-  "cowboy-hat-face",
-  "crying-face",
-  "disappointed-face",
-  "disguised-face",
-  "dog-face",
-  "dotted-line-face",
-  "downcast-face-with-sweat",
-  "dragon-face",
-  "drooling-face",
-  "expressionless-face",
-  "face-blowing-a-kiss",
-  "face-exhaling",
-  "face-holding-back-tears",
-  "face-in-clouds",
-  "face-savoring-food",
-  "face-screaming-in-fear",
-  "face-vomiting",
-  "face-with-crossed-out-eyes",
-  "face-with-diagonal-mouth",
-  "face-with-hand-over-mouth",
-  "face-with-head-bandage",
-  "face-with-medical-mask",
-  "face-with-monocle",
-  "face-with-open-eyes-and-hand-over-mouth",
-  "face-with-open-mouth",
-  "face-with-peeking-eye",
-  "face-with-raised-eyebrow",
-  "face-with-rolling-eyes",
-  "face-with-spiral-eyes",
-  "face-with-steam-from-nose",
-  "face-with-symbols-on-mouth",
-  "face-with-tears-of-joy",
-  "face-with-thermometer",
-  "face-with-tongue",
-  "face-without-mouth",
-  "fearful-face",
-  "first-quarter-moon-face",
-  "flushed-face"
-]
 
 const Lobby = () => {
   const navigate = useNavigate();
@@ -110,7 +48,7 @@ const Lobby = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string>("");
-  const [avatar, setAvatar] = useState<string | null>(null);
+  const [currentAvatar, setCurrentAvatar] = useState<string | null>(null);
   const [roomName, setRoomName] = useState("");
   const [maxRoomPlayers, SetMaxRoomPlayers] = useState(DEFAULT_MIN_PLAYERS);
   const [roomTheme, setRoomTheme] = useState("");
@@ -125,7 +63,7 @@ const Lobby = () => {
       console.log(response);
       sessionStorage.clear();
     } catch (error) {
-      showToast("Something went wrong during the logout: \n${handleError(error)}",  "error");
+      handleError(error);
     }
     navigate("/login");
   };
@@ -138,6 +76,7 @@ const Lobby = () => {
       // try {
       const userResponse = await api.get(`/users/${userId}`);
       setUser(userResponse.data);  // Set user data from API
+      setCurrentAvatar(userResponse.data.avatar);
       console.log("User data:", userResponse.data);
       // } catch (error) {
       // handleError(error);
@@ -146,6 +85,8 @@ const Lobby = () => {
       // }
     } else {
       console.error("User ID not found in sessionStorage!");
+      showToast("User ID not found in sessionStorage!", "error");
+      navigate("/login");
     }
   }
 
@@ -165,7 +106,11 @@ const Lobby = () => {
         onLobbyInfoReceived
       );
       stompClientRef.current?.send(
-        "/app/message/lobby/info", { receiptId: "" }
+        "/app/message/lobby/info", 
+        { 
+          receiptId: "",
+          token: sessionStorage.getItem("token")
+        }
       );
 
 
@@ -185,7 +130,7 @@ const Lobby = () => {
         //   showToast("Reconnect to your previous room!", "success");
         // }
 
-        setRooms(payload); 
+        setRooms(payload);
         console.log("Rooms updated:", message_lobby.message);
       } else {
         console.error("Received data is not in expected format:", message_lobby);
@@ -201,12 +146,16 @@ const Lobby = () => {
       navigate("/login");
     };
 
-    // make sure user was fetched before set timeoutId
-    fetchData().catch(error => {
-      handleError(error);
-    });
-
-    connectWebSocket();
+    // make sure the ws connection was opened after fetching data
+    fetchData()
+      .then(
+        () => {
+          connectWebSocket();
+        }
+      )
+      .catch(error => {
+        handleError(error);
+      });
 
 
     return () => {
@@ -250,7 +199,7 @@ const Lobby = () => {
 
   const doEdit = async () => {
     try {
-      const requestBody = JSON.stringify({ username: username, avatar: avatar });
+      const requestBody = JSON.stringify({ username: username, avatar: currentAvatar });
       const id = sessionStorage.getItem("id");
       console.log("Request body:", requestBody);
       await api.put(`/users/${id}`, requestBody);
@@ -266,8 +215,8 @@ const Lobby = () => {
   const createRoom = async () => {
     // if not chrome, alert the user
     if (!navigator.userAgent.includes("Chrome")) {
-      showToast("Your browser is currently not supported, please use Chrome to play this game!","error");
-      
+      showToast("Your browser is currently not supported, please use Chrome to play this game!", "error");
+
       return;
     }
     try {
@@ -352,7 +301,7 @@ const Lobby = () => {
   const changeAvatar = async (newAvatar) => {
     try {
       // 更新本地状态
-      setAvatar(newAvatar);
+      setCurrentAvatar(newAvatar);
 
       // 构造请求体，只包含 avatar 更改
       const requestBody = JSON.stringify({ avatar: newAvatar });
@@ -404,7 +353,7 @@ const Lobby = () => {
       } else {
         // Handle other types of errors generically
         console.error(`Error: ${data.message}\n${error}`);
-        showToast("An error occurred: ${data.message}", "error");
+        showToast(`An error occurred: ${data.message}`, "error");
       }
     } else if (error.message && error.message.match(/Network Error/)) {
       // Handle network errors
@@ -415,7 +364,7 @@ const Lobby = () => {
       showToast("The server cannot be reached.\nDid you start it?", "error");
     } else {
       console.error(`Something went wrong: \n${error}`);
-      showToast("Something went wrong: \n${error}", "error");
+      showToast(`Something went wrong: \n${error}`, "error");
     }
   }
 
@@ -427,7 +376,7 @@ const Lobby = () => {
         showToast("Session expired or invalid, please log in again.", "error");
         sessionStorage.clear(); // Clear session storage
         navigate("/login");
-        
+
         return; // Exit the function to avoid further processing
       }
 
@@ -450,49 +399,68 @@ const Lobby = () => {
   }, [navigate, showToast]);
 
   const renderRoomLists = () => {
-    return rooms.map((Room) => (
-      <div className="room-container" key={Room.roomId} onClick={handleRoomClick(Room)}>
-        <div className="room-players">
-          {Room.roomPlayersList?.map((user, index) => (
-            <div className="player" key={index}>
-              <i className={"twa twa-" + user.avatar} style={{ fontSize: "3.8rem" }} />
+    return rooms.map((Room) => {
+      const playerSlots = [];
+
+      // 生成玩家头像或空白框，总数等于房间最大玩家数
+      for (let i = 0; i < Room.roomMaxNum; i++) {
+        if (i < Room.roomPlayersList.length) {
+          const user = Room.roomPlayersList[i];
+          playerSlots.push(
+            <div className="player" key={i}>
+              <i className={`twa twa-${user.avatar}`} style={{ fontSize: "3.8rem" }} />
               <div className="name">{user.userName}</div>
             </div>
-          ))}
+          );
+        } else {
+          // 空白框
+          playerSlots.push(
+            <div className="player" key={i}>
+
+            </div>
+          );
+        }
+      }
+
+      return (
+        <div className="room-container" key={Room.roomId} onClick={handleRoomClick(Room)}>
+          <div className="room-players">
+            {playerSlots}
+          </div>
+          <div className="room-header">
+            <div style={{ fontWeight: "bold" }}>{Room.roomName}</div>
+            <div>{Room.theme}</div>
+            <span
+              className={`room-status ${Room.status === "INGAME" ? "in-game" : Room.status === "WAITING" ? "waiting" : "game-over"}`}>
+              {Room.status}
+            </span>
+          </div>
         </div>
-        <div className="room-header">
-          <div style={{ fontWeight: "bold" }}>{Room.roomName}</div>
-          <div>{Room.theme}</div>
-          <span
-            className={`room-status ${Room.status === "In Game" ? "in-game" : "free"
-            }`}
-          >
-            {Room.status}
-          </span>
-        </div>
-      </div>
-    ));
+      )
+    });
   };
 
-  if (user === null) {
-    return <BaseContainer>Loading...</BaseContainer>;
-  }
+  // if (user === null) {
+  //   return <BaseContainer>Loading...</BaseContainer>;
+  // }
 
   return (
     <BaseContainer>
-      <div className="user-container">
-        <i className={"twa twa-" + user.avatar}
-          onClick={toggleProfilePop}
-          style={{
-            fontSize: "3.8rem",
-            marginTop: "0.8rem",
-            cursor: "pointer"
-          }} />
-        <div className="name">{user.username}</div>
-        <div className="btn-logout-container">
-          <Button className="logout-btn" onClick={logout}>logout</Button>
+      {user && (
+        <div className="user-container">
+          <i className={"twa twa-" + user.avatar}
+            onClick={toggleProfilePop}
+            style={{
+              fontSize: "3.8rem",
+              marginTop: "0.8rem",
+              cursor: "pointer"
+            }} />
+          <div className="name">{user.username}</div>
+          <div className="btn-logout-container">
+            <Button className="logout-btn" onClick={logout}>Logout</Button>
+          </div>
         </div>
-      </div>
+      )}
       <div className="title-container">
         <div className="big-title">Kaeps</div>
         <div className="information" onClick={toggleInfoPop}>i</div>
@@ -511,62 +479,69 @@ const Lobby = () => {
         </div>
       </div>
 
-
-      <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className="profile-popup">
-        <BaseContainer className="profile-popup content">
-          <div className="avatar-container" onClick={() => {
-            toggleAvatarPop();
-            toggleProfilePop();
-          }}>
-            <i className={"twa twa-" + user.avatar} style={{ fontSize: "10rem", marginTop: "0.8rem", textAlign: "center" }} />
-          </div>
-          <div className="profile-popup field">
-            <label className="profile-popup label">
-              Username:
-            </label>
-            <input
-              // className="profile-popup input"
-              style={{ height: "40px" }}
-              placeholder={user.username}
-              type="text"
-              value={username}
-              onChange={(e) => {
-                const inputValue = e.target.value;  // 获取输入值
-                if (inputValue.length <= MAX_USERNAME_LENGTH && inputValue.length > 0) {  // 检查输入值的长度
-                  setUsername(inputValue);  // 如果长度小于或等于20，更新状态
-                }
-              }}
-            />
-          </div>
-          <div>Id: {user.id}</div>
-          <div>Status: {user.status}</div>
-
-          {/*<div>RegisterDate: {user && new Date(user.registerDate).toLocaleDateString()}</div>*/}
-
-          <div className="profile-popup btn-container">
-            <Button className="cancel" onClick={() => {
-              toggleProfilePop();
-            }}>
+      {user && (
+        <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className="profile-popup"
+          buttonJSX={
+            (<>    
+              <Button className="cancel" onClick={() => {
+                toggleProfilePop();
+              }}>
               Cancel
-            </Button>
-            <Button className="cancel" 
-              onClick={() => doEdit()}
-              disabled = {username === "" || username === user.username}
-            >
-              Edit
-            </Button>
-          </div>
-        </BaseContainer>
-      </Popup>
+              </Button>
+              <Button className="cancel"
+                onClick={() => doEdit()}
+                disabled={username === "" || username === user.username}
+              >
+                Edit
+              </Button>
+            </>)
+          }
+        >
+          <BaseContainer className="profile-popup content">
+            <div className="avatar-container"
+              onClick={() => {
+                toggleAvatarPop();
+                toggleProfilePop();
+              }}>
+              <i className={"twa twa-" + user.avatar} />
+            </div>
+            <div className="profile-popup field">
+              <label className="profile-popup label">
+              Username:
+              </label>
+              <input
+              // className="profile-popup input"
+                style={{ height: "40px" }}
+                placeholder={user.username}
+                type="text"
+                value={username}
+                onChange={(e) => {
+                  const inputValue = e.target.value;  // 获取输入值
+                  if (inputValue.length <= MAX_USERNAME_LENGTH && inputValue.length >= 0) {  // 检查输入值的长度
+                    setUsername(inputValue);  // 如果长度小于或等于20，更新状态
+                  }
+                }}
+              />
+            </div>
+            <div>User ID: {user.id}</div>
+            <div>Register Date: {user.registerDate}</div>
 
-      <Popup
-        ref={changeAvatarPopRef}
+            {/*<div>RegisterDate: {user && new Date(user.registerDate).toLocaleDateString()}</div>*/}
+
+          </BaseContainer>
+        </Popup>
+      )}
+
+      <Popup ref={changeAvatarPopRef}
         toggleDialog={toggleAvatarPop}
-        className="room-creation-popup"
+        className="avatar-popup"
       >
         <div className="avatar-list">
-          {avatarList?.map((avatar, index) => (
-            <div className="player" key={index} >
+          {AVATAR_LIST?.map((avatar, index) => (
+            <div
+              key={index}
+              className={`avatar-container ${avatar === currentAvatar ? "selected" : ""}`}
+            >
               <i className={"twa twa-" + avatar} style={{ fontSize: "3.8rem" }} onClick={() => {
                 changeAvatar(avatar).then(r => toggleAvatarPop);
                 toggleAvatarPop();
@@ -576,10 +551,16 @@ const Lobby = () => {
         </div>
       </Popup>
 
-      <Popup
-        ref={roomCreationPopRef}
+      <Popup ref={roomCreationPopRef}
         toggleDialog={toggleRoomCreationPop}
         className="room-creation-popup"
+        buttonJSX={
+          <>
+            <Button disabled={roomName === "" || maxRoomPlayers < DEFAULT_MIN_PLAYERS || maxRoomPlayers > DEFAULT_MAX_PLAYERS || roomTheme === "" || isNaN(maxRoomPlayers)}
+              className="create-room" onClick={createRoom}>Create Room</Button>
+            <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
+          </>
+        }
       >
         <BaseContainer className="room-creation-popup content">
           <div className="title">Create Room</div>
@@ -598,12 +579,12 @@ const Lobby = () => {
           <div>Number of Maximum Players: </div>
           <input
             type="number"
-            placeholder="Number of Maximum Players"
+            placeholder={`Between ${DEFAULT_MIN_PLAYERS} and ${DEFAULT_MAX_PLAYERS}`}
             value={maxRoomPlayers}
             onChange={e => {
               const value = parseInt(e.target.value);
               // console.error("Value:", value);
-              SetMaxRoomPlayers(value >= DEFAULT_MIN_PLAYERS && value <= DEFAULT_MAX_PLAYERS ? value : DEFAULT_MIN_PLAYERS);
+              SetMaxRoomPlayers(value);
             }}
             min={DEFAULT_MIN_PLAYERS}
             max={DEFAULT_MAX_PLAYERS}
@@ -620,33 +601,41 @@ const Lobby = () => {
             ]}
             onChange={(value) => setRoomTheme(value)}
           />
-          <div className="room-creation-popup btn-container">
-            <Button disabled={roomName === "" || maxRoomPlayers < DEFAULT_MIN_PLAYERS || maxRoomPlayers > DEFAULT_MAX_PLAYERS || roomTheme === ""}
-              className="create-room" onClick={createRoom}>Create Room</Button>
-            <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
-          </div>
         </BaseContainer>
 
       </Popup>
 
-      <Popup ref={infoPopRef} toggleDialog={toggleInfoPop} className="intro-popup">
+      <Popup ref={infoPopRef}
+        toggleDialog={toggleInfoPop}
+        className="intro-popup"
+        buttonJSX={
+          <>
+            <Button className="game-guide" onClick={() => {
+              navigate("/guide");
+              toggleInfoPop();
+            }}>
+            Guide
+            </Button>
+            <Button className="cancel" onClick={toggleInfoPop}>
+            Close
+            </Button>
+          </>
+        }>
         <div className="intro-cnt">
           <h1>Welcome to KAEPS!</h1>
-          <p>Here are some guides for playing this game:</p>
+          <p>Here are some guides to help you get started with the game:</p>
           <ul>
-            <li><strong>Speaker:</strong> Receives a word, records it, inverts the audio, and sends it to other players.</li>
-            <li><strong>Challenger:</strong> Receives the reversed audio recording from the speaker.
-              The challenger should then mimic this reversed recording.
-              After recording their own version of the reversed audio, they should play it backwards to guess the original word.</li>
-            <li><strong>Scoring:</strong> Correctly deciphering the word scores you points.</li>
-            <li><strong>Turns:</strong> Each round has one Speaker and multiple Challengers. Players take turns to be the Speaker.</li>
+            <li><strong>Speaker:</strong> The speaker receives a word, records it, inverts the recording, and then sends this inverted audio to other players.</li>
+            <li><strong>Challenger:</strong> Challengers listen to the inverted audio sent by the speaker.
+              You must mimic this recording and then play their recording backwards to guess the original word.
+              You can guess multiple times before time is up.
+            </li>
+            <li><strong>Scoring:</strong> Points are awarded for correctly guessing the word. The faster you guess, the more points you earn.</li>
+            <li><strong>Turns:</strong> The game is played in rounds. Each round has one speaker and several challengers. Players alternate roles as the Speaker to ensure fairness.</li>
           </ul>
+          <p>Click <b>GUIDE</b> for more detailed instructions.</p>
           <p>Join a room or create one to play with friends!</p>
-        </div>
-        <div className="intro-popup btn-container">
-          <Button className="cancel" onClick={toggleInfoPop}>
-            Close
-          </Button>
+
         </div>
       </Popup>
     </BaseContainer>

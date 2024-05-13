@@ -1,5 +1,4 @@
 import React, { useCallback,useEffect, useState, useRef, useMemo } from "react";
-import { api, handleError } from "helpers/api";
 import { useNavigate, useParams } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
@@ -36,7 +35,6 @@ type SharedAudioURL = { [userId: string]: string };
 const Gameroom = () => {
   const navigate = useNavigate();
   const { currentRoomID,currentRoomName } = useParams();
-  const currentRoomNameValid = useRef(null);
   const stompClientRef = useRef(null);
   const user = {
     token: sessionStorage.getItem("token"),
@@ -53,6 +51,7 @@ const Gameroom = () => {
   const [playerLists, setPlayerLists] = useState([]);
   const roundFinished = useRef(false);
   const [endTime, setEndTime] = useState(null);
+  const currentRoomNameValid = useRef("");
   const gameTheme = useRef("Loading....");
   const leaderboardInfoRecieved = useRef(false);
   const [leaderboardInfo, setLeaderboardInfo] = useState([]);
@@ -119,7 +118,6 @@ const Gameroom = () => {
     let sharedAudioSuber;
     let responseSuber;
 
-    //const roomId = 5;
     const connectWebSocket = () => {
       const baseurl = getDomain();
       let Sock = new SockJS(`${baseurl}/ws`);
@@ -150,7 +148,6 @@ const Gameroom = () => {
         `/user/${user.id}/response/${currentRoomID}`,
         onResponseReceived
       );
-      // enterRoom();
       throttledEnterRoom();
       //connect or reconnect
     };
@@ -201,13 +198,6 @@ const Gameroom = () => {
         } else if (messageType === "upload") {
           toastMessage = success ? "You have uploaded the audio successfully!" : msg.message;
         }
-        // else if (messageType === "leave") {
-        //   toastMessage = success ? "You have left the room successfully!" : msg.message;
-        //   if (success){
-        //     navigate("/lobby");
-        //     return;
-        //   }
-        // }
 
         if (success) {
           showToast(toastMessage, "success");
@@ -215,11 +205,6 @@ const Gameroom = () => {
           showToast(toastMessage, "error");
         }
       }
-      // const payloadData = JSON.parse(payload.body);
-      // console.error("Response received", payloadData.message);
-      // alert("Response server side receive!"+payloadData.message)
-      // navigate("/lobby");
-      // TODO: handle response
       /// 1. filter the response by the receiptId
       /// 2. if the response is success, do nothing
       /// 3. if the response is failure, show the error message
@@ -238,12 +223,8 @@ const Gameroom = () => {
       }
       readyStatus.current = myInfo.ready;
       if (!showReadyPopup && !gameOver){
-        //console.log("set info for myself")
-        //console.log(myInfo);
         if (myInfo && myInfo.roundFinished !== null){
           roundFinished.current = myInfo.roundFinished;
-          //console.log("roundFinished?")
-          //console.log(roundFinished.current);
         }
       }
       if (gameOverRef.current === true && leaderboardInfoRecieved.current === false){
@@ -254,10 +235,9 @@ const Gameroom = () => {
 
     const onGameInfoReceived = (payload) => {
       const payloadData = JSON.parse(payload.body);
-      // console.error("GameInfo received", JSON.stringify(payloadData.message));
       if (JSON.stringify(gameInfoRef.current) === JSON.stringify(payloadData.message)) {
         console.log("Same game info received, ignore");
-        
+
         return;
       }
       if (currentRoomNameValid.current !== payloadData.message.roomName){
@@ -339,26 +319,6 @@ const Gameroom = () => {
       }
     };
 
-    // const onMessageReceived = (payload) => {
-    //   var payloadData = JSON.parse(payload.body);
-    //   switch (payloadData.messageType) {
-    //     case "PLAYERS":
-    //       //jiaoyan
-    //       setPlayerLists(payloadData.message);
-    //       break;
-    //     case "GAME":
-    //       setGameInfo(payloadData.message);
-    //       break;
-    //     case "ROOM":
-    //       setRoomInfo(payloadData.message);
-    //       break;
-    //     case "AUIDOSHARE":
-    //       //function to deal with audio
-    //       break;
-    //   }
-    // }
-
-
     connectWebSocket();
 
     // Cleanup on component unmount
@@ -429,7 +389,7 @@ const Gameroom = () => {
   const getReady = useCallback(() => {
     console.log("ready once - throttle")
     const payload: Timestamped<PlayerAndRoomID> = {
-      // TODO: need to make sure the timestamp is UTC format
+      // need to make sure the timestamp is UTC format
       // and invariant to the time zone settings
       timestamp: new Date().getTime(),
       message: {
@@ -463,7 +423,7 @@ const Gameroom = () => {
   const cancelReady = useCallback(() => {
     console.log("unready once - throttle")
     const payload: Timestamped<PlayerAndRoomID> = {
-      // TODO: need to make sure the timestamp is UTC format
+      // need to make sure the timestamp is UTC format
       // and invariant to the time zone settings
       timestamp: new Date().getTime(),
       message: {
@@ -546,17 +506,6 @@ const Gameroom = () => {
         token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
-    // requestLists.current.push({ type: "leave",receiptId: receiptId });
-    // console.log(requestLists.current)
-    // const timeoutId = setTimeout(() => {
-    //   const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
-    //   if (index !== INDEX_NOT_FOUND) {
-    //     requestLists.current.splice(index, 1);
-    //   }
-    //   console.log(requestLists.current)
-    // }, RESPONSE_TIME);
-    
-    // return () => clearTimeout(timeoutId);
     navigate("/lobby")
   },[user.id,currentRoomID]);
   const throttledExitRoom = useCallback(throttle(exitRoom, THROTTLE_TIME),[exitRoom, THROTTLE_TIME]);
@@ -743,9 +692,9 @@ const Gameroom = () => {
   };
 
 
-  if (playerLists === null || playerLists.length === 0) {
-    return <div>Loading...</div>;
-  }
+  // if (playerLists === null || playerLists.length === 0) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <BaseContainer className="gameroom basecontainer">
