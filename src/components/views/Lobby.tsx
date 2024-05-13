@@ -1,8 +1,8 @@
 import React, { useCallback, useRef, useEffect, useState } from "react";
-import { api, handleError } from "helpers/api";
+import { api } from "helpers/api";
 import { Button } from "components/ui/Button";
 import { throttle } from "lodash";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 import { User, Room } from "types";
@@ -34,15 +34,6 @@ const Player: React.FC<PlayerProps> = ({ user }) => (
     <div className="player-username">{user.username}</div>
   </div>
 );
-
-interface FormFieldProps {
-  label: string;
-  placeholder?: string;
-  value: string;
-  type?: string;
-  onChange: (value: string) => void;
-  disabled?: boolean;
-}
 
 Player.propTypes = {
   user: PropTypes.object,
