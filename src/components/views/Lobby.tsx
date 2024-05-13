@@ -76,6 +76,7 @@ const Lobby = () => {
       // try {
       const userResponse = await api.get(`/users/${userId}`);
       setUser(userResponse.data);  // Set user data from API
+      setCurrentAvatar(userResponse.data.avatar);
       console.log("User data:", userResponse.data);
       // } catch (error) {
       // handleError(error);
@@ -534,7 +535,7 @@ const Lobby = () => {
           {AVATAR_LIST?.map((avatar, index) => (
             <div
               key={index}
-              className={`avatar-container ${avatar === currentAvatar ? 'selected' : ''}`}
+              className={`avatar-container ${avatar === currentAvatar ? "selected" : ""}`}
             >
               <i className={"twa twa-" + avatar} style={{ fontSize: "3.8rem" }} onClick={() => {
                 changeAvatar(avatar).then(r => toggleAvatarPop);
