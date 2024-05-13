@@ -85,6 +85,8 @@ const Lobby = () => {
       // }
     } else {
       console.error("User ID not found in sessionStorage!");
+      showToast("User ID not found in sessionStorage!", "error");
+      navigate("/login");
     }
   }
 
@@ -438,25 +440,27 @@ const Lobby = () => {
     });
   };
 
-  if (user === null) {
-    return <BaseContainer>Loading...</BaseContainer>;
-  }
+  // if (user === null) {
+  //   return <BaseContainer>Loading...</BaseContainer>;
+  // }
 
   return (
     <BaseContainer>
-      <div className="user-container">
-        <i className={"twa twa-" + user.avatar}
-          onClick={toggleProfilePop}
-          style={{
-            fontSize: "3.8rem",
-            marginTop: "0.8rem",
-            cursor: "pointer"
-          }} />
-        <div className="name">{user.username}</div>
-        <div className="btn-logout-container">
-          <Button className="logout-btn" onClick={logout}>Logout</Button>
+      {user && (
+        <div className="user-container">
+          <i className={"twa twa-" + user.avatar}
+            onClick={toggleProfilePop}
+            style={{
+              fontSize: "3.8rem",
+              marginTop: "0.8rem",
+              cursor: "pointer"
+            }} />
+          <div className="name">{user.username}</div>
+          <div className="btn-logout-container">
+            <Button className="logout-btn" onClick={logout}>Logout</Button>
+          </div>
         </div>
-      </div>
+      )}
       <div className="title-container">
         <div className="big-title">Kaeps</div>
         <div className="information" onClick={toggleInfoPop}>i</div>
@@ -475,57 +479,58 @@ const Lobby = () => {
         </div>
       </div>
 
-
-      <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className="profile-popup"
-        buttonJSX={
-          (<>    
-            <Button className="cancel" onClick={() => {
-              toggleProfilePop();
-            }}>
+      {user && (
+        <Popup ref={profilePopRef} toggleDialog={toggleProfilePop} className="profile-popup"
+          buttonJSX={
+            (<>    
+              <Button className="cancel" onClick={() => {
+                toggleProfilePop();
+              }}>
               Cancel
-            </Button>
-            <Button className="cancel"
-              onClick={() => doEdit()}
-              disabled={username === "" || username === user.username}
-            >
+              </Button>
+              <Button className="cancel"
+                onClick={() => doEdit()}
+                disabled={username === "" || username === user.username}
+              >
                 Edit
-            </Button>
-          </>)
-        }
-      >
-        <BaseContainer className="profile-popup content">
-          <div className="avatar-container"
-            onClick={() => {
-              toggleAvatarPop();
-              toggleProfilePop();
-            }}>
-            <i className={"twa twa-" + user.avatar} />
-          </div>
-          <div className="profile-popup field">
-            <label className="profile-popup label">
+              </Button>
+            </>)
+          }
+        >
+          <BaseContainer className="profile-popup content">
+            <div className="avatar-container"
+              onClick={() => {
+                toggleAvatarPop();
+                toggleProfilePop();
+              }}>
+              <i className={"twa twa-" + user.avatar} />
+            </div>
+            <div className="profile-popup field">
+              <label className="profile-popup label">
               Username:
-            </label>
-            <input
+              </label>
+              <input
               // className="profile-popup input"
-              style={{ height: "40px" }}
-              placeholder={user.username}
-              type="text"
-              value={username}
-              onChange={(e) => {
-                const inputValue = e.target.value;  // 获取输入值
-                if (inputValue.length <= MAX_USERNAME_LENGTH && inputValue.length >= 0) {  // 检查输入值的长度
-                  setUsername(inputValue);  // 如果长度小于或等于20，更新状态
-                }
-              }}
-            />
-          </div>
-          <div>User ID: {user.id}</div>
-          <div>Register Date: {user.registerDate}</div>
+                style={{ height: "40px" }}
+                placeholder={user.username}
+                type="text"
+                value={username}
+                onChange={(e) => {
+                  const inputValue = e.target.value;  // 获取输入值
+                  if (inputValue.length <= MAX_USERNAME_LENGTH && inputValue.length >= 0) {  // 检查输入值的长度
+                    setUsername(inputValue);  // 如果长度小于或等于20，更新状态
+                  }
+                }}
+              />
+            </div>
+            <div>User ID: {user.id}</div>
+            <div>Register Date: {user.registerDate}</div>
 
-          {/*<div>RegisterDate: {user && new Date(user.registerDate).toLocaleDateString()}</div>*/}
+            {/*<div>RegisterDate: {user && new Date(user.registerDate).toLocaleDateString()}</div>*/}
 
-        </BaseContainer>
-      </Popup>
+          </BaseContainer>
+        </Popup>
+      )}
 
       <Popup ref={changeAvatarPopRef}
         toggleDialog={toggleAvatarPop}
