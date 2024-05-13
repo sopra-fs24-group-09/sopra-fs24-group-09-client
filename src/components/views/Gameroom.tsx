@@ -237,6 +237,7 @@ const Gameroom = () => {
       const payloadData = JSON.parse(payload.body);
       if (JSON.stringify(gameInfoRef.current) === JSON.stringify(payloadData.message)) {
         console.log("Same game info received, ignore");
+
         return;
       }
       if (currentRoomNameValid.current !== payloadData.message.roomName){
