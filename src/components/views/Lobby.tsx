@@ -590,11 +590,11 @@ const Lobby = () => {
 
       <Popup ref={changeAvatarPopRef}
         toggleDialog={toggleAvatarPop}
-        className="room-creation-popup"
+        className="avatar-popup"
       >
         <div className="avatar-list">
           {avatarList?.map((avatar, index) => (
-            <div className="player" key={index} >
+            <div className="avatar-container" key={index} >
               <i className={"twa twa-" + avatar} style={{ fontSize: "3.8rem" }} onClick={() => {
                 changeAvatar(avatar).then(r => toggleAvatarPop);
                 toggleAvatarPop();
