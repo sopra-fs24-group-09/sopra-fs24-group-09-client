@@ -35,7 +35,6 @@ type SharedAudioURL = { [userId: string]: string };
 const Gameroom = () => {
   const navigate = useNavigate();
   const { currentRoomID,currentRoomName } = useParams();
-  const currentRoomNameValid = useRef(null);
   const stompClientRef = useRef(null);
   const user = {
     token: sessionStorage.getItem("token"),
@@ -52,6 +51,7 @@ const Gameroom = () => {
   const [playerLists, setPlayerLists] = useState([]);
   const roundFinished = useRef(false);
   const [endTime, setEndTime] = useState(null);
+  const currentRoomNameValid = useRef("");
   const gameTheme = useRef("Loading....");
   const leaderboardInfoRecieved = useRef(false);
   const [leaderboardInfo, setLeaderboardInfo] = useState([]);
@@ -692,9 +692,9 @@ const Gameroom = () => {
   };
 
 
-  if (playerLists === null || playerLists.length === 0) {
-    return <div>Loading...</div>;
-  }
+  // if (playerLists === null || playerLists.length === 0) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <BaseContainer className="gameroom basecontainer">
