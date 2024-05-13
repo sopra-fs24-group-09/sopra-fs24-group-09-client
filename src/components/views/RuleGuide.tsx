@@ -8,6 +8,7 @@ import BaseContainer from "components/ui/BaseContainer";
 import Header from "./Header";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import "../../styles/views/RuleGuide.scss";
+import { showToast} from "../../helpers/toastService";
 
 const mockGameTheme = "FOOD";
 const mockRoomName = "GuideRoom";
@@ -289,7 +290,7 @@ const RuleGuide = () => {
             title: "Guess-Phase",
             content: "When someone shares their audio, you can click here to listen to their audio",
             beforeStepChange: () => {
-              alert("Congratulations! You have successfully completed the Rule Guide!\nEnjoy the game!");
+              showToast("Congratulations! You have successfully completed the Rule Guide!\nEnjoy the game!", "success");
               navigate("/lobby");
             }
           },
