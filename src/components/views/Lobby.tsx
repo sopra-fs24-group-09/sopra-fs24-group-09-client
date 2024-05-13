@@ -187,7 +187,7 @@ const Lobby = () => {
       if (meInRoom) {
         console.log("[DEBUG] Found me in the room, redirecting to the room page" + rooms);
         const Room = rooms.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
-        navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
+        navigate(`/rooms/${Room.roomId}`);
         showToast("Reconnect to your previous room!", "success");
       }
     }, RELOAD_TIME_MS);
@@ -233,7 +233,7 @@ const Lobby = () => {
       console.log("Room created successfully:", response);
       console.log("Room ID:", response.data.roomId);
       const roomId = response.data.roomId;
-      navigate(`/rooms/${roomId}/${roomName}`);
+      navigate(`/rooms/${roomId}`);
       //toggleRoomCreationPop();  
     } catch (error) {
       handleError(error);
@@ -382,10 +382,10 @@ const Lobby = () => {
 
       if (Room.roomPlayersList.length === Room.roomMaxNum) {
         showToast("Room is Full, please enter another room!", "error");
-      } else if (Room.status === "In Game") {
+      } else if (Room.status !== "WAITING") {
         showToast("Game is already started, please enter another room!", "error");
       } else {
-        navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
+        navigate(`/rooms/${Room.roomId}`);
       }
     } catch (error) {
       console.error(`Something went wrong during the enterRoom: \n${error}`);
