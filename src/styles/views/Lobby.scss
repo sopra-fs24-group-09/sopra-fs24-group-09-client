@@ -6,18 +6,8 @@
 
   for more information visit https://sass-lang.com/guide
  */
-
-.lobby {
-  &.container {
-    background: rgba(255, 255, 255);
-    padding: 1.5em;
-    border-radius: $borderRadius;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: $dropShadow;
-  }
-  &.room-list::-webkit-scrollbar {
+// scrollbar styling for the whole page
+::-webkit-scrollbar {
     width: 10px;
     height: 10px;
 
@@ -31,6 +21,20 @@
       -webkit-border-radius: 10px;
       border-radius: 10px;
     }
+}
+Button {
+  font-family: sans-serif;
+}
+
+.lobby {
+  &.container {
+    background: rgba(255, 255, 255);
+    padding: 1.5em;
+    border-radius: $borderRadius;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: $dropShadow;
   }
   &.room-list-wrapper {
     position: absolute;  // Using absolute positioning
@@ -51,6 +55,14 @@
     flex-direction: column;
     flex-grow: 1;
     overflow-y: auto;
+    h1 {
+      color: $whiteYellow;
+      text-shadow: none;
+      text-transform: none;
+      margin-inline: 5%;
+      font-weight: 800;
+      font-size: 2em;
+    }
     &.btn-container {
       all: initial; // avoid the inherited styles
       position: relative; // absolute position relative to the parent
@@ -65,6 +77,7 @@
       left: 0%;
       margin-top: 30px;
       flex-grow: 1;
+      font-family: sans-serif;
       .create-room-btn {
         bottom: 0%;
         min-width: fit-content;
@@ -128,26 +141,26 @@
   margin-inline: 5%;
   justify-content: space-between;
   flex-direction: row;
-  text-align: center;
+  text-align: end;
 }
 .room {
   background-color: #fff;
   margin-bottom: 10px;
   border-radius: 8px;
   text-align: center;
+  cursor: pointer;
+  //text-align: center;
   //overflow: hidden;
-
   .room-header {
     margin-left: 10px;
     flex-shrink: 0;     // Allow both children to grow and take up equal space
     display: flex;
     flex-direction: column;    // Stack the children of these containers vertically
     align-items: center;       // Center the items horizontally
-    justify-content: center;   // Center the items vertically
+    justify-content: flex-end;   // Center the items vertically
     padding: 10px;
-    text-align: center;
+    text-align: right;
   }
-
   .room-header {
     flex-shrink: 0;
     flex-grow: 0;
@@ -155,11 +168,10 @@
     margin-left: 10px;
     flex-direction: column; /* Stack children vertically */
     align-items: center; /* Horizontally center */
-    justify-content: center; /* Vertically center */
-    text-align: center;
+    justify-content: flex-end; /* Vertically center */
+    text-align: right;
     padding: 10px;    // Align room details to the end of the flex container
   }
-
   .room-footer {
     display: flex;
     justify-content: space-between;
@@ -171,50 +183,68 @@
     }
   }
 }
-.avatar-list {
-  display: flex;
-  flex-wrap: wrap; // Allow avatar list to wrap
-  justify-content: flex-start; // Align avatars to the left
-  margin: 0 -10px; // Offset for each avatar's margin, adjustable as needed
 
-  .player {
-    width: 20%; // Four avatars per row, each taking 25% of total width
-    padding-left: 10%; // Padding around each avatar, adjustable as needed
-    box-sizing: border-box; // Include padding in width calculation
-
-    i {
-      display: block; // Ensure icons are block-level
-      font-size: 3.8rem; // Icon size
-      cursor: pointer; // Show pointer on hover
-      margin: 10px 0; // Vertical spacing, adjustable as needed
-    }
+.avatar-popup{
+  max-width: 80vw;
+  justify-content: center;
+  .popup-content{
+    display: flex;
   }
+  .avatar-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .avatar-container {
+    border-radius: 10%;
+    padding: 10px;
+    margin: 10px;
+    box-sizing: border-box;
+    background-color: #D9D9D9; /* Default background color */
+    transition: background-color 0.5s ease;
+  }
+
+  .avatar-container.selected {
+    background-color: $lightYellow; /* Background color for selected avatar */
+  }
+
+  .avatar-container:hover {
+    background-color: darken(#D9D9D9, 20%);
+  }
+  .avatar-container.selected:hover {
+    background-color: $lightYellow;
+  }
+
+  i {
+    display: block;
+    font-size: 3.8rem;
+    cursor: pointer;
+  }
+
 }
 .player {
+  height: 100%;
+  aspect-ratio: 1;
   margin-right: 10px;
   margin-left: 10px;
   text-align: center;
-
   .player-avatar {
-    width: 40px;
-    height: 40px;
+    width: 60.8px;
+    height: 60.8px;
     border-radius: 50%;
     background-color: #D9D9D9; // Default background color
   }
-
   .player-username {
     font-size: 0.8em;
   }
 }
 .room-players {
-  //width: 70%;
-
   align-items: flex-start;   // Align the players to the start of the flex container
   flex: 1 1 auto;                // Allow both children to grow and take up equal space
   display: flex;
   flex-direction: row;    // Stack children vertically
-  //align-items: center;       // Horizontally center items
-  //justify-content: center;   // Vertically center items
   padding: 10px;
   overflow-x: auto;
   white-space: nowrap;
@@ -225,20 +255,26 @@
 }
 .room-status {
   padding: 4px;
-  width: 70px;
+  //width: 70px;
   display: inline-block;
   text-align: center;
+  border-radius: $borderRadius; // 确保你已定义了 $borderRadius 变量
+
   &.in-game {
-    border-radius: $borderRadius;
     background-color: orange;
   }
-  &.free {
-
-    border-radius: $borderRadius;
-    background-color: lightgreen;
+  &.waiting {
+    background-color: lightgreen; // 等待状态的颜色
+  }
+  &.game-over {
+    background-color: lightcoral; // 游戏结束状态的颜色
   }
 }
 .player {
+  background: rgba(217, 217, 217, 1);
+  border-radius: 20px;
+  width: 85px;
+  height: 85px;
   &.container {
     margin: 0.5em 0;
     width: 20em;
@@ -246,7 +282,7 @@
     border-radius: $borderRadius;
     display: flex;
     align-items: center;
-    background: lighten($background, 5);
+    background: gray;
   }
   &.status {
     font-weight: 600;
@@ -296,61 +332,62 @@
 
 .information {
   position: absolute;
+  display: flex;
   top: 0;
-  right: 0;
-  width: 1.5rem;
-  height: 2rem;
-  font-size: 1.5rem;
+  right: -10%;
+  width: 10%;
+  aspect-ratio: 1;
+  font-size: 0.15em;
   font-weight: bold;
-  //display: flex;
   text-align: center;
-  //line-height: 2rem;
+  align-items: center;
+  justify-content: center;
   color: white;
   background: $classicYellow;
-  border-radius: $borderRadius;
-  //padding: 0.25rem;
+  border-radius: 50%;
   cursor: pointer;
-}
-.intro-popup {
-  height:60%;
-  //width: 500px;
-  &.btn-container {
-    width: 200px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-end;
-    //margin-top: 10%;
-    Button {
-      height: auto;
-      font-size: 1em;
-      padding: 0.6em;
-      margin: 0 10px;
-      color: white;
-      background-color: $classicYellow;
-    }
-  }
 }
 .intro-cnt {
   width: 450px;
+  max-width: 40vw;
+  ul {
+    padding-left: 1rem;
+  }
 }
 .profile-popup {
-  height:60%;
   &.content {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    font-size: 1.5em;
-    .title {
-      font-size: 1.5em;
-      margin-bottom: 20px;
-      display: inline;
-      text-align: center;
+    justify-content: center;
+    // font-size: 1.5em;
+    .field{
+      display: flex;
+      flex-direction: row;
+      align-content: center;
+      .label {
+        display: flex;
+        align-items: center;
+      }
+    }
+    input {
+      width: 300px;
+      max-width: 60vw;
+      padding-left: 10px;
+      border: 1px solid black;
+      border-radius: 0.75em;
+      background: transparentize(white, 0.4);
+      color: $textColor;
     }
     .avatar-container {
       display: flex;
       justify-content: center; /* Horizontally center */
       margin-bottom: 3rem;
+      i {
+        font-size: 10rem;
+        color: $classicYellow;
+        cursor: pointer;
+      }
     }
   }
 
@@ -381,34 +418,34 @@
       background-color: $classicYellow;
     }
   }
-  &.label {
-    display: flex;
-    font-size: 32px;
-  }
-  &.field {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-  }
-  &.input {
-    height: 35px;
-    padding-left: 15px;
-    margin-left: 4px;
-    border: none;
-    border-radius: 0.75em;
-    margin-top: 5px;
-    background: #FFF3CF;
-    color: $textColor;
-  }
+  // &.label {
+  //   display: flex;
+  //   font-size: 32px;
+  // }
+  // &.field {
+  //   display: flex;
+  //   flex-direction: row;
+  //   justify-content: center;
+  // }
+  // &.input {
+  //   height: 35px;
+  //   padding-left: 15px;
+  //   margin-left: 4px;
+  //   border: none;
+  //   border-radius: 0.75em;
+  //   margin-top: 5px;
+  //   background: #FFF3CF;
+  //   color: $textColor;
+  // }
 
 }
 .room-creation-popup {
-  height: 60%;
+  //height: 60%;
   &.content {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    font-size: 2em;
+    font-size: 1.5em;
     .title {
       font-size: 1.5em;
       margin-bottom: 20px;
@@ -416,8 +453,9 @@
       text-align: center;
     }
     input {
-      height: 100px;
+      height: 20%;
       width: 600px;
+      max-width: 60vw;
       padding-left: 1px;
       margin-left: 4px;
       border: 1px solid black;
@@ -433,9 +471,10 @@
     align-items: center;
     justify-items: center;
     width: 600px;
-    height: 100px;
-    margin-top: 20px;
-    margin-bottom: 40px;
+    max-width: 60vw;
+    height: 60px;
+    //margin-top: 20px;
+    // margin-bottom: 40px;
     select {
       appearance: none;
       -webkit-appearance: none;
@@ -478,6 +517,7 @@
   left: 0%;
   margin-top: 10px;
   flex-grow: 1;
+  font-family: sans-serif;
   .logout-btn {
     bottom: 1%;
     min-width: fit-content;
@@ -493,6 +533,5 @@
     color: white;
     text-transform: none;
     font-weight: bolder;
-
   }
 }
