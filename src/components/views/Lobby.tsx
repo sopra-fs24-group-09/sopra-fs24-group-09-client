@@ -48,7 +48,7 @@ const Lobby = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string>("");
-  const [avatar, setAvatar] = useState<string | null>(null);
+  const [currentAvatar, setCurrentAvatar] = useState<string | null>(null);
   const [roomName, setRoomName] = useState("");
   const [maxRoomPlayers, SetMaxRoomPlayers] = useState(DEFAULT_MIN_PLAYERS);
   const [roomTheme, setRoomTheme] = useState("");
@@ -196,7 +196,7 @@ const Lobby = () => {
 
   const doEdit = async () => {
     try {
-      const requestBody = JSON.stringify({ username: username, avatar: avatar });
+      const requestBody = JSON.stringify({ username: username, avatar: currentAvatar });
       const id = sessionStorage.getItem("id");
       console.log("Request body:", requestBody);
       await api.put(`/users/${id}`, requestBody);
@@ -298,7 +298,7 @@ const Lobby = () => {
   const changeAvatar = async (newAvatar) => {
     try {
       // 更新本地状态
-      setAvatar(newAvatar);
+      setCurrentAvatar(newAvatar);
 
       // 构造请求体，只包含 avatar 更改
       const requestBody = JSON.stringify({ avatar: newAvatar });
@@ -532,7 +532,10 @@ const Lobby = () => {
       >
         <div className="avatar-list">
           {AVATAR_LIST?.map((avatar, index) => (
-            <div className="avatar-container" key={index} >
+            <div
+              key={index}
+              className={`avatar-container ${avatar === currentAvatar ? 'selected' : ''}`}
+            >
               <i className={"twa twa-" + avatar} style={{ fontSize: "3.8rem" }} onClick={() => {
                 changeAvatar(avatar).then(r => toggleAvatarPop);
                 toggleAvatarPop();
