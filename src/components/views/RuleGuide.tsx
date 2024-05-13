@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useLayoutEffect } from "react";
+import React, { useState,useEffect, useRef, useMemo, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Guide from "byte-guide";
 import { PlayerList } from "./GameroomPlayerList";
@@ -118,6 +118,22 @@ const RuleGuide = () => {
 
     return ffmpeg;
   });
+
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault(); // Cancel the default action
+        navigate("/lobby");
+      }
+    };
+
+    window.addEventListener("keydown", handleEscKey);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscKey);
+    };
+  }, [navigate]);
+
 
   return (
     <BaseContainer className="gameroom basecontainer">
