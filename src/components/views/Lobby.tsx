@@ -443,7 +443,7 @@ const Lobby = () => {
   // if (user === null) {
   //   return <BaseContainer>Loading...</BaseContainer>;
   // }
-
+  const specialCharactersRegex = /[^\w\s]/;
 
   return (
     <BaseContainer>
@@ -557,7 +557,15 @@ const Lobby = () => {
         className="room-creation-popup"
         buttonJSX={
           <>
-            <Button disabled={roomName === "" || maxRoomPlayers < DEFAULT_MIN_PLAYERS || maxRoomPlayers > DEFAULT_MAX_PLAYERS || roomTheme === "" || isNaN(maxRoomPlayers)}
+            <Button
+              disabled={
+                roomName === "" ||
+                maxRoomPlayers < DEFAULT_MIN_PLAYERS ||
+                maxRoomPlayers > DEFAULT_MAX_PLAYERS ||
+                roomTheme === "" ||
+                isNaN(maxRoomPlayers) ||
+                specialCharactersRegex.test(roomName)
+            }
               className="create-room" onClick={createRoom}>Create Room</Button>
             <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </>
