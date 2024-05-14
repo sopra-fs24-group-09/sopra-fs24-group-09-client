@@ -565,7 +565,7 @@ const Lobby = () => {
                 roomTheme === "" ||
                 isNaN(maxRoomPlayers) ||
                 specialCharactersRegex.test(roomName)
-            }
+              }
               className="create-room" onClick={createRoom}>Create Room</Button>
             <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </>
@@ -579,7 +579,7 @@ const Lobby = () => {
             placeholder="Max. 10"
             value={roomName}
             onChange={(e) => {
-              const inputValue = e.target.value.replace(/[^\w\s]/gi, '');
+              const inputValue = e.target.value.replace(/[^\w\s]/gi, "");
               if (inputValue.length <= MAX_ROOM_NAME_LENGTH) { // 检查输入值的长度
                 setRoomName(inputValue); // 如果长度小于或等于 MAX_ROOM_NAME_LENGTH，更新状态
               }
