@@ -34,7 +34,7 @@ type SharedAudioURL = { [userId: string]: string };
 
 const Gameroom = () => {
   const navigate = useNavigate();
-  const { currentRoomID,currentRoomName } = useParams();
+  const { currentRoomID } = useParams();
   const stompClientRef = useRef(null);
   const user = {
     token: sessionStorage.getItem("token"),
