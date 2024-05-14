@@ -700,6 +700,7 @@ const Gameroom = () => {
     <BaseContainer className="gameroom basecontainer">
       {/* <Header left="28vw" /> */}
       <PlayerList
+        currentPlayerId={user.id}
         playerStatus={playerLists}
         sharedAudioList={sharedAudioList}
         gameTheme={gameTheme.current}
