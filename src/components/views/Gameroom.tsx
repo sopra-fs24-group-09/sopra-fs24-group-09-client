@@ -165,17 +165,17 @@ const Gameroom = () => {
       console.log("[onResponseReceived] receiptId",msg.receiptId)
       console.log("[onResponseReceived] reqList:",requestLists.current)
 
-      // Check if the message indicates an invalid or expired token
-      if (msg.auth === false) {
-        showToast("Invalid or expired token, please login again!", "error");
-        sessionStorage.clear(); // Clear session storage
-        navigate("/login"); // Navigate to the login page
-
-        return; // Exit the function to avoid further processing
-      }
-
       const index = requestLists.current.findIndex(item => item.receiptId === msg.receiptId);
       if (index !== INDEX_NOT_FOUND) {
+        // Check if the message indicates an invalid or expired token
+        if (msg.auth === false) {
+          showToast("Invalid or expired token, please login again!", "error");
+          sessionStorage.clear(); // Clear session storage
+          navigate("/login"); // Navigate to the login page
+
+          return; // Exit the function to avoid further processing
+        }
+
         const messageType = requestLists.current[index].type;
         const success = msg.success;
         let toastMessage;
