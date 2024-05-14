@@ -102,6 +102,7 @@ const RuleGuide = () => {
       localStorage.removeItem("RuleGuide");
     }
   }, []);
+
   const navigate = useNavigate();
   const roundStatusComponentRef = useRef(null);
   const [gameInfo, setGameInfo] = useState(mockGameInfo);
@@ -215,33 +216,33 @@ const RuleGuide = () => {
         steps={[
           {
             selector: ".roundstatus",
-            title: "Speak-Phase",
+            title: "Guide: Speak-Phase",
             content: "Now you are the Speaker, and you need to record the word 'Banana' in the next 20 seconds",
           },
           {
             selector: ".remindermssg",
-            title: "Speak-Phase",
+            title: "Guide: Speak-Phase",
             content: "This is where you record your audio",
           },
           {
             selector: ".record-button",
-            title: "Speak-Phase",
+            title: "Guide: Speak-Phase",
             content: "Click here to start a recording, click again to finish, if you are not satisfied with the recording, you can click again to re-record. The maximum recording time is 5 seconds, if you exceed the time limit, the recording will be automatically stopped.",
           },
           {
             selector: ".toggle-reverse-button",
-            title: "Speak-Phase",
+            title: "Guide: Speak-Phase",
             content: "Click here to reverse the audio, and click again to restore to the original audio",
           },
           {
             selector: ".audio-recorder.play-button",
-            title: "Speak-Phase",
+            title: "Guide: Speak-Phase",
             content: "Click here to listen to your recording, you can also click the sound wave to listen.",
           },
           {
             // upload button
             selector: ".readybutton", // it is weird that the button is using a class name of readybutton
-            title: "Speak-Phase",
+            title: "Guide: Speak-Phase",
             placement: "top",
             content: "Click here to submit your recording, and then all the other players will guess the word you recorded",
             beforeStepChange: () => {
@@ -282,30 +283,30 @@ const RuleGuide = () => {
           },
           {
             selector: ".roundstatus",
-            title: "Guess-Phase",
+            title: "Guide: Guess-Phase",
             content: "Now, user3 is the Speaker, and you need to guess the word by simulating the reversed audio",
             placement: "left",
           },
           {
             selector: ".speakPlayerContainer",
-            title: "Guess-Phase",
+            title: "Guide: Guess-Phase",
             content: "Click here to listen to the speaker's audio",
           },
           {
             selector: ".remindermssg",
-            title: "Guess-Phase",
+            title: "Guide: Guess-Phase",
             content: "You shuold simulate the reversed audio and reverse it again to figure out the word",
             placement: "top",
           },
           {
             selector: ".inputarea",
-            title: "Guess-Phase",
+            title: "Guide: Guess-Phase",
             content: "After you figure out the word, you can submit your answer here, also you can share your audio with others (Optional)",
             placement: "top",
           },
           {
             selector: ".btn-player",
-            title: "Guess-Phase",
+            title: "Guide: Guess-Phase",
             content: "When someone shares their audio, you can click here to listen to their audio",
             beforeStepChange: () => {
               showToast("Congratulations! You have successfully completed the Rule Guide!\nEnjoy the game!", "success");
