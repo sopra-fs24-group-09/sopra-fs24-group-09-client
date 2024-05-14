@@ -11,6 +11,7 @@ import "../../styles/views/RuleGuide.scss";
 import { showToast} from "../../helpers/toastService";
 
 const mockGameTheme = "FOOD";
+const mockCurrentPlayer = "id1";
 const mockRoomName = "GuideRoom";
 const mockGlobalVolume = 0.5;
 const MS_PER_SEC = 1000;
@@ -139,6 +140,7 @@ const RuleGuide = () => {
     <BaseContainer className="gameroom basecontainer">
       {/* <Header left="28vw" /> */}
       <PlayerList
+        currentPlayerId={mockCurrentPlayer}
         playerStatus={playerInfo}
         sharedAudioList={mockSharedAudioList}
         gameTheme={mockGameTheme}
