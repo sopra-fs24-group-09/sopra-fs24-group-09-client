@@ -186,9 +186,10 @@ Button {
 
 .avatar-popup{
   max-width: 80vw;
-  justify-content: center;
+  justify-content: flex-start;
   .popup-content{
     display: flex;
+    justify-content: flex-start;
   }
   .avatar-list {
     display: flex;
