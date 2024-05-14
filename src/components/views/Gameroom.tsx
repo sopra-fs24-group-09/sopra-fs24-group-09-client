@@ -102,7 +102,7 @@ const Gameroom = () => {
 
 
   useEffect(() => {
-    currentRoomNameValid.current = currentRoomName;
+    //currentRoomNameValid.current = currentRoomName;
     const isChrome = (window as any).chrome;
     // console.error("ISCHROME",isChrome);
     if (!isChrome) {
