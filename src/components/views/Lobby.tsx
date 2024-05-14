@@ -565,8 +565,8 @@ const Lobby = () => {
             <Button
               disabled={
                 roomName === "" ||
-                maxRoomPlayers < DEFAULT_MIN_PLAYERS ||
-                maxRoomPlayers > DEFAULT_MAX_PLAYERS ||
+                // maxRoomPlayers < DEFAULT_MIN_PLAYERS ||
+                // maxRoomPlayers > DEFAULT_MAX_PLAYERS ||
                 roomTheme === "" ||
                 isNaN(maxRoomPlayers) ||
                 specialCharactersRegex.test(roomName)
