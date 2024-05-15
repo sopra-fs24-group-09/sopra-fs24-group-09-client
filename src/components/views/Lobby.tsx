@@ -456,9 +456,6 @@ const Lobby = () => {
               cursor: "pointer"
             }} />
           <div className="name">{user.username}</div>
-
-
-
         </div>
       )}
       <Button className="logout-btn" onClick={logout}>Logout</Button>

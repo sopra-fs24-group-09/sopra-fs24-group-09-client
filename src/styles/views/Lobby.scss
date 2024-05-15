@@ -346,7 +346,24 @@ Button {
   background: $classicYellow;
   border-radius: 50%;
   cursor: pointer;
+  animation: jelly 1s infinite;
 }
+
+@keyframes jelly {
+  0%, 100% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1.1, 0.9);
+  }
+  50% {
+    transform: scale(0.9, 1.1);
+  }
+  75% {
+    transform: scale(1.05, 0.95);
+  }
+}
+
 .intro-cnt {
   width: 550px;
   max-width: 40vw;
