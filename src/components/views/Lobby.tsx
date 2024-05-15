@@ -636,7 +636,7 @@ const Lobby = () => {
             <li><strong>Turns:</strong> The game is played in rounds. Each round has one speaker and several challengers. Players alternate roles as the Speaker to ensure fairness.</li>
           </ul>
           <p>Click <b>GUIDE</b> for more detailed instructions.</p>
-          <p>Join a room or create one to play with friends!</p>
+          <p className="important-note">Before you start, please enable your browser&apos;s microphone privacy settings.</p>
 
         </div>
       </Popup>

@@ -348,7 +348,7 @@ Button {
   cursor: pointer;
 }
 .intro-cnt {
-  width: 450px;
+  width: 550px;
   max-width: 40vw;
   ul {
     padding-left: 1rem;
@@ -537,3 +537,13 @@ Button {
   font-weight: bolder;
 }
 
+.important-note {
+  font-weight: bold;
+  color: white;
+  font-size: 1.2em;
+  background-color: $classicYellow;
+  padding: 10px;
+  border: 2px solid red;
+  border-radius: 5px;
+  text-align: center;
+}
