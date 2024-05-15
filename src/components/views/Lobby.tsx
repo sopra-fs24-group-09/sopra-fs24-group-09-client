@@ -456,11 +456,12 @@ const Lobby = () => {
               cursor: "pointer"
             }} />
           <div className="name">{user.username}</div>
-          <div className="btn-logout-container">
-            <Button className="logout-btn" onClick={logout}>Logout</Button>
-          </div>
+
+
+
         </div>
       )}
+      <Button className="logout-btn" onClick={logout}>Logout</Button>
       <div className="title-container">
         <div className="big-title">Kaeps</div>
         <div className="information" onClick={toggleInfoPop}>i</div>
@@ -494,6 +495,7 @@ const Lobby = () => {
               >
                 Edit
               </Button>
+              <Button className="out" onClick={logout}>Logout</Button>
             </>)
           }
         >

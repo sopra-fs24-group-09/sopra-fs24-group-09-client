@@ -513,25 +513,27 @@ Button {
   justify-content: center;
   height: auto;
   width: 100%;
-  bottom: 1.5%;
-  left: 0%;
   margin-top: 10px;
   flex-grow: 1;
   font-family: sans-serif;
-  .logout-btn {
-    bottom: 1%;
-    min-width: fit-content;
-    width: 20%;
-    min-height: 50px;
-    display: flex;
-    justify-items: center;
-    align-items: center;
-    justify-content: center;
-    align-content: center;
-    font-size: 1.3em;
-    background-color: $classicYellow;
-    color: white;
-    text-transform: none;
-    font-weight: bolder;
-  }
 }
+
+.logout-btn {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  min-width: fit-content;
+  width: 30px;
+  min-height: 50px;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  font-size: 1.3em;
+  background-color: $classicYellow;
+  color: white;
+  text-transform: none;
+  font-weight: bolder;
+}
+
