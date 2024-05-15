@@ -1,0 +1,32 @@
+@import "../theme";
+.custom-number-input {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+
+  button {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $classicYellow; // 使用预定义的变量
+    border: none;
+    border-radius: 50%; // 使按钮变为圆形
+    cursor: pointer;
+    color: white; // 设置按钮文字颜色为白色
+
+    &:disabled {
+      background-color: #eee;
+      cursor: not-allowed;
+    }
+  }
+
+  input {
+    width: 60px; // 设置数字输入框的宽度
+    text-align: center;
+    font-size: 18px;
+    margin: 0 5px;
+  }
+}
