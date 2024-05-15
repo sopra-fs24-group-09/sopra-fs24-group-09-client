@@ -456,6 +456,36 @@ Button {
   // }
 
 }
+
+.custom-number-input {
+  display: flex;
+  align-items: center;
+}
+
+.custom-number-input button {
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ccc;
+  border: none;
+  cursor: pointer;
+}
+
+.custom-number-input button:disabled {
+  background-color: #eee;
+  cursor: not-allowed;
+}
+
+.custom-number-input input {
+  width: 60px;
+  text-align: center;
+  font-size: 18px;
+  margin: 0 5px;
+}
+
 .room-creation-popup {
   //height: 60%;
   &.content {
@@ -471,7 +501,7 @@ Button {
     }
     input {
       height: 20%;
-      width: 600px;
+      width: 400px;
       max-width: 60vw;
       padding-left: 1px;
       margin-left: 4px;
@@ -482,12 +512,52 @@ Button {
       color: $textColor;
     }
   }
+  .custom-number-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    justify-content: center;
+    button {
+      width: 30px;
+      height: 30px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: $classicYellow;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      color: white;
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+
+      }
+    }
+
+    input {
+      width: 60px;
+      text-align: center;
+      font-size: 18px;
+      margin: 0 5px;
+      -moz-appearance: textfield; /* Firefox */
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none; /* Chrome, Safari, Edge, Opera */
+        margin: 0;
+      }
+    }
+  }
   .theme-dropdown {
     position: relative;
     display: flex;
     align-items: center;
     justify-items: center;
-    width: 600px;
+    width: 400px;
     max-width: 60vw;
     height: 60px;
     //margin-top: 20px;

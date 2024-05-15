@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useEffect, useState } from "react";
 import { api } from "helpers/api";
+import CustomNumberInput from "components/ui/CustomNumberInput";
 import { Button } from "components/ui/Button";
 import { throttle } from "lodash";
 import { useNavigate } from "react-router-dom";
@@ -286,7 +287,6 @@ const Lobby = () => {
       : changeAvatarPopRef.current.showModal();
   };
 
-
   const toggleInfoPop = () => {
     // if the ref is not set, do nothing
     if (!infoPopRef.current) {
@@ -569,24 +569,19 @@ const Lobby = () => {
             placeholder="Max. 10"
             value={roomName}
             onChange={(e) => {
-              const inputValue = e.target.value;  // 获取输入值
-              if (inputValue.length <= MAX_ROOM_NAME_LENGTH) {  // 检查输入值的长度
-                setRoomName(inputValue);  // 如果长度小于或等于15，更新状态
+              const inputValue = e.target.value;
+              if (inputValue.length <= MAX_ROOM_NAME_LENGTH) {
+                setRoomName(inputValue);
               }
             }}
           />
           <div>Number of Maximum Players: </div>
-          <input
-            type="number"
-            placeholder={`Between ${DEFAULT_MIN_PLAYERS} and ${DEFAULT_MAX_PLAYERS}`}
-            value={maxRoomPlayers}
-            onChange={e => {
-              const value = parseInt(e.target.value);
-              // console.error("Value:", value);
-              SetMaxRoomPlayers(value);
-            }}
+          <CustomNumberInput
+            className="custom-number-input"
             min={DEFAULT_MIN_PLAYERS}
             max={DEFAULT_MAX_PLAYERS}
+            value={maxRoomPlayers}
+            onChange={SetMaxRoomPlayers}
           />
           <Dropdown
             className="theme-dropdown"
