@@ -127,7 +127,7 @@ const Lobby = () => {
         // if (meIngameRoom) {
         //   console.log("[DEBUG] Found me in the room, redirecting to the room page" + payload);
         //   const Room = payload.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
-        //   navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
+        //   navigate(`/rooms/${Room.roomId}`);
         //   showToast("Reconnect to your previous room!", "success");
         // }
 
@@ -188,7 +188,7 @@ const Lobby = () => {
       if (meInRoom) {
         console.log("[DEBUG] Found me in the room, redirecting to the room page" + rooms);
         const Room = rooms.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
-        navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
+        navigate(`/rooms/${Room.roomId}`);
         showToast("Reconnect to your previous room!", "success");
       }
     }, RELOAD_TIME_MS);
@@ -234,7 +234,7 @@ const Lobby = () => {
       console.log("Room created successfully:", response);
       console.log("Room ID:", response.data.roomId);
       const roomId = response.data.roomId;
-      navigate(`/rooms/${roomId}/${roomName}`);
+      navigate(`/rooms/${roomId}`);
       //toggleRoomCreationPop();  
     } catch (error) {
       handleError(error);
@@ -382,10 +382,10 @@ const Lobby = () => {
 
       if (Room.roomPlayersList.length === Room.roomMaxNum) {
         showToast("Room is Full, please enter another room!", "error");
-      } else if (Room.status === "In Game") {
+      } else if (Room.status !== "WAITING") {
         showToast("Game is already started, please enter another room!", "error");
       } else {
-        navigate(`/rooms/${Room.roomId}/${Room.roomName}`);
+        navigate(`/rooms/${Room.roomId}`);
       }
     } catch (error) {
       console.error(`Something went wrong during the enterRoom: \n${error}`);
@@ -431,6 +431,11 @@ const Lobby = () => {
         }
       }
 
+      // don't render the room if there is no player in the room or the game is over
+      if (Room.roomPlayersList.length === 0 || Room.status === "GAMEOVER") {
+        return ;
+      }
+
       return (
         <div className="room-container" key={Room.roomId} onClick={handleRoomClick(Room)}>
           <div className="room-players">
@@ -452,6 +457,7 @@ const Lobby = () => {
   // if (user === null) {
   //   return <BaseContainer>Loading...</BaseContainer>;
   // }
+  const specialCharactersRegex = /[^\w\s]/;
 
   return (
     <BaseContainer>
@@ -564,7 +570,15 @@ const Lobby = () => {
         className="room-creation-popup"
         buttonJSX={
           <>
-            <Button disabled={roomName === "" || maxRoomPlayers < DEFAULT_MIN_PLAYERS || maxRoomPlayers > DEFAULT_MAX_PLAYERS || roomTheme === "" || isNaN(maxRoomPlayers)}
+            <Button
+              disabled={
+                roomName === "" ||
+                // maxRoomPlayers < DEFAULT_MIN_PLAYERS ||
+                // maxRoomPlayers > DEFAULT_MAX_PLAYERS ||
+                roomTheme === "" ||
+                isNaN(maxRoomPlayers) ||
+                specialCharactersRegex.test(roomName)
+              }
               className="create-room" onClick={createRoom}>Create Room</Button>
             <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </>
@@ -578,9 +592,9 @@ const Lobby = () => {
             placeholder="Max. 10"
             value={roomName}
             onChange={(e) => {
-              const inputValue = e.target.value;
-              if (inputValue.length <= MAX_ROOM_NAME_LENGTH) {
-                setRoomName(inputValue);
+              const inputValue = e.target.value.replace(/[^\w\s]/gi, "");
+              if (inputValue.length <= MAX_ROOM_NAME_LENGTH) { 
+                setRoomName(inputValue); 
               }
             }}
           />

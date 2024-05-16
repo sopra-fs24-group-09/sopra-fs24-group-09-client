@@ -39,7 +39,7 @@ const AppRouter = () => {
 
         {/* no guard for gameroom page now*/}
         {/* the parameter name should match with the useParam in the Gameroom */}
-        <Route path="/rooms/:currentRoomID/:currentRoomName" element={<LobbyGuard/>} >
+        <Route path="/rooms/:currentRoomID" element={<LobbyGuard/>} >
           <Route path="" element={<Gameroom />} />
         </Route>
 

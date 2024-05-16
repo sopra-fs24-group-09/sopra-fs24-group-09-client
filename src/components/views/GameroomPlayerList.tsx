@@ -23,10 +23,11 @@ type PlayerListProps = {
     showReadyPopup: boolean;
     gameOver: boolean;
     globalVolume: number;
+    currentPlayerId: string;
 }
 
 export const PlayerList = (props:PlayerListProps) => {
-  const { playerStatus, sharedAudioList, gameTheme, currentRoomName, showReadyPopup, gameOver, globalVolume } = props;
+  const { playerStatus, sharedAudioList, gameTheme, currentRoomName, showReadyPopup, gameOver, globalVolume,currentPlayerId } = props;
 
   return (
     <div className="gameroom left-area">
@@ -47,9 +48,11 @@ export const PlayerList = (props:PlayerListProps) => {
           if (hasRecording) {
             _audioURL = sharedAudioList[playerInfo.user.id];
           }
+          const currentUserName= (playerInfo.user.id === currentPlayerId) ? "(You)" : "";
+          const currentUserBgColor = (playerInfo.user.id === currentPlayerId) ? "rgb(255, 233, 158)" : "rgba(255, 243, 207, 1)";
 
           return (
-            <div className="gameroom singlePlayerContainer" key={index}>
+            <div className="gameroom singlePlayerContainer" style={{ background: `${currentUserBgColor}` }} key={index}>
               <span className="gameroom playerAvatar">
                 <i
                   className={"twa twa-" + playerInfo.user.avatar}
@@ -59,9 +62,12 @@ export const PlayerList = (props:PlayerListProps) => {
               {!showReadyPopup && !gameOver && (
                 <>
                   <div className="gameroom secondcolumn">
-                    <span className="gameroom playerName">
-                      {playerInfo.user.name}
-                    </span>
+                    <div style={{display:"flex",flexDirection:"row"}}>
+                      <span className="gameroom playerName">
+                        {playerInfo.user.name}
+                      </span>
+                      <span style={{marginLeft:"0.5rem"}}>{currentUserName}</span>
+                    </div>
                     <span className="gameroom secondRow">
                       <span className="gameroom scoreTitle">Score:</span>
                       <span className="gameroom playerScore">
@@ -93,9 +99,12 @@ export const PlayerList = (props:PlayerListProps) => {
               {gameOver && (
                 <>
                   <div className="gameroom secondcolumn">
-                    <span className="gameroom playerName">
-                      {playerInfo.user.name}
-                    </span>
+                    <div style={{display:"flex",flexDirection:"row"}}>
+                      <span className="gameroom playerName">
+                        {playerInfo.user.name}
+                      </span>
+                      <span style={{marginLeft:"0.5rem"}}>{currentUserName}</span>
+                    </div>
                     <span className="gameroom secondRow">
                       <span className="gameroom scoreTitle">Score:</span>
                       <span className="gameroom playerScore">
@@ -111,7 +120,9 @@ export const PlayerList = (props:PlayerListProps) => {
                     <span className="gameroom playerName">
                       {playerInfo.user.name}
                     </span>
-                    <span className="gameroom secondRow"></span>
+                    <span className="gameroom secondRow">
+                      <span>{currentUserName}</span>
+                    </span>
                   </div>
                   <div className="gameroom playerStatus">
                     {playerInfo.ready ? (
