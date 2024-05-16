@@ -55,8 +55,8 @@ const Register = () => {
       sessionStorage.setItem("id", user.id);
       sessionStorage.setItem("username", user.username);
       // Register successfully worked --> navigate to the route /game in the LobbyRouter
-      showToast("Register successful!", "success");
-      navigate("/lobby");
+      showToast("Register successful!\nWelcome to this guide for newbies!", "success");
+      navigate("/guide");
     } catch (error) {
       let message = "An unexpected error occurred during Register.";
       if (error.response) {
