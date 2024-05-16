@@ -409,10 +409,10 @@ const Lobby = () => {
           playerSlots.push(
             <div className="player" key={i}>
               <i className={`twa twa-${user.avatar}`}
-                 style={{
-                   fontSize: "3.5rem",
-                   marginTop:"5px"
-                 }}
+                style={{
+                  fontSize: "3.5rem",
+                  marginTop:"5px"
+                }}
               />
               <div className="name">{user.userName}</div>
             </div>
