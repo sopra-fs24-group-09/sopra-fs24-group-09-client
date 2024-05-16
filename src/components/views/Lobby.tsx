@@ -382,7 +382,7 @@ const Lobby = () => {
 
       if (Room.roomPlayersList.length === Room.roomMaxNum) {
         showToast("Room is Full, please enter another room!", "error");
-      } else if (Room.status === "In Game") {
+      } else if (Room.status !== "WAITING") {
         showToast("Game is already started, please enter another room!", "error");
       } else {
         navigate(`/rooms/${Room.roomId}`);
@@ -420,6 +420,11 @@ const Lobby = () => {
             </div>
           );
         }
+      }
+
+      // don't render the room if there is no player in the room or the game is over
+      if (Room.roomPlayersList.length === 0 || Room.status === "GAMEOVER") {
+        return ;
       }
 
       return (
@@ -560,8 +565,8 @@ const Lobby = () => {
             <Button
               disabled={
                 roomName === "" ||
-                maxRoomPlayers < DEFAULT_MIN_PLAYERS ||
-                maxRoomPlayers > DEFAULT_MAX_PLAYERS ||
+                // maxRoomPlayers < DEFAULT_MIN_PLAYERS ||
+                // maxRoomPlayers > DEFAULT_MAX_PLAYERS ||
                 roomTheme === "" ||
                 isNaN(maxRoomPlayers) ||
                 specialCharactersRegex.test(roomName)
