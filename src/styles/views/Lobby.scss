@@ -240,6 +240,28 @@ Button {
     font-size: 0.8em;
   }
 }
+
+.plus-player {
+  background: rgba(217, 217, 217, 1);
+  border-radius: 20px;
+  width: 85px;
+  height: 85px;
+  aspect-ratio: 1;
+  margin-right: 10px;
+  margin-left: 10px;
+  text-align: center;
+  cursor: pointer;
+  .player-avatar {
+    width: 60.8px;
+    height: 60.8px;
+    border-radius: 50%;
+    background-color: #D9D9D9; // Default background color
+  }
+  .player-username {
+    font-size: 0.8em;
+  }
+}
+
 .room-players {
   align-items: flex-start;   // Align the players to the start of the flex container
   flex: 1 1 auto;                // Allow both children to grow and take up equal space

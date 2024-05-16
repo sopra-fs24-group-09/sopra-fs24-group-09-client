@@ -402,21 +402,30 @@ const Lobby = () => {
     return rooms.map((Room) => {
       const playerSlots = [];
 
-      // 生成玩家头像或空白框，总数等于房间最大玩家数
+      // generate players avatar
       for (let i = 0; i < Room.roomMaxNum; i++) {
         if (i < Room.roomPlayersList.length) {
           const user = Room.roomPlayersList[i];
           playerSlots.push(
             <div className="player" key={i}>
-              <i className={`twa twa-${user.avatar}`} style={{ fontSize: "3.8rem" }} />
+              <i className={`twa twa-${user.avatar}`}
+                 style={{
+                   fontSize: "3.5rem",
+                   marginTop:"5px"
+                 }}
+              />
               <div className="name">{user.userName}</div>
             </div>
           );
         } else {
-          // 空白框
+          // plus avatar
           playerSlots.push(
-            <div className="player" key={i}>
-
+            <div className="plus-player" key={i}>
+              <i className="twa twa-plus" style={{
+                fontSize: "3rem",
+                marginTop: "18.5px",
+                opacity: "0.4"
+              }} />
             </div>
           );
         }
