@@ -411,7 +411,6 @@ const Lobby = () => {
               <i className={`twa twa-${user.avatar}`}
                 style={{
                   fontSize: "3.5rem",
-                  marginTop:"5px"
                 }}
               />
               <div className="name">{user.userName}</div>
@@ -423,7 +422,6 @@ const Lobby = () => {
             <div className="plus-player" key={i}>
               <i className="twa twa-plus" style={{
                 fontSize: "3rem",
-                marginTop: "18.5px",
                 opacity: "0.4"
               }} />
             </div>
@@ -579,33 +577,39 @@ const Lobby = () => {
                 isNaN(maxRoomPlayers) ||
                 specialCharactersRegex.test(roomName)
               }
-              className="create-room" onClick={createRoom}>Create Room</Button>
+              className="create-room" onClick={createRoom}>Create</Button>
             <Button className="cancel" onClick={toggleRoomCreationPop}>Cancel</Button>
           </>
         }
       >
         <BaseContainer className="room-creation-popup content">
           <div className="title">Create Room</div>
-          <div>Room Name: </div>
-          <input
-            type="text"
-            placeholder="Max. 10"
-            value={roomName}
-            onChange={(e) => {
-              const inputValue = e.target.value.replace(/[^\w\s]/gi, "");
-              if (inputValue.length <= MAX_ROOM_NAME_LENGTH) { 
-                setRoomName(inputValue); 
-              }
-            }}
-          />
-          <div>Number of Maximum Players: </div>
-          <CustomNumberInput
-            className="custom-number-input"
-            min={DEFAULT_MIN_PLAYERS}
-            max={DEFAULT_MAX_PLAYERS}
-            value={maxRoomPlayers}
-            onChange={SetMaxRoomPlayers}
-          />
+          <div className="room-creation-popup field">
+            <div className="label">Room Name: </div>
+            <input
+              className="room-creation-popup room-name-input"
+              style={{ width: "13rem" }}
+              type="text"
+              placeholder="Max. 10 chars"
+              value={roomName}
+              onChange={(e) => {
+                const inputValue = e.target.value.replace(/[^\w\s]/gi, "");
+                if (inputValue.length <= MAX_ROOM_NAME_LENGTH) { 
+                  setRoomName(inputValue); 
+                }
+              }}
+            />
+          </div>
+          <div className = "room-creation-popup field">
+            <div className="label">Max Seats: </div>
+            <CustomNumberInput
+              className="custom-number-input"
+              min={DEFAULT_MIN_PLAYERS}
+              max={DEFAULT_MAX_PLAYERS}
+              value={maxRoomPlayers}
+              onChange={SetMaxRoomPlayers}
+            />
+          </div>
           <Dropdown
             className="theme-dropdown"
             prompt="Select Theme"

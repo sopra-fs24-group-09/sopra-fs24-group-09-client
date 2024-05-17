@@ -1,6 +1,7 @@
 @import "../theme";
 
 .wave-player {
+  user-select: none;
   display: flex;
   align-items: center;
   position: relative;
