@@ -295,7 +295,7 @@ const RuleGuide = () => {
           {
             selector: ".remindermssg",
             title: "Guide: Guess-Phase",
-            content: "You shuold simulate the reversed audio and reverse it again to figure out the word",
+            content: "You should simulate the reversed audio and reverse it again to figure out the word",
             placement: "top",
           },
           {

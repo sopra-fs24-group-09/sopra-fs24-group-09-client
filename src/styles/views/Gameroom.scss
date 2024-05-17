@@ -85,6 +85,7 @@
     }
   }
   &.playercontainer {
+    user-select: none;
     // position: relative;
     // top:5vh;
     // margin-top: 5vh;
@@ -179,6 +180,7 @@
     font-size: 100%;
   }
   &.playerName {
+    user-select: text;
     position: relative;
     // top: 1rem;
     // left:1.4rem;
@@ -271,6 +273,7 @@
     color:$darkBlue;
   }
   &.buttonset{
+    user-select: none;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -283,6 +286,7 @@
   .readybutton,
   .leavebutton,
   .cancelbutton {
+    user-select: none;
     border-radius: 0.5rem;
     width: 11vw;
     height: 5vh;
@@ -325,6 +329,7 @@
     border:0;
   }
   &.counterdiv {
+    user-select: none;
     margin-top:1.5vh;
     display: flex;
     justify-content: center;
