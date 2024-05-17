@@ -3,6 +3,7 @@
 @import "../theme";
 // define color variables
 .audio-recorder {
+    user-select: none;
     margin: 40px;
     display:flex;
     flex-direction: column;
