@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { api, handleError } from "helpers/api";
+import { api } from "helpers/api";
 import User from "models/User";
 import {Link, useNavigate} from "react-router-dom";
 import { Button } from "components/ui/Button";
 import "styles/views/Login.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
-import { MAX_USERNAME_LENGTH, HTTP_STATUS } from "../../constants/constants";
+import { MAX_USERNAME_LENGTH, MAX_PASSWORD_LENGTH, HTTP_STATUS } from "../../constants/constants";
 import { showToast} from "../../helpers/toastService";
 
 /*
@@ -24,7 +24,7 @@ const FormField = (props) => {
         placeholder="enter here.."
         value={props.value}
         type={props.type}
-        onChange={(e) => props.onChange(e.target.value)}
+        onChange={(e) => props.onChange(e)}
       />
     </div>
   );
@@ -58,7 +58,7 @@ const Login = () => {
       showToast("Login successful!", "success");
       navigate("/lobby");
     } catch (error) {
-      let message = "An unexpected error occurred during login.";
+      let message;
       if (error.response) {
         switch (error.response.status) {
         case HTTP_STATUS.NOT_FOUND:
@@ -87,16 +87,22 @@ const Login = () => {
             label="Username"
             value={username}
             type="text"
-            onChange={(un: string) => {
-              if (un.length <= MAX_USERNAME_LENGTH) setUsername(un)
+            onChange={(e) => {
+              const inputValue = e.target.value.replace(/[^\w\s]/gi, "");
+              if (inputValue.length <= MAX_USERNAME_LENGTH) {
+                setUsername(inputValue);
+              }
             }}
           />
           <FormField
             label="Password"
             value={password}
             type="password"
-            onChange={(n: any) => {
-              if (n.length <= MAX_USERNAME_LENGTH) setPassword(n)
+            onChange={(e) => {
+              const inputValue = e.target.value.replace(/[^\w\s]/gi, "");
+              if (inputValue.length <= MAX_PASSWORD_LENGTH) {
+                setPassword(inputValue);
+              }
             }}
           />
           <div className="login button-container">
