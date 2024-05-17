@@ -2,6 +2,8 @@
 
 export const MAX_USERNAME_LENGTH = 10;
 
+export const MAX_PASSWORD_LENGTH = 20;
+
 export const MAX_ROOM_NAME_LENGTH = 10;
 
 export const DEFAULT_TIMEOUT = 1500;
