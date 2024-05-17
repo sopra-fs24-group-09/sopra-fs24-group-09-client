@@ -59,10 +59,22 @@
     justify-content: center;
     margin-top: -1em;
   }
+  .password-input {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    input {
+      width: 100%;
+    }
+    Button {
+      width: 10%;
+      margin-left: -20%;
+    }
+  }
 }
 
 .kaeps-title{
-
+  user-select: none;
   top: 5%;           // 从顶部留下10%的空间以居中显示
   font-size: 150px;
   padding-bottom: 5%;
