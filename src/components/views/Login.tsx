@@ -8,7 +8,7 @@ import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 import { MAX_USERNAME_LENGTH, MAX_PASSWORD_LENGTH, HTTP_STATUS } from "../../constants/constants";
 import { showToast} from "../../helpers/toastService";
-
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 /*
 It is possible to add multiple components inside a single file,
 however be sure not to clutter your files with an endless amount!
@@ -16,16 +16,39 @@ As a rule of thumb, use one file per component and only add small,
 specific components that belong to the main one in the same file.
  */
 const FormField = (props) => {
+  const [showPassword, setShowPassword] = useState(false);
+  
   return (
     <div className="login field">
       <label className="login label">{props.label}</label>
-      <input
-        className="login input"
-        placeholder="enter here.."
-        value={props.value}
-        type={props.type}
-        onChange={(e) => props.onChange(e)}
-      />
+      {
+        props.type !== "password" ? (
+          <input
+            className="login input"
+            placeholder="enter here.."
+            value={props.value}
+            type={props.type}
+            onChange={(e) => props.onChange(e)}
+          />
+        ) : (
+          <div className="password-input">
+            <input
+              className="login input"
+              placeholder="enter here.."
+              value={props.value}
+              type={showPassword ? "text" : "password"}
+              onChange={(e) => props.onChange(e)}
+            />
+            <Button
+              className="login password-button"
+              style={{ color: "black"}}
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </Button>
+          </div>
+        )
+      }
     </div>
   );
 };
