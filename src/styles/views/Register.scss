@@ -2,8 +2,8 @@
 
 .register {
   &.container {
-    margin-top: 0em;
-    min-height: 400px;
+
+    min-height: 300px;
     /* we include the center mixin defined in _theme.scss and save three duplicate lines :) */
     @include center;
     flex-direction: column;
@@ -20,11 +20,11 @@
     padding-top: 30px;
     padding-left: 37px;
     padding-right: 37px;
-    background-color: #C9D7DD;
+    background-color: $lightYellow;
     transition: opacity 0.5s ease, transform 0.5s ease;
     box-shadow: $dropShadow;
     border-radius: 1.5em;
-    border: 20px solid $stroke;
+    border: 20px solid $classicYellow;
   }
   &.field {
     display: flex;
@@ -38,7 +38,7 @@
     border: none;
     border-radius: 0.75em;
     margin-bottom: 20px;
-    background: transparentize(white, 0.85);
+    background: $whiteYellow;
     color: $textColor;
   }
   &.label {
@@ -51,13 +51,13 @@
     font-family: sans-serif;
     display: flex;
     justify-content: center;
-    margin-top: 1em;
+    margin-top: 2em;
   }
   &.button-container1 {
     font-family: sans-serif;
     display: flex;
     justify-content: center;
-    margin-top: 0em;
+    margin-top: -1em;
   }
 }
 

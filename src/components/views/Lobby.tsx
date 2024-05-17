@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useEffect, useState } from "react";
 import { api } from "helpers/api";
+import CustomNumberInput from "components/ui/CustomNumberInput";
 import { Button } from "components/ui/Button";
 import { throttle } from "lodash";
 import { useNavigate } from "react-router-dom";
@@ -286,7 +287,6 @@ const Lobby = () => {
       : changeAvatarPopRef.current.showModal();
   };
 
-
   const toggleInfoPop = () => {
     // if the ref is not set, do nothing
     if (!infoPopRef.current) {
@@ -402,21 +402,30 @@ const Lobby = () => {
     return rooms.map((Room) => {
       const playerSlots = [];
 
-      // 生成玩家头像或空白框，总数等于房间最大玩家数
+      // generate players avatar
       for (let i = 0; i < Room.roomMaxNum; i++) {
         if (i < Room.roomPlayersList.length) {
           const user = Room.roomPlayersList[i];
           playerSlots.push(
             <div className="player" key={i}>
-              <i className={`twa twa-${user.avatar}`} style={{ fontSize: "3.8rem" }} />
+              <i className={`twa twa-${user.avatar}`}
+                style={{
+                  fontSize: "3.5rem",
+                  marginTop:"5px"
+                }}
+              />
               <div className="name">{user.userName}</div>
             </div>
           );
         } else {
-          // 空白框
+          // plus avatar
           playerSlots.push(
-            <div className="player" key={i}>
-
+            <div className="plus-player" key={i}>
+              <i className="twa twa-plus" style={{
+                fontSize: "3rem",
+                marginTop: "18.5px",
+                opacity: "0.4"
+              }} />
             </div>
           );
         }
@@ -462,11 +471,9 @@ const Lobby = () => {
               cursor: "pointer"
             }} />
           <div className="name">{user.username}</div>
-          <div className="btn-logout-container">
-            <Button className="logout-btn" onClick={logout}>Logout</Button>
-          </div>
         </div>
       )}
+      <Button className="logout-btn" onClick={logout}>Logout</Button>
       <div className="title-container">
         <div className="big-title">Kaeps</div>
         <div className="information" onClick={toggleInfoPop}>i</div>
@@ -500,6 +507,7 @@ const Lobby = () => {
               >
                 Edit
               </Button>
+              <Button className="out" onClick={logout}>Logout</Button>
             </>)
           }
         >
@@ -585,23 +593,18 @@ const Lobby = () => {
             value={roomName}
             onChange={(e) => {
               const inputValue = e.target.value.replace(/[^\w\s]/gi, "");
-              if (inputValue.length <= MAX_ROOM_NAME_LENGTH) { // 检查输入值的长度
-                setRoomName(inputValue); // 如果长度小于或等于 MAX_ROOM_NAME_LENGTH，更新状态
+              if (inputValue.length <= MAX_ROOM_NAME_LENGTH) { 
+                setRoomName(inputValue); 
               }
             }}
           />
           <div>Number of Maximum Players: </div>
-          <input
-            type="number"
-            placeholder={`Between ${DEFAULT_MIN_PLAYERS} and ${DEFAULT_MAX_PLAYERS}`}
-            value={maxRoomPlayers}
-            onChange={e => {
-              const value = parseInt(e.target.value);
-              // console.error("Value:", value);
-              SetMaxRoomPlayers(value);
-            }}
+          <CustomNumberInput
+            className="custom-number-input"
             min={DEFAULT_MIN_PLAYERS}
             max={DEFAULT_MAX_PLAYERS}
+            value={maxRoomPlayers}
+            onChange={SetMaxRoomPlayers}
           />
           <Dropdown
             className="theme-dropdown"
@@ -648,7 +651,7 @@ const Lobby = () => {
             <li><strong>Turns:</strong> The game is played in rounds. Each round has one speaker and several challengers. Players alternate roles as the Speaker to ensure fairness.</li>
           </ul>
           <p>Click <b>GUIDE</b> for more detailed instructions.</p>
-          <p>Join a room or create one to play with friends!</p>
+          <p className="important-note">Before you start, please enable your browser&apos;s microphone privacy settings.</p>
 
         </div>
       </Popup>

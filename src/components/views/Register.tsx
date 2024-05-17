@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { api, handleError } from "helpers/api";
+import { api } from "helpers/api";
 import User from "models/User";
 import {Link, useNavigate} from "react-router-dom";
 import { Button } from "components/ui/Button";
 import "styles/views/Register.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
-import { MAX_USERNAME_LENGTH, HTTP_STATUS } from "../../constants/constants";
+import { MAX_USERNAME_LENGTH, MAX_PASSWORD_LENGTH, HTTP_STATUS } from "../../constants/constants";
 import { showToast} from "../../helpers/toastService";
 /*
 It is possible to add multiple components inside a single file,
@@ -24,7 +24,7 @@ const FormField = (props) => {
         placeholder="enter here.."
         value={props.value}
         type={props.type}
-        onChange={(e) => props.onChange(e.target.value)}
+        onChange={(e) => props.onChange(e)}
       />
     </div>
   );
@@ -58,7 +58,7 @@ const Register = () => {
       showToast("Register successful!\nWelcome to this guide for newbies!", "success");
       navigate("/guide");
     } catch (error) {
-      let message = "An unexpected error occurred during Register.";
+      let message;
       if (error.response) {
         switch (error.response.status) {
         case HTTP_STATUS.CONFLICT:
@@ -84,22 +84,28 @@ const Register = () => {
             label="Username"
             value={username}
             type="text"
-            onChange={(un: string) => {
-              if (un.length <= MAX_USERNAME_LENGTH) setUsername(un);
+            onChange={(e) => {
+              const inputValue = e.target.value.replace(/[^\w\s]/gi, "");
+              if (inputValue.length <= MAX_USERNAME_LENGTH) {
+                setUsername(inputValue);
+              }
             }}
           />
           <FormField
             label="Password"
             value={password}
             type="password"
-            onChange={(n: any) => {
-              if (n.length <= MAX_USERNAME_LENGTH) setPassword(n)
+            onChange={(e) => {
+              const inputValue = e.target.value.replace(/[^\w\s]/gi, "");
+              if (inputValue.length <= MAX_PASSWORD_LENGTH) {
+                setPassword(inputValue);
+              }
             }}
           />
           <div className="register button-container">
             <Button
               disabled={!username || !password ||password.indexOf(" ") !== CHAR_NOT_FOUND || username.indexOf(" ") !== CHAR_NOT_FOUND }
-              width="75%"
+              width="100%"
               onClick={() => doRegister()}
               style={{ color: "black"}}
             >
