@@ -105,7 +105,7 @@ const Register = () => {
           <div className="register button-container">
             <Button
               disabled={!username || !password ||password.indexOf(" ") !== CHAR_NOT_FOUND || username.indexOf(" ") !== CHAR_NOT_FOUND }
-              width="75%"
+              width="100%"
               onClick={() => doRegister()}
               style={{ color: "black"}}
             >
