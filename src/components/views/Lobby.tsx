@@ -133,13 +133,16 @@ const Lobby = () => {
         // make sure message.message is timestamped<roomInfo[]>
         const payload: RoomInfo[] = message_lobby.message;
         // if me is in the room, redirect to the room
-        // const meIngameRoom = payload.some(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")))
-        // if (meIngameRoom) {
-        //   console.log("[DEBUG] Found me in the room, redirecting to the room page" + payload);
-        //   const Room = payload.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
-        //   navigate(`/rooms/${Room.roomId}`);
-        //   showToast("Reconnect to your previous room!", "success");
-        // }
+        const meIngameRoom = payload.some(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")))
+        const needRedirect : boolean = JSON.parse(sessionStorage.getItem("allowRedirect"));
+        if (meIngameRoom && needRedirect) {
+          console.log("[DEBUG] Found me in the room, redirecting to the room page" + payload);
+          const Room = payload.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
+          if (Room.status !== "GAMEOVER") {
+            navigate(`/rooms/${Room.roomId}`);
+            showToast("Reconnect to your previous room!", "success");
+          }
+        }
 
         setRooms(payload);
         console.log("Rooms updated:", message_lobby.message);
@@ -186,27 +189,27 @@ const Lobby = () => {
   // when user get navigated back to this page, fetch data again
   // const location = useLocation();
   // console.warn("Location:", location);
-  const RELOAD_TIME_MS = 500;
+  // const RELOAD_TIME_MS = 500;
   // when first time loading the page, check if the user is in the room
-  useEffect(() => {
-    // wait for 1 second before fetching data
-    const timeoutId = setTimeout(() => {
-      console.log("========check if already in room========");
-      console.warn("Rooms:", rooms);
-      const meInRoom = rooms.some(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")))
-      console.log("Me in room:", meInRoom);
-      if (meInRoom) {
-        console.log("[DEBUG] Found me in the room, redirecting to the room page" + rooms);
-        const Room = rooms.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
-        navigate(`/rooms/${Room.roomId}`);
-        showToast("Reconnect to your previous room!", "success");
-      }
-    }, RELOAD_TIME_MS);
+  // useEffect(() => {
+  //   // wait for 1 second before fetching data
+  //   const timeoutId = setTimeout(() => {
+  //     console.log("========check if already in room========");
+  //     console.warn("Rooms:", rooms);
+  //     const meInRoom = rooms.some(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")))
+  //     console.log("Me in room:", meInRoom);
+  //     if (meInRoom) {
+  //       console.log("[DEBUG] Found me in the room, redirecting to the room page" + rooms);
+  //       const Room = rooms.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
+  //       navigate(`/rooms/${Room.roomId}`);
+  //       showToast("Reconnect to your previous room!", "success");
+  //     }
+  //   }, RELOAD_TIME_MS);
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [rooms]);
+  //   return () => {
+  //     clearTimeout(timeoutId);
+  //   };
+  // }, [rooms]);
 
   const doEdit = async () => {
     try {

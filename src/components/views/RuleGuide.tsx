@@ -333,6 +333,7 @@ const RuleGuide = () => {
     try {
       const ffmpeg = new FFmpeg();
       ffmpeg.load();
+      
       return ffmpeg;
     }
     catch (e) {
@@ -352,10 +353,11 @@ const RuleGuide = () => {
       beforeClose={() => {
         showToast("You have left the guide page.", "info");
         navigate("/lobby");
+        ffmpegObj.terminate();
       }}
     >
       <RuleGuideContent 
-      ffmpegObj={ffmpegObj}
+        ffmpegObj={ffmpegObj}
       />
     </TourProvider>
   );

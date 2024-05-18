@@ -78,6 +78,7 @@ const Register = () => {
       sessionStorage.setItem("token", user.token);
       sessionStorage.setItem("id", user.id);
       sessionStorage.setItem("username", user.username);
+      sessionStorage.setItem("allowRedirect", "true");
       // Register successfully worked --> navigate to the route /game in the LobbyRouter
       showToast("Register successful!\nWelcome to this guide for newbies!", "success");
       navigate("/guide");

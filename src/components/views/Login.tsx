@@ -76,6 +76,7 @@ const Login = () => {
       sessionStorage.setItem("token", user.token);
       sessionStorage.setItem("id", user.id);
       sessionStorage.setItem("username", user.username);
+      sessionStorage.setItem("allowRedirect", "true"); // allow redirect to game room
 
       // Login successfully worked --> navigate to the route /game in the LobbyRouter
       showToast("Login successful!", "success");
