@@ -21,6 +21,16 @@ const DEFAULT_MAX_PLAYERS = 5;
 const DEFAULT_MIN_PLAYERS = 2;
 const RESPONSE_TIME = 1000;
 
+function askForMic() {
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(function (stream) {
+      console.log("You let the game use your mic");
+    })
+    .catch(function (err) {
+      console.log("You did not let the game use your mic");
+    });
+}
+
 type PlayerProps = {
   user: User;
 };
@@ -655,7 +665,11 @@ const Lobby = () => {
             <li><strong>Turns:</strong> The game is played in rounds. Each round has one speaker and several challengers. Players alternate roles as the Speaker to ensure fairness.</li>
           </ul>
           <p>Click <b>GUIDE</b> for more detailed instructions.</p>
-          <p className="important-note">Before you start, please enable your browser&apos;s microphone privacy settings.</p>
+          <p className="important-note"
+            onClick={askForMic}
+            onKeyPress={askForMic}
+          >Before you start, please enable your browser&apos;s microphone privacy settings.
+          </p>
 
         </div>
       </Popup>
