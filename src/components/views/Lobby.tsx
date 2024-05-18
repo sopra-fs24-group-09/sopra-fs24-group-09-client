@@ -671,7 +671,7 @@ const Lobby = () => {
           <p className="important-note"
             onClick={askForMic}
             onKeyPress={askForMic}
-          >Before you start, please enable your browser&apos;s microphone privacy settings.
+          >Before you start, click here to enable your browser&apos;s microphone privacy settings.
           </p>
 
         </div>

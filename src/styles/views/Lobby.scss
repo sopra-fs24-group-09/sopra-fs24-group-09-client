@@ -655,7 +655,15 @@ Button {
   font-size: 1.2em;
   background-color: $classicYellow;
   padding: 10px;
-  border: 2px solid red;
+  //border: 2px solid red;
   border-radius: 5px;
   text-align: center;
+  transition: background-color 2s ease;
+  transition: color 1s ease;
+}
+
+.important-note:hover {
+  background-color: $lightYellow;
+  color:$classicYellow;
+  cursor: pointer;
 }
