@@ -17,18 +17,32 @@ export const ButtonPlayer = (props: ButtonPlayerProps) => {
   const audioRef = useRef(null);
 
   const playAudio = () => {
+    if (!audioRef.current) {
+      console.error("audio element not found");
+      
+      return;
+    }
+  
     if (isPlaying) {
-      audioRef.current.pause().catch((e) => console.error(e));
+      try {
+        audioRef.current.pause();
+      } catch (e) {
+        console.error("error pausing audio", e);
+        
+        return;
+      }
       setIsPlaying((prev) => !prev);
     } else {
       // play form start
       audioRef.current.currentTime = 0;
-      audioRef.current.play()
-        .then(()  => {
-          setIsPlaying((prev) => !prev);
-        }
-        )
-        .catch((e) => console.error(e));
+      try {
+        audioRef.current.play()
+      } catch (e) {
+        console.error("error playing audio", e);
+        
+        return;
+      }
+      setIsPlaying((prev) => !prev);
     }
   };
 
