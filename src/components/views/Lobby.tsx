@@ -25,9 +25,11 @@ function askForMic() {
   navigator.mediaDevices.getUserMedia({ audio: true })
     .then(function (stream) {
       console.log("You let the game use your mic");
+      showToast("Microphone access granted. Thank you!","success");
     })
     .catch(function (err) {
       console.log("You did not let the game use your mic");
+      showToast("Microphone access was not granted; Please verify your settings.","error");
     });
 }
 
