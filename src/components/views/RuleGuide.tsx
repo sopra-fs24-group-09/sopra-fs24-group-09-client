@@ -8,6 +8,7 @@ import Header from "./Header";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import "../../styles/views/RuleGuide.scss";
 import { TourProvider, useTour } from "@reactour/tour"
+import { showToast} from "../../helpers/toastService";
 
 const mockGameTheme = "FOOD";
 const mockCurrentPlayer = "id2";
@@ -346,6 +347,7 @@ const RuleGuide = () => {
       disableDotsNavigation={true}
       showCloseButton={false}
       beforeClose={() => {
+        showToast("Congratulations! You have successfully completed the Rule Guide!\nEnjoy the game!", "success");
         navigate("/lobby");
       }}
     >
