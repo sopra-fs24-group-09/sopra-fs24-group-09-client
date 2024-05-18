@@ -106,7 +106,7 @@ const GuideContentDiv: React.FC<GuideContentDivProps> = (props:GuideContentDivPr
 }
 
 
-const RuleGuideContent = () => {
+const RuleGuideContent = ({ffmpegObj}:any) => {
   const { isOpen, currentStep, steps, setIsOpen, setCurrentStep, setSteps } = useTour()
   // const currentSpeakerAudioURL = "fakeURL";
   const [currentSpeakerAudioURL, setCurrentSpeakerAudioURL] = useState("fakeURL");
@@ -116,18 +116,6 @@ const RuleGuideContent = () => {
   const [gameInfo, setGameInfo] = useState(mockGameInfo);
   const [playerInfo, setPlayerInfo] = useState(mockPlayerLists);
   const endTime = useMemo(() => new Date(Date.now() + DEFAULT_ROUND_DURATION_S * MS_PER_SEC).toISOString(), [gameInfo.roundStatus]);
-  const ffmpegObj = useMemo(() => {
-    const ffmpeg = new FFmpeg();
-    try {
-      ffmpeg.load();
-    }
-    catch (e) {
-      console.error(e);
-      alert("Failed to load ffmpeg");
-    }
-
-    return ffmpeg;
-  });
   const step_speak_phase = [
     {
       selector: ".roundstatus",
@@ -341,6 +329,17 @@ const RuleGuideContent = () => {
 
 const RuleGuide = () => {
   const navigate = useNavigate();
+  const ffmpegObj = useMemo(() => {
+    try {
+      const ffmpeg = new FFmpeg();
+      ffmpeg.load();
+      return ffmpeg;
+    }
+    catch (e) {
+      console.error(e);
+      alert("Failed to load ffmpeg");
+    }
+  }, []);
   
   return (
     <TourProvider
@@ -355,7 +354,9 @@ const RuleGuide = () => {
         navigate("/lobby");
       }}
     >
-      <RuleGuideContent />
+      <RuleGuideContent 
+      ffmpegObj={ffmpegObj}
+      />
     </TourProvider>
   );
 }
