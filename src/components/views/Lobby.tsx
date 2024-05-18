@@ -20,6 +20,8 @@ import { Timestamped, RoomInfo, RoomPlayer, PlayerAndRoomID } from "stomp_types"
 const DEFAULT_MAX_PLAYERS = 5;
 const DEFAULT_MIN_PLAYERS = 2;
 const RESPONSE_TIME = 1000;
+const TOAST_TIME_MID = 3000;
+const TOAST_TIME_LONG = 6000;
 
 function askForMic() {
   navigator.mediaDevices.getUserMedia({ audio: true })
@@ -29,9 +31,21 @@ function askForMic() {
     })
     .catch(function (err) {
       console.log("You did not let the game use your mic");
-      showToast("Microphone access was not granted; Please verify your settings.","error");
+      showToast("Microphone access was not granted; Please verify your settings.","error", TOAST_TIME_MID);
     });
 }
+
+function checkMic() {
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(function (stream) {
+      console.log("Microphone is already accessible.");
+    })
+    .catch(function (err) {
+      console.log("Microphone access is not granted.");
+      showToast("Microphone access is required; please verify your settings.", "error", TOAST_TIME_LONG);
+    });
+}
+
 
 type PlayerProps = {
   user: User;
@@ -236,6 +250,7 @@ const Lobby = () => {
       return;
     }
     try {
+      checkMic();
       console.log("Current theme:", roomTheme);
       const ownerId = sessionStorage.getItem("id");  // 假设ownerId存储在sessionStorage中
       const requestBody = JSON.stringify({
@@ -410,6 +425,7 @@ const Lobby = () => {
 
   const handleRoomClick = useCallback((Room) => (e) => {
     e.preventDefault();
+    checkMic();
     throttledClickHandler(Room, navigate, showToast);
   }, [navigate, showToast]);
 
