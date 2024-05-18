@@ -588,7 +588,7 @@ const Lobby = () => {
             <div className="label">Room Name: </div>
             <input
               className="room-creation-popup room-name-input"
-              style={{ width: "13rem" }}
+              // style={{ width: "13em" }}
               type="text"
               placeholder="Max. 10 chars"
               value={roomName}

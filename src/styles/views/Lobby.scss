@@ -500,7 +500,7 @@ Button {
 .room-creation-popup {
   //height: 60%;
   &.content {
-    font-size: 24px;
+    font-size: 50px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -517,9 +517,9 @@ Button {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 13em;
     // width: 100%;
     .label {
-      flex-grow: 0.5;
       font-size: 0.6em;
       align-self: flex-start;
     }
@@ -527,7 +527,8 @@ Button {
     input {
       font-size: 1em;
       height: 1.2em;
-      max-width: 60vw;
+      width: 13em;
+      // max-width: 60vw;
       padding-left: 1px;
       margin-left: 4px;
       border: 1px solid black;
@@ -538,15 +539,16 @@ Button {
     }
   }
   .custom-number-input {
-    width: 13rem;
+    // width: 13em;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 13em;
     button {
-      width: 30px;
-      height: 30px;
-      font-size: 18px;
+      height: 1.2em;
+      width: 1.8em;
+      font-size: 1em;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -561,7 +563,7 @@ Button {
       }
     }
     input {
-      width: 80%;
+      flex-grow: 1;
       text-align: center;
       height: 1.2em;
       &::-webkit-outer-spin-button,
@@ -576,12 +578,12 @@ Button {
     display: flex;
     align-items: center;
     justify-items: center;
-    font-size: 0.8em;
-    width: 13rem;
-    max-width: 60vw;
+    font-size: 1em;
+    width: 13em;
+    // max-width: 60vw;
     height: 1.2em;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
     //margin-top: 20px;
     // margin-bottom: 40px;
     select {
@@ -600,14 +602,14 @@ Button {
       }
     }
   }
-  &.btn-container {
+  .popup-button-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: flex-end;
     Button {
       height: auto;
-      font-size: 1em;
+      font-size: 30px;
       padding: 0.6em;
       margin: 0 10px;
       color: white;

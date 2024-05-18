@@ -856,7 +856,7 @@ const Gameroom = () => {
                   //console.log("upload audio");
                   throttledUploadAudio();
                 }
-              }>share your audio</div>
+              }>Share Audio</div>
             )}
           </div>
 
