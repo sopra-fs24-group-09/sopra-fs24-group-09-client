@@ -249,10 +249,9 @@ const RuleGuideContent = () => {
       ),
       // stepInteraction: false,
       padding: 0,
-      // beforeStepChange: () => {
-      //   showToast("Congratulations! You have successfully completed the Rule Guide!\nEnjoy the game!", "success");
-      //   navigate("/lobby");
-      // }
+      actionAfter: () => {
+        showToast("Congratulations! You have successfully completed the Rule Guide!\nEnjoy the game!", "success");
+      }
     },
   ];
 
@@ -352,7 +351,7 @@ const RuleGuide = () => {
       disableDotsNavigation={true}
       showCloseButton={false}
       beforeClose={() => {
-        showToast("Congratulations! You have successfully completed the Rule Guide!\nEnjoy the game!", "success");
+        showToast("You have left the guide page.", "info");
         navigate("/lobby");
       }}
     >
