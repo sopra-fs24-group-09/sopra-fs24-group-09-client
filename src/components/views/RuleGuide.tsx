@@ -241,7 +241,12 @@ const RuleGuideContent = () => {
     {
       selector: ".btn-player",
       title: "Guide: Guess-Phase",
-      content: "When someone shares their audio, you can click here to listen to their audio",
+      content: (
+        <GuideContentDiv>
+          <p>When someone shares their audio, you can click here to listen to their audio</p>
+          <p style={{ color: "red" }}>(You have now completed the guide, click anywhere out of this box to leave.)</p>
+        </GuideContentDiv>
+      ),
       // stepInteraction: false,
       padding: 0,
       // beforeStepChange: () => {
