@@ -20,6 +20,32 @@ import { Timestamped, RoomInfo, RoomPlayer, PlayerAndRoomID } from "stomp_types"
 const DEFAULT_MAX_PLAYERS = 5;
 const DEFAULT_MIN_PLAYERS = 2;
 const RESPONSE_TIME = 1000;
+const TOAST_TIME_MID = 3000;
+const TOAST_TIME_LONG = 6000;
+
+function askForMic() {
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(function (stream) {
+      console.log("You let the game use your mic");
+      showToast("Microphone access granted. Thank you!","success");
+    })
+    .catch(function (err) {
+      console.log("You did not let the game use your mic");
+      showToast("Microphone access was not granted; Please verify your settings.","error", TOAST_TIME_MID);
+    });
+}
+
+function checkMic() {
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(function (stream) {
+      console.log("Microphone is already accessible.");
+    })
+    .catch(function (err) {
+      console.log("Microphone access is not granted.");
+      showToast("Microphone access is required; please verify your settings.", "error", TOAST_TIME_LONG);
+    });
+}
+
 
 type PlayerProps = {
   user: User;
@@ -123,13 +149,16 @@ const Lobby = () => {
         // make sure message.message is timestamped<roomInfo[]>
         const payload: RoomInfo[] = message_lobby.message;
         // if me is in the room, redirect to the room
-        // const meIngameRoom = payload.some(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")))
-        // if (meIngameRoom) {
-        //   console.log("[DEBUG] Found me in the room, redirecting to the room page" + payload);
-        //   const Room = payload.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
-        //   navigate(`/rooms/${Room.roomId}`);
-        //   showToast("Reconnect to your previous room!", "success");
-        // }
+        const meIngameRoom = payload.some(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")))
+        const needRedirect : boolean = JSON.parse(sessionStorage.getItem("allowRedirect"));
+        if (meIngameRoom && needRedirect) {
+          console.log("[DEBUG] Found me in the room, redirecting to the room page" + payload);
+          const Room = payload.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
+          if (Room.status !== "GAMEOVER") {
+            navigate(`/rooms/${Room.roomId}`);
+            showToast("Reconnect to your previous room!", "success");
+          }
+        }
 
         setRooms(payload);
         console.log("Rooms updated:", message_lobby.message);
@@ -176,27 +205,27 @@ const Lobby = () => {
   // when user get navigated back to this page, fetch data again
   // const location = useLocation();
   // console.warn("Location:", location);
-  const RELOAD_TIME_MS = 500;
+  // const RELOAD_TIME_MS = 500;
   // when first time loading the page, check if the user is in the room
-  useEffect(() => {
-    // wait for 1 second before fetching data
-    const timeoutId = setTimeout(() => {
-      console.log("========check if already in room========");
-      console.warn("Rooms:", rooms);
-      const meInRoom = rooms.some(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")))
-      console.log("Me in room:", meInRoom);
-      if (meInRoom) {
-        console.log("[DEBUG] Found me in the room, redirecting to the room page" + rooms);
-        const Room = rooms.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
-        navigate(`/rooms/${Room.roomId}`);
-        showToast("Reconnect to your previous room!", "success");
-      }
-    }, RELOAD_TIME_MS);
+  // useEffect(() => {
+  //   // wait for 1 second before fetching data
+  //   const timeoutId = setTimeout(() => {
+  //     console.log("========check if already in room========");
+  //     console.warn("Rooms:", rooms);
+  //     const meInRoom = rooms.some(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")))
+  //     console.log("Me in room:", meInRoom);
+  //     if (meInRoom) {
+  //       console.log("[DEBUG] Found me in the room, redirecting to the room page" + rooms);
+  //       const Room = rooms.find(room => room.roomPlayersList.some(user => user.userId === sessionStorage.getItem("id")));
+  //       navigate(`/rooms/${Room.roomId}`);
+  //       showToast("Reconnect to your previous room!", "success");
+  //     }
+  //   }, RELOAD_TIME_MS);
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [rooms]);
+  //   return () => {
+  //     clearTimeout(timeoutId);
+  //   };
+  // }, [rooms]);
 
   const doEdit = async () => {
     try {
@@ -221,6 +250,7 @@ const Lobby = () => {
       return;
     }
     try {
+      checkMic();
       console.log("Current theme:", roomTheme);
       const ownerId = sessionStorage.getItem("id");  // 假设ownerId存储在sessionStorage中
       const requestBody = JSON.stringify({
@@ -395,6 +425,7 @@ const Lobby = () => {
 
   const handleRoomClick = useCallback((Room) => (e) => {
     e.preventDefault();
+    checkMic();
     throttledClickHandler(Room, navigate, showToast);
   }, [navigate, showToast]);
 
@@ -655,7 +686,11 @@ const Lobby = () => {
             <li><strong>Turns:</strong> The game is played in rounds. Each round has one speaker and several challengers. Players alternate roles as the Speaker to ensure fairness.</li>
           </ul>
           <p>Click <b>GUIDE</b> for more detailed instructions.</p>
-          <p className="important-note">Before you start, please enable your browser&apos;s microphone privacy settings.</p>
+          <p className="important-note"
+            onClick={askForMic}
+            onKeyPress={askForMic}
+          >Before you start, click here to enable your browser&apos;s microphone privacy settings.
+          </p>
 
         </div>
       </Popup>

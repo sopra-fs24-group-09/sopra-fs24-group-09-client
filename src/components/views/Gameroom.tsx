@@ -107,6 +107,7 @@ const Gameroom = () => {
     // console.error("ISCHROME",isChrome);
     if (!isChrome) {
       alert("Please use Chrome browser to play the game.");
+      ffmpegObj.terminate();
       navigate("/lobby");
       
       return;
@@ -155,6 +156,7 @@ const Gameroom = () => {
     const onError = (err) => {
       console.error("WebSocket Error: ", err);
       // alert("WebSocket connection error. Check console for details.");
+      // ffmpegObj.terminate();
       // navigate("/lobby");
     };
 
@@ -171,6 +173,7 @@ const Gameroom = () => {
         if (msg.auth === false) {
           showToast("Invalid or expired token, please login again!", "error");
           sessionStorage.clear(); // Clear session storage
+          ffmpegObj.terminate(); // Terminate the FFmpeg instance
           navigate("/login"); // Navigate to the login page
 
           return; // Exit the function to avoid further processing
@@ -193,6 +196,7 @@ const Gameroom = () => {
         } else if (messageType === "enter") {
           toastMessage = success ? "You have entered the room successfully!" : msg.message;
           if (!success){
+            ffmpegObj.terminate();
             navigate("/lobby");
           }
         } else if (messageType === "upload") {
@@ -506,6 +510,8 @@ const Gameroom = () => {
         token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
+    ffmpegObj.terminate();
+    sessionStorage.setItem("allowRedirect", "false");
     navigate("/lobby")
   },[user.id,currentRoomID]);
   const throttledExitRoom = useCallback(throttle(exitRoom, THROTTLE_TIME),[exitRoom, THROTTLE_TIME]);
