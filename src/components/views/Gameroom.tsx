@@ -28,6 +28,7 @@ import { throttle } from "lodash";
 const DEFAULT_VOLUME = 0.5;
 const THROTTLE_TIME = 1000;
 const RESPONSE_TIME = 5000;
+const TOAST_TIME_LONG = 6000;
 const INDEX_NOT_FOUND = -1;
 
 type SharedAudioURL = { [userId: string]: string };
@@ -46,6 +47,7 @@ const Gameroom = () => {
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const readyStatus = useRef(false);
   const [gameOver, setGameOver] = useState(false);
+  const isMicReady = useRef(false);
   const gameOverRef = useRef(false);
   const [currentSpeakerID, setCurrentSpeakerID] = useState(null);
   const [playerLists, setPlayerLists] = useState([]);
@@ -98,6 +100,18 @@ const Gameroom = () => {
     return ffmpeg;
   }, []);
 
+  function checkMic() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(function (stream) {
+        isMicReady.current = true;
+        console.log("Microphone is already accessible.");
+      })
+      .catch(function (err) {
+        isMicReady.current = false;
+        console.log("Microphone access is not granted.");
+        showToast("Microphone access is required to start the game; Please verify your settings.", "error", TOAST_TIME_LONG);
+      });
+  }
   //("GameInfo", gameInfo);
 
 
@@ -391,35 +405,38 @@ const Gameroom = () => {
 
   //ready
   const getReady = useCallback(() => {
-    console.log("ready once - throttle")
-    const payload: Timestamped<PlayerAndRoomID> = {
-      // need to make sure the timestamp is UTC format
-      // and invariant to the time zone settings
-      timestamp: new Date().getTime(),
-      message: {
-        userID: user.id,
-        roomID: currentRoomID,
-      },
-    };
-    // get a random receipt uuid
-    const receiptId = uuidv4();
-    stompClientRef.current?.send(
-      `/app/message/users/ready/${currentRoomID}`,
-      { receiptId: receiptId,
-        token: sessionStorage.getItem("token") },
-      JSON.stringify(payload)
-    );
-    requestLists.current.push({ type: "ready",receiptId: receiptId });
-    console.log(requestLists.current)
-    const timeoutId = setTimeout(() => {
-      const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
-      if (index !== INDEX_NOT_FOUND) {
-        requestLists.current.splice(index, 1);
-      }
+    checkMic();
+    if(isMicReady.current){
+      console.log("ready once - throttle")
+      const payload: Timestamped<PlayerAndRoomID> = {
+        // need to make sure the timestamp is UTC format
+        // and invariant to the time zone settings
+        timestamp: new Date().getTime(),
+        message: {
+          userID: user.id,
+          roomID: currentRoomID,
+        },
+      };
+      // get a random receipt uuid
+      const receiptId = uuidv4();
+      stompClientRef.current?.send(
+        `/app/message/users/ready/${currentRoomID}`,
+        { receiptId: receiptId,
+          token: sessionStorage.getItem("token") },
+        JSON.stringify(payload)
+      );
+      requestLists.current.push({ type: "ready",receiptId: receiptId });
       console.log(requestLists.current)
-    }, RESPONSE_TIME);
+      const timeoutId = setTimeout(() => {
+        const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+        if (index !== INDEX_NOT_FOUND) {
+          requestLists.current.splice(index, 1);
+        }
+        console.log(requestLists.current)
+      }, RESPONSE_TIME);
 
-    return () => clearTimeout(timeoutId);
+      return () => clearTimeout(timeoutId);
+    }
   },[user.id,currentRoomID]);
   const throttledGetReady = useCallback(throttle(getReady, THROTTLE_TIME), [getReady, THROTTLE_TIME]);
 
@@ -458,34 +475,36 @@ const Gameroom = () => {
 
   //start game
   const startGame = useCallback(() => {
-    console.log("start button used once")
-    const payload: Timestamped<PlayerAndRoomID> = {
-      // TODO: need to make sure the timestamp is UTC format
-      // and invariant to the time zone settings
-      timestamp: new Date().getTime(),
-      message: {
-        userID: user.id,
-        roomID: currentRoomID,
-      },
-    };
-    const receiptId = uuidv4();
-    stompClientRef.current?.send(
-      `/app/message/games/start/${currentRoomID}`,
-      { receiptId: receiptId,
-        token: sessionStorage.getItem("token") },
-      JSON.stringify(payload)
-    );
-    requestLists.current.push({ type: "start",receiptId: receiptId });
-    console.log(requestLists.current)
-    const timeoutId = setTimeout(() => {
-      const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
-      if (index !== INDEX_NOT_FOUND) {
-        requestLists.current.splice(index, 1);
-      }
+    checkMic();
+    if (isMicReady){
+      console.log("start button used once")
+      const payload: Timestamped<PlayerAndRoomID> = {
+        // and invariant to the time zone settings
+        timestamp: new Date().getTime(),
+        message: {
+          userID: user.id,
+          roomID: currentRoomID,
+        },
+      };
+      const receiptId = uuidv4();
+      stompClientRef.current?.send(
+        `/app/message/games/start/${currentRoomID}`,
+        { receiptId: receiptId,
+          token: sessionStorage.getItem("token") },
+        JSON.stringify(payload)
+      );
+      requestLists.current.push({ type: "start",receiptId: receiptId });
       console.log(requestLists.current)
-    }, RESPONSE_TIME);
+      const timeoutId = setTimeout(() => {
+        const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+        if (index !== INDEX_NOT_FOUND) {
+          requestLists.current.splice(index, 1);
+        }
+        console.log(requestLists.current)
+      }, RESPONSE_TIME);
 
-    return () => clearTimeout(timeoutId);
+      return () => clearTimeout(timeoutId);
+    }
   },[user.id,currentRoomID]);
   const throttledStartGame = useCallback(throttle(startGame, THROTTLE_TIME),[startGame, THROTTLE_TIME]);
 

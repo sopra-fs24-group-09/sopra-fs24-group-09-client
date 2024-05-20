@@ -42,7 +42,7 @@ function checkMic() {
     })
     .catch(function (err) {
       console.log("Microphone access is not granted.");
-      showToast("Microphone access is required; please verify your settings.", "error", TOAST_TIME_LONG);
+      showToast("Microphone access is required; Please verify your settings.", "error", TOAST_TIME_LONG);
     });
 }
 
@@ -425,7 +425,7 @@ const Lobby = () => {
 
   const handleRoomClick = useCallback((Room) => (e) => {
     e.preventDefault();
-    checkMic();
+    //checkMic();
     throttledClickHandler(Room, navigate, showToast);
   }, [navigate, showToast]);
 
