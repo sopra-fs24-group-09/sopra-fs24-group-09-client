@@ -49,67 +49,50 @@ The player entity extends the user, will be created when the game starts, and it
 
 <a name="launch-deployment"/>
 
-## Launch & Deployment
+## Prerequisites & Installation
 
-### Setup this Template with your IDE of choice
-Download your IDE of choice (e.g., [IntelliJ](https://www.jetbrains.com/idea/download/), [Visual Studio Code](https://code.visualstudio.com/), or [Eclipse](http://www.eclipse.org/downloads/)). Make sure Java 17 is installed on your system (for Windows, please make sure your `JAVA_HOME` environment variable is set to the correct version of Java).
+For your local development environment, you will need Node.js.\
+We urge you to install the exact version **v20.11.0** which comes with the npm package manager. You can download it [here](https://nodejs.org/download/release/v20.11.0/).\
+If you are confused about which download to choose, feel free to use these direct links:
 
-### IntelliJ
-1. File -> Open... -> SoPra server template
-2. Accept to import the project as a `gradle project`
-3. To build right click the `build.gradle` file and choose `Run Build`
+- **MacOS:** [node-v20.11.0.pkg](https://nodejs.org/download/release/v20.11.0/node-v20.11.0.pkg)
+- **Windows 32-bit:** [node-v20.11.0-x86.msi](https://nodejs.org/download/release/v20.11.0/node-v20.11.0-x86.msi)
+- **Windows 64-bit:** [node-v20.11.0-x64.msi](https://nodejs.org/download/release/v20.11.0/node-v20.11.0-x64.msi)
+- **Linux:** [node-v20.11.0.tar.xz](https://nodejs.org/dist/v20.11.0/node-v20.11.0-linux-x64.tar.xz) (use this [installation guide](https://github.com/nodejs/help/wiki/Installation#how-to-install-nodejs-via-binary-archive-on-linux) if you are new to Linux)
 
-### VS Code
-The following extensions can help you get started more easily:
--   `vmware.vscode-spring-boot`
--   `vscjava.vscode-spring-initializr`
--   `vscjava.vscode-spring-boot-dashboard`
--   `vscjava.vscode-java-pack`
+If you happen to have a package manager the following commands can be used:
 
-**Note:** You'll need to build the project first with Gradle, just click on the `build` command in the _Gradle Tasks_ extension. Then check the _Spring Boot Dashboard_ extension if it already shows `soprafs24` and hit the play button to start the server. If it doesn't show up, restart VS Code and check again.
+- **Homebrew:** `brew install node@20.11.0`
+- **Chocolatey:** `choco install nodejs-lts --version=20.11.0`
 
-### Building with Gradle
-You can use the local Gradle Wrapper to build the application.
--   macOS: `./gradlew`
--   Linux: `./gradlew`
--   Windows: `./gradlew.bat`
+After the installation, update the npm package manager to **10.4.0** by running ```npm install -g npm@10.4.0```\
+You can ensure the correct version of node and npm by running ```node -v``` and ```npm --version```, which should give you **v20.11.0** and **10.4.0** respectively.\
+Before you start your application for the first time, run this command to install all other dependencies, including React:
 
-More Information about [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) and [Gradle](https://gradle.org/docs/).
+```npm install```
+
+Next, you can start the app with:
+
+```npm run dev```
+
+Now you can open [http://localhost:3000](http://localhost:3000) to view it in the browser.\
+Notice that the page will reload if you make any edits. You will also see any lint errors in the console (use a Chrome-based browser).\
+The client will send HTTP requests to the server which can be found [here](https://github.com/HASEL-UZH/sopra-fs24-template-server).\
+In order for these requests to work, you need to install and start the server as well.
+
+### Testing
+Testing is optional, and you can run the tests with `npm run test`\
+This launches the test runner in an interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+> For macOS user running into a 'fsevents' error: https://github.com/jest-community/vscode-jest/issues/423
 
 ### Build
+Finally, `npm run build` builds the app for production to the `build` folder.<br>
+It correctly bundles React in production mode and optimizes the build for the best performance:\
+The build is minified, and the filenames include hashes.<br>
 
-```bash
-./gradlew build
-```
-
-### Run
-
-```bash
-./gradlew bootRun
-```
-
-You can verify that the server is running by visiting `localhost:8080` in your browser.
-
-### Test
-
-```bash
-./gradlew test
-```
-### Development Mode
-You can start the backend in development mode, this will automatically trigger a new build and reload the application
-once the content of a file has been changed.
-
-Start two terminal windows and run:
-
-`./gradlew build --continuous`
-
-and in the other one:
-
-`./gradlew bootRun`
-
-If you want to avoid running all tests with every change, use the following command instead:
-
-`./gradlew build --continuous -xtest`
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
 ## Roadmap
 
@@ -132,7 +115,7 @@ If you want to avoid running all tests with every change, use the following comm
 
 ### Acknowledgement
 
-- The client code is based on the [SoPra FS24 - Server Template](https://github.com/HASEL-UZH/sopra-fs24-template-server).
+- The client code is based on the [SoPra FS24 - Client Template](https://github.com/HASEL-UZH/sopra-fs24-template-client).
 - Many thanks to **[Miro Vannini](https://github.com/mirovv)** who helped us as a Tutor and Scrum Master during this SoPra project.
 
 
