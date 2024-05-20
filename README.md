@@ -94,6 +94,64 @@ The build is minified, and the filenames include hashes.<br>
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+## Illustration
+
+### Main User Flow
+1. **User Registration and Login:**
+    - Users can register with username and password.
+    - After registration, users will log in and access the lobby.
+
+2. **Beginner's Guide:**
+    - For a newly registered user, he/she will go through a beginner's guide to get familiar with the UI and game flow.
+      <div style="text-align: center;">
+         <img src="src/images/guide.jpg" alt="Guide Screenshot" width="500"/>
+      </div>
+
+3. **Lobby:**
+    - After Beginner's Guide, users will navigate to lobby where they can see their avatars and usernames on the left-hand side
+      and room lists on the right-hand side.
+      <div style="text-align: center;">
+         <img src="src/images/lobby.jpg" alt="Lobby Screenshot" width="500"/>
+      </div>
+    - Users can create a new room by specifying room settings (e.g. room name, maximum players, game theme).
+      <div style="text-align: center;">
+         <img src="src/images/create-room.jpg" alt="create-room Screenshot" width="300"/>
+      </div>
+    - Alternatively, users can join an existing room by clicking on the room from the list.
+
+4. **Preparation:**
+    - In the room, users can get ready and wait for other players to join.
+      <div style="text-align: center;">
+         <img src="src/images/room.jpg" alt="room Screenshot" width="500"/>
+      </div>
+    - The room creator can start the game once players in the room are all ready.
+
+5. **Game Start:**
+    - The game starts with one player designated as the **Speaker** and others as the **Challengers**.
+    - The **Speaker** receives a word, records it, and sends this audio to the Challengers.
+      <div style="text-align: center;">
+         <img src="src/images/speaker.jpg" alt="speaker Screenshot" width="500"/>
+      </div>
+    - The **Challengers** listen to the inverted audio sent by the Speaker, mimic the recording and play their recording backwards to guess the original word.
+      Then, they submit the original word and can share audio as well. Multiple guesses are allowed before the time runs out.
+      <div style="text-align: center;">
+         <img src="src/images/challenger.jpg" alt="challenger Screenshot" width="500"/>
+      </div>
+
+6. **Scoring:**
+    - Points are awarded for correctly guessing the word.
+    - The faster the guess, the more points are earned.
+    - The final score board will be displayed when the game is finished.
+      <div style="text-align: center;">
+         <img src="src/images/leaderboard.jpg" alt="leaderboard Screenshot" width="500"/>
+      </div>
+
+7. **Rounds:**
+    - The game is played in rounds with each round having a different Speaker.
+    - Players take turns being the Speaker.
+
+
+
 ## Roadmap
 
 - :negative_squared_cross_mark: Implement a live chat feature.
