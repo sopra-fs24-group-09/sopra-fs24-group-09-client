@@ -838,12 +838,28 @@ const Gameroom = () => {
                         Confirm
                       </div>
                     )}
-                    <div className="gameroom leavebutton" onClick={
-                      () => {
-                        //console.log("leave room");
-                        exitRoom();
+                    <div className="gameroom leavebutton" 
+                      onClick={() => 
+                      {
+                        if (readyStatus.current === false){
+                          throttledExitRoom();
+                        } else {
+                          showToast("Please cancel ready before leaving the room.", "error");
+                        }
                       }
-                    }>leave</div>
+                      }
+                      onKeyDown={() =>
+                      {
+                        if (readyStatus.current === false){
+                          throttledExitRoom();
+                        } else {
+                          showToast("Please cancel ready before leaving the room.", "error");
+                        }
+                      }
+                      }
+                    >
+                      leave
+                    </div>
                   </>
                 )}
               </div>
