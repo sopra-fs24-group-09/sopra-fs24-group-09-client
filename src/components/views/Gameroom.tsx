@@ -722,7 +722,7 @@ const Gameroom = () => {
     playerStatus: PropTypes.arrayOf(
       PropTypes.shape({
         user: PropTypes.shape({
-          id: PropTypes.number.isRequired,
+          id: PropTypes.string.isRequired,
           name: PropTypes.string.isRequired,
           avatar: PropTypes.string.isRequired,
         }).isRequired,
@@ -766,8 +766,9 @@ const Gameroom = () => {
         <Header 
           onChange={
             e => {
-              setGlobalVolume(e.target.value);
-              console.log("[volume] set to", e.target.value);
+              const volume = parseFloat(e.target.value);
+              setGlobalVolume(volume);
+              console.log("[volume] set to", volume);
             }
           }
           onClickMute={
@@ -837,12 +838,28 @@ const Gameroom = () => {
                         Confirm
                       </div>
                     )}
-                    <div className="gameroom leavebutton" onClick={
-                      () => {
-                        //console.log("leave room");
-                        exitRoom();
+                    <div className="gameroom leavebutton" 
+                      onClick={() => 
+                      {
+                        if (readyStatus.current === false){
+                          throttledExitRoom();
+                        } else {
+                          showToast("Please cancel ready before leaving the room.", "error");
+                        }
                       }
-                    }>leave</div>
+                      }
+                      onKeyDown={() =>
+                      {
+                        if (readyStatus.current === false){
+                          throttledExitRoom();
+                        } else {
+                          showToast("Please cancel ready before leaving the room.", "error");
+                        }
+                      }
+                      }
+                    >
+                      leave
+                    </div>
                   </>
                 )}
               </div>
