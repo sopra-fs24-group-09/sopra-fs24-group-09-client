@@ -129,18 +129,6 @@ const Gameroom = () => {
     };
   }, []);
 
-  function checkMic() {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then(function (stream) {
-        isMicReady.current = true;
-        console.log("Microphone is already accessible.");
-      })
-      .catch(function (err) {
-        isMicReady.current = false;
-        console.log("Microphone access is not granted.");
-        showToast("Microphone access is required to start the game; Please verify your settings.", "error", TOAST_TIME_LONG);
-      });
-  }
   //("GameInfo", gameInfo);
 
 
@@ -434,38 +422,43 @@ const Gameroom = () => {
 
   //ready
   const getReady = useCallback(() => {
-    checkMic();
-    if(isMicReady.current){
-      console.log("ready once - throttle")
-      const payload: Timestamped<PlayerAndRoomID> = {
-        // need to make sure the timestamp is UTC format
-        // and invariant to the time zone settings
-        timestamp: new Date().getTime(),
-        message: {
-          userID: user.id,
-          roomID: currentRoomID,
-        },
-      };
-      // get a random receipt uuid
-      const receiptId = uuidv4();
-      stompClientRef.current?.send(
-        `/app/message/users/ready/${currentRoomID}`,
-        { receiptId: receiptId,
-          token: sessionStorage.getItem("token") },
-        JSON.stringify(payload)
-      );
-      requestLists.current.push({ type: "ready",receiptId: receiptId });
-      console.log(requestLists.current)
-      const timeoutId = setTimeout(() => {
-        const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
-        if (index !== INDEX_NOT_FOUND) {
-          requestLists.current.splice(index, 1);
-        }
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(function (stream) {
+        console.log("Microphone is already accessible.");
+        console.log("ready once - throttle")
+        const payload: Timestamped<PlayerAndRoomID> = {
+          // need to make sure the timestamp is UTC format
+          // and invariant to the time zone settings
+          timestamp: new Date().getTime(),
+          message: {
+            userID: user.id,
+            roomID: currentRoomID,
+          },
+        };
+          // get a random receipt uuid
+        const receiptId = uuidv4();
+        stompClientRef.current?.send(
+          `/app/message/users/ready/${currentRoomID}`,
+          { receiptId: receiptId,
+            token: sessionStorage.getItem("token") },
+          JSON.stringify(payload)
+        );
+        requestLists.current.push({ type: "ready",receiptId: receiptId });
         console.log(requestLists.current)
-      }, RESPONSE_TIME);
+        const timeoutId = setTimeout(() => {
+          const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+          if (index !== INDEX_NOT_FOUND) {
+            requestLists.current.splice(index, 1);
+          }
+          console.log(requestLists.current)
+        }, RESPONSE_TIME);
 
-      return () => clearTimeout(timeoutId);
-    }
+        return () => clearTimeout(timeoutId);
+      })
+      .catch(function (err) {
+        console.log("Microphone access is not granted.");
+        showToast("Microphone access is required to start the game; Please verify your settings.", "error", TOAST_TIME_LONG);
+      });
   },[user.id,currentRoomID]);
   const throttledGetReady = useCallback(throttle(getReady, THROTTLE_TIME), [getReady, THROTTLE_TIME]);
 
@@ -504,36 +497,41 @@ const Gameroom = () => {
 
   //start game
   const startGame = useCallback(() => {
-    checkMic();
-    if (isMicReady){
-      console.log("start button used once")
-      const payload: Timestamped<PlayerAndRoomID> = {
-        // and invariant to the time zone settings
-        timestamp: new Date().getTime(),
-        message: {
-          userID: user.id,
-          roomID: currentRoomID,
-        },
-      };
-      const receiptId = uuidv4();
-      stompClientRef.current?.send(
-        `/app/message/games/start/${currentRoomID}`,
-        { receiptId: receiptId,
-          token: sessionStorage.getItem("token") },
-        JSON.stringify(payload)
-      );
-      requestLists.current.push({ type: "start",receiptId: receiptId });
-      console.log(requestLists.current)
-      const timeoutId = setTimeout(() => {
-        const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
-        if (index !== INDEX_NOT_FOUND) {
-          requestLists.current.splice(index, 1);
-        }
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(function (stream) {
+        console.log("Microphone is already accessible.");
+        console.log("start button used once")
+        const payload: Timestamped<PlayerAndRoomID> = {
+          // and invariant to the time zone settings
+          timestamp: new Date().getTime(),
+          message: {
+            userID: user.id,
+            roomID: currentRoomID,
+          },
+        };
+        const receiptId = uuidv4();
+        stompClientRef.current?.send(
+          `/app/message/games/start/${currentRoomID}`,
+          { receiptId: receiptId,
+            token: sessionStorage.getItem("token") },
+          JSON.stringify(payload)
+        );
+        requestLists.current.push({ type: "start",receiptId: receiptId });
         console.log(requestLists.current)
-      }, RESPONSE_TIME);
+        const timeoutId = setTimeout(() => {
+          const index = requestLists.current.findIndex(request => request.receiptId === receiptId);
+          if (index !== INDEX_NOT_FOUND) {
+            requestLists.current.splice(index, 1);
+          }
+          console.log(requestLists.current)
+        }, RESPONSE_TIME);
 
-      return () => clearTimeout(timeoutId);
-    }
+        return () => clearTimeout(timeoutId);
+      })
+      .catch(function (err) {
+        console.log("Microphone access is not granted.");
+        showToast("Microphone access is required to start the game; Please verify your settings.", "error", TOAST_TIME_LONG);
+      });
   },[user.id,currentRoomID]);
   const throttledStartGame = useCallback(throttle(startGame, THROTTLE_TIME),[startGame, THROTTLE_TIME]);
 
