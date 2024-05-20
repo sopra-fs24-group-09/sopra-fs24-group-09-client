@@ -329,16 +329,25 @@ const RuleGuideContent = ({ffmpegObj}:any) => {
 
 const RuleGuide = () => {
   const navigate = useNavigate();
-  const ffmpegObj = useMemo(() => {
-    try {
-      const ffmpeg = new FFmpeg();
-      ffmpeg.load();
-      
-      return ffmpeg;
+  const ffmpegRef = useRef(null);
+  const [ifFFmpegLoaded, setIfFFmpegLoaded] = useState(false);
+  useLayoutEffect(() => {
+    ffmpegRef.current = new FFmpeg();
+    const loadFFmpeg = async (ffmpeg: FFmpeg) => {
+      await ffmpeg.load();
     }
-    catch (e) {
+    try {
+      loadFFmpeg(ffmpegRef.current).then(() => {
+        console.log("FFmpeg loaded successfully", ffmpegRef.current);
+        setIfFFmpegLoaded(true);
+      });
+    } catch (e) {
       console.error(e);
-      alert("Failed to load ffmpeg");
+      alert("Failed to load ffmpeg! Please use Chrome Browser.");
+    }
+
+    return () => {
+      ffmpegRef.current?.loaded && ffmpegRef.current.terminate();
     }
   }, []);
   
@@ -353,12 +362,11 @@ const RuleGuide = () => {
       beforeClose={() => {
         showToast("You have left the guide page.", "info");
         navigate("/lobby");
-        ffmpegObj.terminate();
       }}
     >
-      <RuleGuideContent 
-        ffmpegObj={ffmpegObj}
-      />
+      {
+        ifFFmpegLoaded && <RuleGuideContent ffmpegObj={ffmpegRef.current} />
+      }
     </TourProvider>
   );
 }
