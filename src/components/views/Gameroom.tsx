@@ -1,4 +1,4 @@
-import React, { useCallback,useEffect, useState, useRef, useMemo } from "react";
+import React, { useCallback,useEffect, useState, useRef, useMemo, useLayoutEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
@@ -42,7 +42,9 @@ const Gameroom = () => {
     id: sessionStorage.getItem("id"),
     username: sessionStorage.getItem("username")
   };
-  console.log(user)
+  // console.log(user)
+  const ffmpegRef = useRef(null);
+  const [isFFmpegLoaded, setIsFFmpegLoaded] = useState(false);
   const [isStartedPressed, setIsStartedPressed] = useState(false);
   const [showReadyPopup, setShowReadyPopup] = useState(false);
   const readyStatus = useRef(false);
@@ -87,17 +89,44 @@ const Gameroom = () => {
 
   // useMemo to initialize and load FFmpeg wasm module
   // load FFmpeg wasm module
-  const ffmpegObj = useMemo(() => {
-    const ffmpeg = new FFmpeg();
+  // const ffmpegObj = useMemo( () => {
+  //   const ffmpeg = new FFmpeg();
+  //   const loadFFmpeg = async (ffmpeg) => {
+  //     await ffmpeg.load();
+  //   }
+  //   try {
+  //     loadFFmpeg(ffmpeg);
+  //     console.error("FFmpegObj.loaded",ffmpegObj);
+  //     console.error("FFmpegObj",ffmpegObj);
+  //   } catch (error) {
+  //     console.error("Failed to load FFmpeg module, please use Chrome browser.", error);
+  //     alert("Failed to load FFmpeg module");
+  //   }
+  // }, []);
+
+  // console.error("FFmpegObj.loaded",ffmpegObj);
+  // console.error("FFmpegObj",ffmpegObj);
+
+  //("GameInfo", gameInfo);
+
+  useLayoutEffect(() => {
+    ffmpegRef.current = new FFmpeg();
+    const loadFFmpeg = async (ffmpeg) => {
+      await ffmpeg.load();
+    }
     try {
-      ffmpeg.load();
-      console.log("FFmpeg module loaded");
+      loadFFmpeg(ffmpegRef.current).then(() => {
+        console.log("FFmpegObj.loaded",ffmpegRef.current);
+        setIsFFmpegLoaded(true);
+      }); 
     } catch (error) {
-      console.error("Failed to load FFmpeg module", error);
+      console.error("Failed to load FFmpeg module, please use Chrome browser.", error);
       alert("Failed to load FFmpeg module");
     }
 
-    return ffmpeg;
+    return () => {
+      ffmpegRef.current?.loaded && ffmpegRef.current.terminate();
+    };
   }, []);
 
   function checkMic() {
@@ -121,7 +150,7 @@ const Gameroom = () => {
     // console.error("ISCHROME",isChrome);
     if (!isChrome) {
       alert("Please use Chrome browser to play the game.");
-      ffmpegObj.terminate();
+      // ffmpegRef.current?.loaded && ffmpegRef.current.terminate();
       navigate("/lobby");
       
       return;
@@ -170,7 +199,7 @@ const Gameroom = () => {
     const onError = (err) => {
       console.error("WebSocket Error: ", err);
       // alert("WebSocket connection error. Check console for details.");
-      // ffmpegObj.terminate();
+      // ffmpegObj.loaded && ffmpegObj.terminate();
       // navigate("/lobby");
     };
 
@@ -187,7 +216,7 @@ const Gameroom = () => {
         if (msg.auth === false) {
           showToast("Invalid or expired token, please login again!", "error");
           sessionStorage.clear(); // Clear session storage
-          ffmpegObj.terminate(); // Terminate the FFmpeg instance
+          // ffmpegRef.current?.loaded && ffmpegRef.current.terminate();
           navigate("/login"); // Navigate to the login page
 
           return; // Exit the function to avoid further processing
@@ -210,7 +239,7 @@ const Gameroom = () => {
         } else if (messageType === "enter") {
           toastMessage = success ? "You have entered the room successfully!" : msg.message;
           if (!success){
-            ffmpegObj.terminate();
+            // ffmpegRef.current?.loaded && ffmpegRef.current.terminate();
             navigate("/lobby");
           }
         } else if (messageType === "upload") {
@@ -400,7 +429,7 @@ const Gameroom = () => {
     }, RESPONSE_TIME);
 
     return () => clearTimeout(timeoutId);
-  },[user.id,currentRoomID]);
+  },[user.id, currentRoomID]);
   const throttledEnterRoom = useCallback(throttle(enterRoom, THROTTLE_TIME), [enterRoom, THROTTLE_TIME]);
 
   //ready
@@ -529,8 +558,9 @@ const Gameroom = () => {
         token: sessionStorage.getItem("token") },
       JSON.stringify(payload)
     );
-    ffmpegObj.terminate();
+    // ffmpegRef.current?.loaded && ffmpegRef.current.terminate();
     sessionStorage.setItem("allowRedirect", "false");
+    // console.warn("ffmpegObj.loaded",ffmpegRef.current?.loaded)
     navigate("/lobby")
   },[user.id,currentRoomID]);
   const throttledExitRoom = useCallback(throttle(exitRoom, THROTTLE_TIME),[exitRoom, THROTTLE_TIME]);
@@ -754,7 +784,7 @@ const Gameroom = () => {
           }
           volume={globalVolume}
         />
-        {!gameOver && showReadyPopup && (
+        {!gameOver && showReadyPopup && isFFmpegLoaded && (
           <div className="gameroom readypopupbg">
             <div className="gameroom readypopupcontainer">
               <span className="gameroom popuptitle"> {"Room#" + currentRoomNameValid.current}</span>
@@ -829,7 +859,7 @@ const Gameroom = () => {
             gameInfo = {gameInfo}
             currentSpeakerAudioURL={currentSpeakerAudioURL}
             endTime = {endTime}
-            ffmpegObj = {ffmpegObj}
+            ffmpegObj = {ffmpegRef.current}
             meId = {user.id}
             globalVolume = {globalVolume}
             handleAudioReversed = {handleAudioReversed}
