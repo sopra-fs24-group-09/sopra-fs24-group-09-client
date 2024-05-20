@@ -6,7 +6,7 @@ export const MAX_PASSWORD_LENGTH = 20;
 
 export const MAX_ROOM_NAME_LENGTH = 10;
 
-export const DEFAULT_TIMEOUT = 1500;
+export const DEFAULT_TIMEOUT = 2000;
 
 export const HTTP_STATUS = {
   OK: 200,

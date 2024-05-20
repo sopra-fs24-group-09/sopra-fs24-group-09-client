@@ -9,9 +9,11 @@ import { IoMdMicrophone, IoMdCheckmark } from "react-icons/io";
 import "../../styles/ui/AudioRecorder.scss";
 import PropType from "prop-types";
 import { Base64audio } from "types";
+import { showToast } from "../../helpers/toastService"
 
 // stop recording after 5 seconds
 const MAX_RECORDING_TIME = 5000;
+const MIC_PERMISSION_TOAST_DURATION = 5000;
 
 export const AudioRecorder = React.forwardRef((props, ref) => {
   const waveformRef = useRef<HTMLDivElement>(null);
@@ -271,6 +273,9 @@ export const AudioRecorder = React.forwardRef((props, ref) => {
       .then((stream) => {
         recorder.current?.startRecording();
         setIsRecording(true);
+      })
+      .catch((error) => {
+        showToast("Failed to get microphone access, please check your browser setting.", "error", MIC_PERMISSION_TOAST_DURATION);
       });
     // once recording is started, enable interaction
     // should be placed in onRecordEnd event, but it's not working
