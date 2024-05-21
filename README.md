@@ -19,33 +19,29 @@ The motivation behind a KAEPS is to provide a fun, interactive, and lighthearted
 
 ## Technologies
 
-- SpringBoot
-- Gradle
-- Java
-- JPA
-- Mockito
-- RESTful API
-- WebSockets
-- Google Cloud
-- SonarQube
+* [React](https://react.dev/) - Frontend JavaScript library developed by facebook
+* [STOMP](https://stomp-js.github.io/stomp-websocket/) - Text agreement for configuring WebSocket connections
+* [SockJS](https://github.com/sockjs) - API compatible with WebSocket
+* [NPM](https://www.npmjs.com/) - Build automation tool
+* [FFmpeg](https://ffmpeg.org/) -  Open-source tool to record and convert audio
+
 
 ## High level components
 
-### [GameConTroller](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/controller/GameController.java)
+### [Gameroom](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/blob/main/src/components/views/Gameroom.tsx)
+![1716304743485](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/assets/114996149/c48ca9ef-8233-429d-b752-767e3a3d9f79)
 
-The game controller is critical to the app's functionality because it handles practically all API requests performed during the game turns. For example, it is responsible for setting player ready/unready, start the game and upload audio and guessing words.
+The Gameroom page is the central interface for gameplay, displaying essential player information (name, avatar, readiness, round status, and score) on the left, based the current round. The top section features room details (name and theme) alongside a volume control for audio adjustments. On the right, a timer counts down each round, complemented by widgets showing current round details and reminders. The bottom-right contains audio recorders supporting recording, playing and reversing, an answer input field, and buttons for uploading/sharing and confirming answer validation. Before and after the game, the bottom-right area will have only the confirm ready pop up or the ranked leader board pop up showing the final result.
 
-### [GameController](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/controller/GameController.java) && [RoomController](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/controller/RoomController.java)
+### [Lobby](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/blob/main/src/components/views/Lobby.tsx)
+![1716304906209](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/assets/114996149/6d5221f5-e663-4efc-b569-abedd5388a86)
 
-The user can view a public lobby, find existing waiting rooms and select one to join to a room, or user can exit the room when he/she is already in the room, then the owner of this room can start the game. And game controller controls the startings and endings of the games. After finishing each game, the game and room entity will be deleted.
+The lobby page serves as a navigation hub to various parts of the site. In the top-left, user information (avatar and name) is displayed; clicking here allows access to profile editing. The bottom-left features a logout button, redirecting users to the login/register page. Near the center, an animated info button activates a pop-up with game rules and buttons to activate mic and redirect to the rule guide page. On the right, a list of game rooms shows real-time details (current status, available seats, players, room theme, and name), each clickable to join a game directly from the lobby.
 
-### [Game](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/entity/Game.java)
+### [RuleGuide](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/blob/main/src/components/views/RuleGuide.tsx)
+![1716304863668](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/assets/114996149/da31f4ac-7aab-4c0d-86ba-f1dbddd2e445)
 
-The game entity extends the room, will be created when the game starts, and it will be deleted after the game ends. The game entity contains the game's status, the current player's turn, the current round, and all needed information.
-
-### [Player](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs24/entity/Player.java)
-
-The player entity extends the user, will be created when the game starts, and it will be deleted after the game ends. The player entity contains the player's status, the player's score, and all needed information.
+The Rule Guide page offers a step-by-step walk-through for new players, detailing each stage of a complete game round for both speaking and guessing roles. It features instructional messages and highlighted boxes to indicate necessary actions.
 
 <a name="launch-deployment"/>
 
