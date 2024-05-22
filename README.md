@@ -99,7 +99,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 1. **User Registration and Login:**
     - Users can register with username and password.
     - After registration, users will log in and access the lobby.
-
+   
 2. **Beginner's Guide:**
     - For a newly registered user, he/she will go through a beginner's guide to get familiar with the UI and game flow.
       <div style="text-align: center;">
@@ -112,6 +112,10 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
       <div style="text-align: center;">
          <img src="src/images/lobby.jpg" alt="Lobby Screenshot" width="500"/>
       </div>
+    - Users can edit their username and choose a new avatar in profile pop-up
+      <div style="text-align: center;">
+         <img src="src/images/avatar.jpg" alt="avatar Screenshot" width="500"/>
+      </div>  
     - Users can create a new room by specifying room settings (e.g. room name, maximum players, game theme).
       <div style="text-align: center;">
          <img src="src/images/create-room.jpg" alt="create-room Screenshot" width="300"/>
