@@ -12,11 +12,14 @@ The motivation behind a KAEPS is to provide a fun, interactive, and lighthearted
 
 - [Technologies](#technologies)
 - [High-level components](#high-level-components)
-- [Launch & Deployment](#launch-deployment)
+- [Prerequisites & Installation](#prerequisites)
+- [Illustration](#illustration)
 - [Roadmap](#roadmap)
-- [Contributions](#contributions)
+- [Authors](#authors)
+- [Acknowledgment](#acknowledgment)
 - [License](#license)
 
+<a name="technologies"></a>
 ## Technologies
 
 * [React](https://react.dev/) - Frontend JavaScript library developed by facebook
@@ -25,7 +28,7 @@ The motivation behind a KAEPS is to provide a fun, interactive, and lighthearted
 * [NPM](https://www.npmjs.com/) - Build automation tool
 * [FFmpeg](https://ffmpeg.org/) -  Open-source tool to record and convert audio
 
-
+<a name="high-level-components"></a>
 ## High level components
 
 ### [Gameroom](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/blob/main/src/components/views/Gameroom.tsx)
@@ -43,8 +46,7 @@ The lobby page serves as a navigation hub to various parts of the site. In the t
 
 The Rule Guide page offers a step-by-step walk-through for new players, detailing each stage of a complete game round for both speaking and guessing roles. It features instructional messages and highlighted boxes to indicate necessary actions.
 
-<a name="launch-deployment"/>
-
+<a name="prerequisites"/></a>
 ## Prerequisites & Installation
 
 For your local development environment, you will need Node.js.\
@@ -90,6 +92,7 @@ The build is minified, and the filenames include hashes.<br>
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+<a name="illustration"></a>
 ## Illustration
 
 ### Main User Flow
@@ -147,7 +150,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
     - Players take turns being the Speaker.
 
 
-
+<a name="roadmap"></a>
 ## Roadmap
 
 - :negative_squared_cross_mark: Implement a live chat feature.
@@ -155,7 +158,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 - :negative_squared_cross_mark: Configurable setting of game rounds and word difficulty.
 - :negative_squared_cross_mark: Optional re-match after a game ends.
 
-
+<a name="authors"></a>
 ## Authors
 
 | Name          | Personal page                                                                                                                                  |
@@ -166,12 +169,12 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 | Zehao Zhang   | [![GitHub Badge](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Zehao-Zhang)     |
 | Zihan Liu     | [![GitHub Badge](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zihanltesla)    |
 
-
+<a name="acknowledgement"></a>
 ### Acknowledgement
 
 - The client code is based on the [SoPra FS24 - Client Template](https://github.com/HASEL-UZH/sopra-fs24-template-client).
 - Many thanks to **[Miro Vannini](https://github.com/mirovv)** who helped us as a Tutor and Scrum Master during this SoPra project.
 
-
+<a name="license"></a>
 ## License
 We publish the code under the terms of the [MIT License](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-server/blob/main/LICENSE) that allows distribution, modification, and commercial use. This software, however, comes without any warranty or liability.
