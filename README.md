@@ -187,4 +187,4 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 <a name="license"></a>
 ## License
-We publish the code under the terms of the [MIT License](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-server/blob/main/LICENSE) that allows distribution, modification, and commercial use. This software, however, comes without any warranty or liability.
+We publish the code under the terms of the [Apache 2.0 License](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-server/blob/main/LICENSE) that allows distribution, modification, and commercial use. This software, however, comes without any warranty or liability.
