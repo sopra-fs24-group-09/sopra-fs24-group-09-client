@@ -23,10 +23,12 @@ The motivation behind a KAEPS is to provide a fun, interactive, and lighthearted
 ## Technologies
 
 * [React](https://react.dev/) - Frontend JavaScript library developed by facebook
-* [STOMP](https://stomp-js.github.io/stomp-websocket/) - Text agreement for configuring WebSocket connections
+* [STOMP](https://stomp-js.github.io/stomp-websocket/) - Text oriented protocol over WebSocket
 * [SockJS](https://github.com/sockjs) - API compatible with WebSocket
 * [NPM](https://www.npmjs.com/) - Build automation tool
-* [FFmpeg](https://ffmpeg.org/) -  Open-source tool to record and convert audio
+* [FFmpeg.wasm](https://ffmpegwasm.netlify.app/docs/overview) -  A pure WebAssembly / JavaScript port of FFmpeg enabling powerful and blazing fast audio processing.
+* [wavesurfer](https://wavesurfer.xyz/) - Audio visualization library for creating interactive, customizable waveforms.
+* [reactour](https://docs.react.tours/) - Interactive tourist guide library.
 
 <a name="high-level-components"></a>
 ## High level components
@@ -77,6 +79,10 @@ Now you can open [http://localhost:3000](http://localhost:3000) to view it in th
 Notice that the page will reload if you make any edits. You will also see any lint errors in the console (use a Chrome-based browser).\
 The client will send HTTP requests to the server which can be found [here](https://github.com/HASEL-UZH/sopra-fs24-template-server).\
 In order for these requests to work, you need to install and start the server as well.
+
+```npm run lint```
+
+Automatically check an format your code following predefined ESlint rules.
 
 ### Testing
 Testing is optional, and you can run the tests with `npm run test`\
