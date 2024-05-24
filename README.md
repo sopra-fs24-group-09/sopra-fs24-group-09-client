@@ -16,8 +16,9 @@ The motivation behind a KAEPS is to provide a fun, interactive, and lighthearted
 - [Illustration](#illustration)
 - [Roadmap](#roadmap)
 - [Authors](#authors)
-- [Acknowledgment](#acknowledgment)
+- [Acknowledgment](#acknowledgement)
 - [License](#license)
+- [Troubleshooting Tips](#tips)
 
 <a name="technologies"></a>
 ## Technologies
@@ -167,6 +168,34 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 - :negative_squared_cross_mark: Allow to finish each round earlier
 - :negative_squared_cross_mark: Configurable setting of game rounds and word difficulty.
 - :negative_squared_cross_mark: Optional re-match after a game ends.
+
+<a name="tips"></a>
+## Troubleshooting Tips
+
+### Mic Check: 
+Ensure your microphone is enabled before starting the game. If your microphone is not accessible, a toast notification will appear to alert you. You can enable microphone access in your browser settings as shown in the images below.
+
+**First time mic access granting:**
+
+![image](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/assets/114996149/7ba3b086-6a0d-41d8-9c72-06fe5cb52972)
+
+**Re-grant the access if blocked before:**
+
+![image](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/assets/114996149/4873534b-af1b-4939-a995-bcd09e15e770)
+
+### Time Sync:
+Some users may experience issues with an inaccurate counter. To ensure an uninterrupted experience, verify that your computer's clock is set correctly. We depend on the local machine's time to sync game counters and challenges for accurate timing throughout your audio adventure. Most systems will already be synchronized, but if you encounter issues, follow the steps below for manual synchronization:
+
+**For Windows:**
+
+![Windows Screenshot](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/assets/114996149/dfa2476a-d157-49e9-a6a8-6a4cae48e76d)
+*Image from [Windows Report](https://windowsreport.com/time-synchronization-failed-windows-11/)*
+
+**For macOS:**
+
+![macOS Screenshot](https://github.com/sopra-fs24-group-09/sopra-fs24-group-09-client/assets/114996149/cd73fda2-1cc9-4d40-a28a-48a899b974df)
+
+*Image from [MacInstruct](https://www.macinstruct.com/tutorials/synchronize-your-macs-clock-with-a-time-server/#:~:text=Here%E2%80%99s%20how%20to%20synchronize%20your%20Mac%E2%80%99s%20clock%20with,the%20time%20server.%20One%20stable%20option%20is%20pool.ntp.org.)*
 
 <a name="authors"></a>
 ## Authors
