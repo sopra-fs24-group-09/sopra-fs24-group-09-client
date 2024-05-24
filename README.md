@@ -15,10 +15,10 @@ The motivation behind a KAEPS is to provide a fun, interactive, and lighthearted
 - [Prerequisites & Installation](#prerequisites)
 - [Illustration](#illustration)
 - [Roadmap](#roadmap)
+- [Troubleshooting Tips](#tips)
 - [Authors](#authors)
 - [Acknowledgment](#acknowledgement)
 - [License](#license)
-- [Troubleshooting Tips](#tips)
 
 <a name="technologies"></a>
 ## Technologies
